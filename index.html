@@ -529,14 +529,15 @@ async function loadPayments() {
     renderTransactions(result.transactions || []);
 
   } catch (error) {
-    list.textContent = error.message;
+  list.textContent = "";
 
-    document.getElementById("paymentMessage").innerHTML = "";
-    showMessage(
-      "paymentMessage",
-      "Payment information could not be loaded. Please contact management if this continues."
-    );
-  }
+  showMessage(
+    "paymentMessage",
+    "Payment Error: " + error.message,
+    "error"
+  );
+
+  console.error("Payment Loading Error:", error);
 }
 
 /* =====================================
