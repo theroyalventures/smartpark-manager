@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+
+<title>Royal Parking Manager</title>
+
+<style>
+:root {
+  --bg: #101827;
+  --card: #1b293c;
+  --gold: #e9bd58;
+  --white: #ffffff;
+  --muted: #aab5c5;
+  --green: #20c77a;
+  --red: #ff6262;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+}
+
+button, input {
+  font: inherit;
+}
+
+.container {
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  padding: 28px 10px;
+}
+
+.logo {
+  width: 65px;
+  height: 65px;
+  margin: auto;
+  border: 2px solid var(--gold);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+  color: var(--gold);
+  font-weight: bold;
+}
+
+header h1 {
+  font-size: 23px;
+  margin-top: 14px;
+  letter-spacing: 1px;
+}
+
+header p {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 6px;
+  letter-spacing: 2px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid #304057;
+  border-radius: 17px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+
+.card h2 {
+  font-size: 19px;
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  background: #101827;
+  border: 1px solid #40516a;
+  border-radius: 10px;
+  color: white;
+  margin-bottom: 17px;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--gold);
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 15px;
+  font-weight: bold;
+  width: 100%;
+}
+
+.primary {
+  background: var(--gold);
+  color: #151515;
+}
+
+.secondary {
+  background: #33465f;
+  color: white;
+}
+
+.logout {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  margin-top: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.status-box {
+  text-align: center;
+  padding: 22px;
+  border-radius: 14px;
+  background: #101827;
+  margin-bottom: 20px;
+}
+
+.status-label {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.status {
+  font-size: 25px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.parked {
+  color: var(--green);
+}
+
+.outside {
+  color: var(--red);
+}
+
+.vehicle-number {
+  color: var(--gold);
+  font-size: 20px;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.action-button {
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.check-out {
+  background: var(--red);
+  color: white;
+}
+
+.check-in {
+  background: var(--green);
+  color: #061b10;
+}
+
+.info {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 12px;
+}
+
+.history-item {
+  padding: 14px;
+  background: #101827;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.history-item strong {
+  color: var(--gold);
+}
+
+.history-item a {
+  color: #8fc5ff;
+}
+
+#photoPreview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  background: #101827;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.message {
+  padding: 12px;
+  border-radius: 9px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.error {
+  background: #48252b;
+  color: #ffaaaa;
+}
+
+.success {
+  background: #173d30;
+  color: #9df0c5;
+}
+
+.loading {
+  text-align: center;
+  color: var(--gold);
+  padding: 15px;
+}
+
+footer {
+  text-align: center;
+  color: #78869b;
+  font-size: 11px;
+  padding: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <div class="logo">R</div>
+  <h1>ROYAL PARKING</h1>
+  <p>SMART PARKING MANAGEMENT</p>
+</header>
+
+<!-- LOGIN -->
+
+<section id="loginSection" class="card">
+
+  <h2>Customer Login</h2>
+
+  <div id="loginMessage"></div>
+
+  <label>Vehicle Registration Number</label>
+  <input
+    id="vehicle"
+    type="text"
+    placeholder="DL01AB1234"
+    autocomplete="off"
+  >
+
+  <label>Registered Mobile Number</label>
+  <input
+    id="mobile"
+    type="tel"
+    maxlength="10"
+    placeholder="10 digit mobile number"
+  >
+
+  <label>4 Digit Security PIN</label>
+  <input
+    id="pin"
+    type="password"
+    maxlength="4"
+    inputmode="numeric"
+    placeholder="Enter your PIN"
+  >
+
+  <button class="primary" onclick="login()">
+    LOGIN SECURELY
+  </button>
+
+  <p class="info">
+    Use your registered vehicle number, mobile number
+    and PIN to access your parking account.
+  </p>
+
+</section>
+
+<!-- CUSTOMER DASHBOARD -->
+
+<section id="dashboardSection" class="hidden">
+
+  <div class="card">
+
+    <h2>Welcome, <span id="customerName">Customer</span></h2>
+
+    <div class="status-box">
+
+      <div class="status-label">CURRENT VEHICLE STATUS</div>
+
+      <div id="vehicleStatus" class="status parked">
+        PARKED
+      </div>
+
+      <div id="vehicleNumber" class="vehicle-number">
+        DL01AB1234
+      </div>
+
+      <p class="info">
+        Last Odometer: <strong id="lastOdometer">--</strong> KM
+      </p>
+
+    </div>
+
+    <div id="dashboardMessage"></div>
+
+    <button
+      id="checkOutButton"
+      class="action-button check-out"
+      onclick="openMovement('CHECK_OUT')"
+    >
+      CHECK OUT – TAKE VEHICLE
+    </button>
+
+    <button
+      id="checkInButton"
+      class="action-button check-in"
+      onclick="openMovement('CHECK_IN')"
+    >
+      CHECK IN – PARK VEHICLE
+    </button>
+
+    <button class="logout" onclick="logout()">
+      LOG OUT
+    </button>
+
+  </div>
+
+  <!-- ODOMETER FORM -->
+
+  <div id="movementSection" class="card hidden">
+
+    <h2 id="movementTitle">Vehicle Movement</h2>
+
+    <div id="movementMessage"></div>
+
+    <label>Current Odometer Reading (KM)</label>
+
+    <input
+      id="odometer"
+      type="number"
+      min="0"
+      step="0.1"
+      placeholder="Enter current KM reading"
+    >
+
+    <label>Odometer Display Photo (Mandatory)</label>
+
+    <input
+      id="odometerPhoto"
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+      capture="environment"
+      onchange="previewPhoto(event)"
+    >
+
+    <img id="photoPreview" class="hidden" alt="Odometer preview">
+
+    <p class="info">
+      Please upload a clear photo showing the odometer
+      reading on your vehicle dashboard.
+
+      <br><br>
+      Vehicle photo is NOT required.
+      Only the odometer display photo is mandatory.
+    </p>
+
+    <br>
+
+    <button class="primary" onclick="submitMovement()">
+      CONFIRM MOVEMENT
+    </button>
+
+    <br><br>
+
+    <button class="secondary" onclick="closeMovement()">
+      CANCEL
+    </button>
+
+  </div>
+
+  <!-- HISTORY -->
+
+  <div class="card">
+
+    <h2>Movement History</h2>
+
+    <div id="historyList">
+      <p class="info">Loading history...</p>
+    </div>
+
+  </div>
+
+</section>
+
+<footer>
+  © 2026 Royal Parking Manager
+  <br>
+  Secure Customer Parking Portal
+</footer>
+
+</div>
+
+<script>
+
+// ======================================
+// CONFIGURATION
+// ======================================
+
+// Paste your deployed Apps Script /exec URL here.
+
+const API_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+let token = localStorage.getItem("rpm_token") || "";
+
+let currentMovement = "";
+
+let currentVehicle = "";
+
+let currentStatus = "";
+
+let photoBase64 = "";
+
+
+// ======================================
+// API CONNECTION
+// ======================================
+
+async function api(action, data = {}) {
+
+  if (API_URL.includes("PASTE_YOUR")) {
+    throw new Error("Please configure your Google Apps Script URL.");
+  }
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    redirect: "follow",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify({
+      action,
+      ...data
+    })
+  });
+
+  const result = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.error || "Something went wrong");
+  }
+
+  return result.data;
+}
+
+
+// ======================================
+// MESSAGE
+// ======================================
+
+function showMessage(id, message, type = "error") {
+
+  const element = document.getElementById(id);
+
+  element.innerHTML = "";
+
+  const box = document.createElement("div");
+
+  box.className = "message " + type;
+
+  box.textContent = message;
+
+  element.appendChild(box);
+}
+
+
+// ======================================
+// LOGIN
+// ======================================
+
+async function login() {
+
+  const vehicle = document
+    .getElementById("vehicle")
+    .value.trim().toUpperCase();
+
+  const mobile = document
+    .getElementById("mobile")
+    .value.trim();
+
+  const pin = document
+    .getElementById("pin")
+    .value.trim();
+
+  if (!vehicle || !mobile || !pin) {
+    showMessage("loginMessage", "Please complete all fields.");
+    return;
+  }
+
+  try {
+
+    showMessage("loginMessage", "Please wait...", "success");
+
+    const result = await api("ownerLogin", {
+      vehicle,
+      mobile,
+      pin
+    });
+
+    token = result.token;
+
+    currentVehicle = result.vehicle;
+
+    localStorage.setItem("rpm_token", token);
+
+    await loadDashboard();
+
+  } catch (error) {
+
+    showMessage("loginMessage", error.message);
+
+  }
+
+}
+
+
+// ======================================
+// DASHBOARD
+// ======================================
+
+async function loadDashboard() {
+
+  try {
+
+    const result = await api("ownerStatus", {
+      token
+    });
+
+    document.getElementById("loginSection")
+      .classList.add("hidden");
+
+    document.getElementById("dashboardSection")
+      .classList.remove("hidden");
+
+    document.getElementById("customerName")
+      .textContent = result.name;
+
+    document.getElementById("vehicleNumber")
+      .textContent = result.vehicle;
+
+    document.getElementById("lastOdometer")
+      .textContent = result.odometer || "--";
+
+    currentVehicle = result.vehicle;
+
+    currentStatus = result.status;
+
+    const statusElement =
+      document.getElementById("vehicleStatus");
+
+    statusElement.textContent = result.status;
+
+    statusElement.className =
+      "status " +
+      (result.status === "PARKED" ? "parked" : "outside");
+
+    document.getElementById("checkOutButton")
+      .classList.toggle("hidden", result.status !== "PARKED");
+
+    document.getElementById("checkInButton")
+      .classList.toggle("hidden", result.status !== "OUTSIDE");
+
+    await loadHistory();
+
+  } catch (error) {
+
+    logout();
+
+    showMessage("loginMessage", error.message);
+
+  }
+
+}
+
+
+// ======================================
+// OPEN MOVEMENT FORM
+// ======================================
+
+function openMovement(action) {
+
+  currentMovement = action;
+
+  photoBase64 = "";
+
+  document.getElementById("odometer").value = "";
+
+  document.getElementById("odometerPhoto").value = "";
+
+  document.getElementById("photoPreview")
+    .classList.add("hidden");
+
+  document.getElementById("movementSection")
+    .classList.remove("hidden");
+
+  document.getElementById("movementTitle").textContent =
+    action === "CHECK_OUT"
+      ? "Vehicle Check-Out"
+      : "Vehicle Check-In";
+
+  document.getElementById("movementMessage").innerHTML = "";
+
+  document.getElementById("movementSection")
+    .scrollIntoView({ behavior: "smooth" });
+
+}
+
+
+// ======================================
+// CLOSE MOVEMENT FORM
+// ======================================
+
+function closeMovement() {
+
+  document.getElementById("movementSection")
+    .classList.add("hidden");
+
+  photoBase64 = "";
+
+}
+
+
+// ======================================
+// PHOTO PREVIEW + VALIDATION
+// ======================================
+
+function previewPhoto(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+
+    event.target.value = "";
+
+    showMessage(
+      "movementMessage",
+      "Only JPG, PNG or WEBP photos are allowed."
+    );
+
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+
+    event.target.value = "";
+
+    showMessage(
+      "movementMessage",
+      "Photo size must be under 5 MB."
+    );
+
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+
+    photoBase64 = e.target.result;
+
+    const preview = document.getElementById("photoPreview");
+
+    preview.src = photoBase64;
+
+    preview.classList.remove("hidden");
+
+  };
+
+  reader.readAsDataURL(file);
+
+}
+
+
+// ======================================
+// SUBMIT CHECK-IN / CHECK-OUT
+// ======================================
+
+async function submitMovement() {
+
+  const odometer = document
+    .getElementById("odometer")
+    .value.trim();
+
+  const photoInput = document
+    .getElementById("odometerPhoto");
+
+  if (odometer === "" || !Number.isFinite(Number(odometer)) ||
+      Number(odometer) < 0) {
+
+    showMessage(
+      "movementMessage",
+      "Please enter a valid odometer reading."
+    );
+
+    return;
+  }
+
+  if (!photoInput.files.length || !photoBase64) {
+
+    showMessage(
+      "movementMessage",
+      "Odometer photo is mandatory."
+    );
+
+    return;
+  }
+
+  try {
+
+    showMessage(
+      "movementMessage",
+      "Uploading photo and saving movement...",
+      "success"
+    );
+
+    const result = await api("movement", {
+
+      token,
+
+      movement: currentMovement,
+
+      odometer: Number(odometer),
+
+      photo: photoBase64
+
+    });
+
+    showMessage(
+      "dashboardMessage",
+      currentMovement === "CHECK_OUT"
+        ? "Vehicle successfully checked out."
+        : "Vehicle successfully checked in.",
+      "success"
+    );
+
+    closeMovement();
+
+    await loadDashboard();
+
+  } catch (error) {
+
+    showMessage("movementMessage", error.message);
+
+  }
+
+}
+
+
+// ======================================
+// MOVEMENT HISTORY
+// ======================================
+
+async function loadHistory() {
+
+  try {
+
+    const history = await api("ownerHistory", {
+      token
+    });
+
+    const list = document.getElementById("historyList");
+
+    list.innerHTML = "";
+
+    if (!history.length) {
+
+      list.innerHTML =
+        '<p class="info">No movement history available.</p>';
+
+      return;
+
+    }
+
+    history.forEach(item => {
+
+      const box = document.createElement("div");
+
+      box.className = "history-item";
+
+      const date = new Date(item.DateTime);
+
+      const dateText = isNaN(date.getTime())
+        ? item.DateTime
+        : date.toLocaleString("en-IN");
+
+      const actionText =
+        item.Action === "CHECK_OUT"
+          ? "CHECKED OUT"
+          : "CHECKED IN";
+
+      const reading = document.createElement("div");
+      reading.innerHTML =
+        "<strong>" + actionText + "</strong>";
+
+      const dateElement = document.createElement("div");
+      dateElement.textContent = dateText;
+
+      const odometerElement = document.createElement("div");
+      odometerElement.textContent =
+        "Odometer: " + item.Odometer + " KM";
+
+      const distanceElement = document.createElement("div");
+      distanceElement.textContent =
+        "Distance since previous reading: " +
+        (item.Distance || 0) + " KM";
+
+      box.appendChild(reading);
+      box.appendChild(dateElement);
+      box.appendChild(odometerElement);
+      box.appendChild(distanceElement);
+
+      if (item.PhotoURL) {
+
+        const link = document.createElement("a");
+
+        link.href = item.PhotoURL;
+
+        link.target = "_blank";
+
+        link.rel = "noopener noreferrer";
+
+        link.textContent = "View Odometer Photo";
+
+        box.appendChild(document.createElement("br"));
+
+        box.appendChild(link);
+
+      }
+
+      list.appendChild(box);
+
+    });
+
+  } catch (error) {
+
+    document.getElementById("historyList").textContent =
+      error.message;
+
+  }
+
+}
+
+
+// ======================================
+// LOGOUT
+// ======================================
+
+function logout() {
+
+  token = "";
+
+  localStorage.removeItem("rpm_token");
+
+  document.getElementById("loginSection")
+    .classList.remove("hidden");
+
+  document.getElementById("dashboardSection")
+    .classList.add("hidden");
+
+  document.getElementById("movementSection")
+    .classList.add("hidden");
+
+}
+
+
+// ======================================
+// AUTO LOGIN
+// ======================================
+
+window.addEventListener("load", async function() {
+
+  if (token) {
+
+    await loadDashboard();
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>
