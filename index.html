@@ -1,778 +1,719 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101827">
-
-<title>Smart Parking Manager</title>
+<title>Smart Parking Management</title>
 
 <style>
 :root {
-  --bg: #101827;
-  --card: #1b293c;
-  --gold: #e9bd58;
-  --white: #ffffff;
-  --muted: #aab5c5;
-  --green: #20c77a;
-  --red: #ff6262;
+  --bg:#101827;
+  --card:#1b293c;
+  --gold:#e9bd58;
+  --white:#fff;
+  --muted:#aab5c5;
+  --green:#20c77a;
+  --red:#ff6262;
+  --blue:#75baff;
+  --border:#304057;
 }
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  min-height:100vh;
 }
-
-body {
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--white);
-  min-height: 100vh;
+button,input{font:inherit}
+.container{max-width:500px;margin:auto;padding:18px}
+header{text-align:center;padding:25px 10px}
+.logo{
+  width:62px;height:62px;margin:auto;
+  border:2px solid var(--gold);border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:27px;color:var(--gold);font-weight:bold
 }
-
-button, input {
-  font: inherit;
+header h1{font-size:21px;margin-top:13px;letter-spacing:1px}
+header p{font-size:11px;color:var(--muted);margin-top:7px;letter-spacing:2px}
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:20px;margin-bottom:16px
 }
-
-.container {
-  width: 100%;
-  max-width: 480px;
-  margin: auto;
-  padding: 20px;
+.card h2{font-size:18px;margin-bottom:17px}
+label{display:block;color:var(--muted);font-size:13px;margin-bottom:8px}
+input{
+  width:100%;padding:14px;background:var(--bg);
+  border:1px solid #40516a;border-radius:9px;
+  color:white;margin-bottom:16px;outline:none
 }
-
-header {
-  text-align: center;
-  padding: 28px 10px;
+input:focus{border-color:var(--gold)}
+button{
+  border:0;border-radius:10px;padding:14px;
+  width:100%;font-weight:bold;cursor:pointer
 }
-
-.logo {
-  width: 65px;
-  height: 65px;
-  margin: auto;
-  border: 2px solid var(--gold);
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 27px;
-  color: var(--gold);
-  font-weight: bold;
+button:disabled{opacity:.55;cursor:not-allowed}
+.primary{background:var(--gold);color:#151515}
+.secondary{background:#33465f;color:white}
+.green-btn{background:var(--green);color:#061b10}
+.red-btn{background:var(--red);color:white}
+.logout{background:transparent;color:var(--gold);border:1px solid var(--gold);margin-top:12px}
+.hidden{display:none!important}
+.info{font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px}
+.message{padding:12px;border-radius:9px;margin-bottom:14px;font-size:13px;line-height:1.5}
+.error{background:#48252b;color:#ffaaaa}
+.success{background:#173d30;color:#9df0c5}
+.warning{background:#493c20;color:#ffe0a0}
+.loading{text-align:center;color:var(--gold);padding:14px}
+.status-box{
+  text-align:center;background:var(--bg);
+  border-radius:13px;padding:20px;margin-bottom:18px
 }
-
-header h1 {
-  font-size: 23px;
-  margin-top: 14px;
-  letter-spacing: 1px;
+.status-label{font-size:11px;color:var(--muted);letter-spacing:1px}
+.status{font-size:25px;font-weight:bold;margin-top:10px}
+.parked{color:var(--green)}
+.outside{color:var(--red)}
+.vehicle-number{color:var(--gold);font-size:19px;font-weight:bold;margin-top:8px}
+.action-button{margin-bottom:11px}
+.section-heading{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:15px
 }
-
-header p {
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 6px;
-  letter-spacing: 2px;
+.section-heading h2{margin:0}
+.small-label{font-size:11px;color:var(--muted)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.stat{
+  background:var(--bg);padding:15px;border-radius:11px;
+  min-width:0
 }
-
-.card {
-  background: var(--card);
-  border: 1px solid #304057;
-  border-radius: 17px;
-  padding: 22px;
-  margin-bottom: 18px;
+.stat-label{font-size:11px;color:var(--muted);margin-bottom:8px}
+.stat-value{font-size:23px;font-weight:bold;overflow-wrap:anywhere}
+.gold{color:var(--gold)}
+.red{color:var(--red)}
+.green{color:var(--green)}
+.blue{color:var(--blue)}
+.payment-box{
+  background:var(--bg);border-radius:12px;
+  padding:15px;margin-bottom:12px
 }
-
-.card h2 {
-  font-size: 19px;
-  margin-bottom: 18px;
+.payment-row{
+  display:flex;justify-content:space-between;
+  gap:12px;padding:9px 0;font-size:13px;
+  border-bottom:1px solid #304057
 }
-
-label {
-  display: block;
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 8px;
+.payment-row:last-child{border:0}
+.payment-row span:first-child{color:var(--muted)}
+.badge{
+  display:inline-block;padding:5px 9px;
+  border-radius:20px;font-size:10px;font-weight:bold
 }
-
-input {
-  width: 100%;
-  padding: 15px;
-  background: #101827;
-  border: 1px solid #40516a;
-  border-radius: 10px;
-  color: white;
-  margin-bottom: 17px;
-  outline: none;
+.badge-paid{background:#173d30;color:#9df0c5}
+.badge-due{background:#493c20;color:#ffe0a0}
+.badge-overdue{background:#48252b;color:#ffaaaa}
+.history-item{
+  background:var(--bg);padding:13px;
+  border-radius:10px;margin-bottom:10px;
+  font-size:13px;line-height:1.8;overflow-wrap:anywhere
 }
-
-input:focus {
-  border-color: var(--gold);
+.history-item strong{color:var(--gold)}
+.history-item a{color:var(--blue)}
+#photoPreview{
+  width:100%;max-height:220px;object-fit:contain;
+  background:var(--bg);border-radius:10px;margin-bottom:15px
 }
-
-button {
-  border: none;
-  cursor: pointer;
-  border-radius: 10px;
-  padding: 15px;
-  font-weight: bold;
-  width: 100%;
-}
-
-.primary {
-  background: var(--gold);
-  color: #151515;
-}
-
-.secondary {
-  background: #33465f;
-  color: white;
-}
-
-.logout {
-  background: transparent;
-  color: var(--gold);
-  border: 1px solid var(--gold);
-  margin-top: 12px;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.status-box {
-  text-align: center;
-  padding: 22px;
-  border-radius: 14px;
-  background: #101827;
-  margin-bottom: 20px;
-}
-
-.status-label {
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-
-.status {
-  font-size: 25px;
-  font-weight: bold;
-  margin-top: 10px;
-}
-
-.parked {
-  color: var(--green);
-}
-
-.outside {
-  color: var(--red);
-}
-
-.vehicle-number {
-  color: var(--gold);
-  font-size: 20px;
-  margin-top: 8px;
-  font-weight: bold;
-}
-
-.action-button {
-  margin-bottom: 12px;
-  font-size: 15px;
-}
-
-.check-out {
-  background: var(--red);
-  color: white;
-}
-
-.check-in {
-  background: var(--green);
-  color: #061b10;
-}
-
-.info {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.6;
-  margin-top: 12px;
-}
-
-.history-item {
-  padding: 14px;
-  background: #101827;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  font-size: 13px;
-  line-height: 1.8;
-}
-
-.history-item strong {
-  color: var(--gold);
-}
-
-.history-item a {
-  color: #8fc5ff;
-}
-
-#photoPreview {
-  width: 100%;
-  max-height: 220px;
-  object-fit: contain;
-  background: #101827;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}
-
-.message {
-  padding: 12px;
-  border-radius: 9px;
-  margin-bottom: 15px;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.error {
-  background: #48252b;
-  color: #ffaaaa;
-}
-
-.success {
-  background: #173d30;
-  color: #9df0c5;
-}
-
-.loading {
-  text-align: center;
-  color: var(--gold);
-  padding: 15px;
-}
-
-footer {
-  text-align: center;
-  color: #78869b;
-  font-size: 11px;
-  padding: 20px;
-}
+footer{text-align:center;color:#78869b;font-size:11px;padding:20px}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <header>
-  <div class="logo">$</div>
+  <div class="logo">S</div>
   <h1>SMART PARKING MANAGEMENT</h1>
+  <p>SMART • SECURE • TRANSPARENT</p>
 </header>
 
 <!-- LOGIN -->
-
 <section id="loginSection" class="card">
-
   <h2>Customer Login</h2>
-
   <div id="loginMessage"></div>
 
   <label>Vehicle Registration Number</label>
-  <input
-    id="vehicle"
-    type="text"
-    placeholder="DL01AB1234"
-    autocomplete="off"
-  >
+  <input id="vehicle" type="text" placeholder="DL01AB1234" autocomplete="off">
 
   <label>Registered Mobile Number</label>
-  <input
-    id="mobile"
-    type="tel"
-    maxlength="10"
-    placeholder="10 digit mobile number"
-  >
+  <input id="mobile" type="tel" maxlength="10" inputmode="numeric" placeholder="10 digit mobile number">
 
   <label>4 Digit Security PIN</label>
-  <input
-    id="pin"
-    type="password"
-    maxlength="4"
-    inputmode="numeric"
-    placeholder="Enter your PIN"
-  >
+  <input id="pin" type="password" maxlength="4" inputmode="numeric" placeholder="Enter your PIN">
 
-  <button class="primary" onclick="login()">
-    LOGIN SECURELY
-  </button>
+  <button id="loginButton" class="primary" onclick="login()">LOGIN SECURELY</button>
 
-  <p class="info">
-    Use your registered vehicle number, mobile number
-    and PIN to access your parking account.
-  </p>
-
+  <p class="info">Use your registered vehicle number, mobile number and PIN to access your account.</p>
 </section>
 
-<!-- CUSTOMER DASHBOARD -->
-
+<!-- DASHBOARD -->
 <section id="dashboardSection" class="hidden">
 
   <div class="card">
-
     <h2>Welcome, <span id="customerName">Customer</span></h2>
 
     <div class="status-box">
-
       <div class="status-label">CURRENT VEHICLE STATUS</div>
-
-      <div id="vehicleStatus" class="status parked">
-        PARKED
-      </div>
-
-      <div id="vehicleNumber" class="vehicle-number">
-        DL01AB1234
-      </div>
-
-      <p class="info">
-        Last Odometer: <strong id="lastOdometer">--</strong> KM
-      </p>
-
+      <div id="vehicleStatus" class="status parked">PARKED</div>
+      <div id="vehicleNumber" class="vehicle-number">--</div>
+      <p class="info">Last Odometer: <strong id="lastOdometer">--</strong> KM</p>
     </div>
 
     <div id="dashboardMessage"></div>
 
-    <button
-      id="checkOutButton"
-      class="action-button check-out"
-      onclick="openMovement('CHECK_OUT')"
-    >
+    <button id="checkOutButton" class="action-button red-btn" onclick="openMovement('CHECK_OUT')">
       CHECK OUT – TAKE VEHICLE
     </button>
 
-    <button
-      id="checkInButton"
-      class="action-button check-in"
-      onclick="openMovement('CHECK_IN')"
-    >
+    <button id="checkInButton" class="action-button green-btn" onclick="openMovement('CHECK_IN')">
       CHECK IN – PARK VEHICLE
     </button>
 
-    <button class="logout" onclick="logout()">
-      LOG OUT
-    </button>
-
+    <button class="logout" onclick="logout()">LOG OUT</button>
   </div>
 
-  <!-- ODOMETER FORM -->
+  <!-- PAYMENT DASHBOARD -->
+  <div class="card">
+    <div class="section-heading">
+      <h2>My Payments</h2>
+      <span class="small-label">ACCOUNT SUMMARY</span>
+    </div>
 
+    <div id="paymentMessage"></div>
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label">Outstanding Balance</div>
+        <div class="stat-value red" id="outstandingAmount">₹--</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Next Payment</div>
+        <div class="stat-value gold" id="nextPaymentAmount">₹--</div>
+      </div>
+    </div>
+
+    <div class="payment-box">
+      <h3 style="font-size:15px;margin-bottom:12px">Upcoming Payment</h3>
+
+      <div class="payment-row">
+        <span>Billing Month</span>
+        <strong id="billingMonth">--</strong>
+      </div>
+
+      <div class="payment-row">
+        <span>Due Date</span>
+        <strong id="paymentDueDate">--</strong>
+      </div>
+
+      <div class="payment-row">
+        <span>Amount Due</span>
+        <strong id="amountDue">₹--</strong>
+      </div>
+
+      <div class="payment-row">
+        <span>Payment Status</span>
+        <span id="paymentStatus">--</span>
+      </div>
+    </div>
+
+    <div id="paymentReminder"></div>
+
+    <p class="info">
+      Your monthly payment due date is calculated according to your registered joining date.
+      Please clear your dues on time.
+    </p>
+
+    <button class="secondary" onclick="loadPayments()">REFRESH PAYMENT DETAILS</button>
+  </div>
+
+  <!-- TRANSACTION HISTORY -->
+  <div class="card">
+    <div class="section-heading">
+      <h2>Transaction History</h2>
+    </div>
+    <div id="transactionList">
+      <p class="info">Loading transactions...</p>
+    </div>
+  </div>
+
+  <!-- MOVEMENT FORM -->
   <div id="movementSection" class="card hidden">
-
     <h2 id="movementTitle">Vehicle Movement</h2>
-
     <div id="movementMessage"></div>
 
     <label>Current Odometer Reading (KM)</label>
-
-    <input
-      id="odometer"
-      type="number"
-      min="0"
-      step="0.1"
-      placeholder="Enter current KM reading"
-    >
+    <input id="odometer" type="number" min="0" step="0.1" placeholder="Enter current KM reading">
 
     <label>Odometer Display Photo (Mandatory)</label>
-
-    <input
-      id="odometerPhoto"
-      type="file"
-      accept="image/jpeg,image/png,image/webp"
-      capture="environment"
-      onchange="previewPhoto(event)"
-    >
+    <input id="odometerPhoto" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onchange="previewPhoto(event)">
 
     <img id="photoPreview" class="hidden" alt="Odometer preview">
 
     <p class="info">
-      Please upload a clear photo showing the odometer
-      reading on your vehicle dashboard.
-
-      <br><br>
-      Vehicle photo is NOT required.
-      Only the odometer display photo is mandatory.
+      A clear odometer display photo is mandatory for every check-in and check-out.
+      Vehicle photo is not required.
     </p>
 
     <br>
-
-    <button class="primary" onclick="submitMovement()">
-      CONFIRM MOVEMENT
-    </button>
-
+    <button id="movementButton" class="primary" onclick="submitMovement()">CONFIRM MOVEMENT</button>
     <br><br>
-
-    <button class="secondary" onclick="closeMovement()">
-      CANCEL
-    </button>
-
+    <button class="secondary" onclick="closeMovement()">CANCEL</button>
   </div>
 
-  <!-- HISTORY -->
-
+  <!-- MOVEMENT HISTORY -->
   <div class="card">
-
-    <h2>Movement History</h2>
-
+    <h2>Vehicle Movement History</h2>
     <div id="historyList">
       <p class="info">Loading history...</p>
     </div>
-
   </div>
 
 </section>
 
 <footer>
-  © 2026 Smart Parking Manager
-  <br>
-  Secure Customer Parking Portal
+  © 2026 Smart Parking Management
+  <br>Secure Customer Portal
 </footer>
-
 </div>
 
 <script>
-
-// ======================================
-// CONFIGURATION
-// ======================================
-
-// Paste your deployed Apps Script /exec URL here.
+/* =====================================
+   CONFIGURATION
+===================================== */
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzDxI1LyqLkIkTioRTn-xuL9JHZ_iWUH8LYrPUlniFgizDI6wbbM0X4OLtamcwwLhIQ/exec";
 
 let token = localStorage.getItem("rpm_token") || "";
-
 let currentMovement = "";
-
-let currentVehicle = "";
-
-let currentStatus = "";
-
 let photoBase64 = "";
 
-
-// ======================================
-// API CONNECTION
-// ======================================
+/* =====================================
+   API
+===================================== */
 
 async function api(action, data = {}) {
-
-  if (API_URL.includes("PASTE_YOUR")) {
-    throw new Error("Please configure your Google Apps Script URL.");
+  if (!API_URL || API_URL.includes("PASTE_YOUR")) {
+    throw new Error("Apps Script URL is not configured.");
   }
 
-  const response = await fetch(API_URL, {
-    method: "POST",
-    redirect: "follow",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify({
-      action,
-      ...data
-    })
-  });
+  let response;
 
-  const result = await response.json();
+  try {
+    response = await fetch(API_URL, {
+      method: "POST",
+      redirect: "follow",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({action, ...data})
+    });
+  } catch (e) {
+    throw new Error("Unable to connect to the server. Please check your internet connection or Apps Script deployment.");
+  }
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch (e) {
+    throw new Error("Invalid server response. Please check your Apps Script deployment.");
+  }
 
   if (!result.success) {
-    throw new Error(result.error || "Something went wrong");
+    throw new Error(result.error || "Something went wrong.");
   }
 
   return result.data;
 }
 
+/* =====================================
+   MESSAGES
+===================================== */
 
-// ======================================
-// MESSAGE
-// ======================================
-
-function showMessage(id, message, type = "error") {
-
+function showMessage(id, message, type="error") {
   const element = document.getElementById(id);
-
   element.innerHTML = "";
 
   const box = document.createElement("div");
-
   box.className = "message " + type;
-
   box.textContent = message;
 
   element.appendChild(box);
 }
 
-
-// ======================================
-// LOGIN
-// ======================================
+/* =====================================
+   LOGIN
+===================================== */
 
 async function login() {
+  const button = document.getElementById("loginButton");
 
-  const vehicle = document
-    .getElementById("vehicle")
-    .value.trim().toUpperCase();
-
-  const mobile = document
-    .getElementById("mobile")
-    .value.trim();
-
-  const pin = document
-    .getElementById("pin")
-    .value.trim();
+  const vehicle = document.getElementById("vehicle").value.trim().toUpperCase();
+  const mobile = document.getElementById("mobile").value.trim();
+  const pin = document.getElementById("pin").value.trim();
 
   if (!vehicle || !mobile || !pin) {
     showMessage("loginMessage", "Please complete all fields.");
     return;
   }
 
+  if (!/^\d{10}$/.test(mobile)) {
+    showMessage("loginMessage", "Please enter a valid 10-digit mobile number.");
+    return;
+  }
+
+  if (!/^\d{4}$/.test(pin)) {
+    showMessage("loginMessage", "Security PIN must contain exactly 4 digits.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "PLEASE WAIT...";
+
   try {
+    showMessage("loginMessage", "Verifying your account...", "success");
 
-    showMessage("loginMessage", "Please wait...", "success");
-
-    const result = await api("ownerLogin", {
-      vehicle,
-      mobile,
-      pin
-    });
+    const result = await api("ownerLogin", {vehicle, mobile, pin});
 
     token = result.token;
-
-    currentVehicle = result.vehicle;
-
     localStorage.setItem("rpm_token", token);
 
     await loadDashboard();
 
   } catch (error) {
-
     showMessage("loginMessage", error.message);
-
+  } finally {
+    button.disabled = false;
+    button.textContent = "LOGIN SECURELY";
   }
-
 }
 
-
-// ======================================
-// DASHBOARD
-// ======================================
+/* =====================================
+   DASHBOARD
+===================================== */
 
 async function loadDashboard() {
-
   try {
+    const result = await api("ownerStatus", {token});
 
-    const result = await api("ownerStatus", {
-      token
-    });
+    document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("dashboardSection").classList.remove("hidden");
 
-    document.getElementById("loginSection")
-      .classList.add("hidden");
+    document.getElementById("customerName").textContent = result.name || "Customer";
+    document.getElementById("vehicleNumber").textContent = result.vehicle || "--";
+    document.getElementById("lastOdometer").textContent = result.odometer ?? "--";
 
-    document.getElementById("dashboardSection")
-      .classList.remove("hidden");
+    const status = result.status || "PARKED";
 
-    document.getElementById("customerName")
-      .textContent = result.name;
+    document.getElementById("vehicleStatus").textContent = status;
+    document.getElementById("vehicleStatus").className =
+      "status " + (status === "PARKED" ? "parked" : "outside");
 
-    document.getElementById("vehicleNumber")
-      .textContent = result.vehicle;
+    document.getElementById("checkOutButton").classList.toggle("hidden", status !== "PARKED");
+    document.getElementById("checkInButton").classList.toggle("hidden", status !== "OUTSIDE");
 
-    document.getElementById("lastOdometer")
-      .textContent = result.odometer || "--";
-
-    currentVehicle = result.vehicle;
-
-    currentStatus = result.status;
-
-    const statusElement =
-      document.getElementById("vehicleStatus");
-
-    statusElement.textContent = result.status;
-
-    statusElement.className =
-      "status " +
-      (result.status === "PARKED" ? "parked" : "outside");
-
-    document.getElementById("checkOutButton")
-      .classList.toggle("hidden", result.status !== "PARKED");
-
-    document.getElementById("checkInButton")
-      .classList.toggle("hidden", result.status !== "OUTSIDE");
-
-    await loadHistory();
+    await Promise.allSettled([
+      loadHistory(),
+      loadPayments()
+    ]);
 
   } catch (error) {
+    token = "";
+    localStorage.removeItem("rpm_token");
 
-    logout();
+    document.getElementById("loginSection").classList.remove("hidden");
+    document.getElementById("dashboardSection").classList.add("hidden");
 
     showMessage("loginMessage", error.message);
-
   }
-
 }
 
+/* =====================================
+   PAYMENT DASHBOARD
+===================================== */
 
-// ======================================
-// OPEN MOVEMENT FORM
-// ======================================
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2
+  });
+}
+
+function formatDate(value) {
+  if (!value) return "--";
+
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return value;
+
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
+async function loadPayments() {
+  const list = document.getElementById("transactionList");
+  list.innerHTML = '<p class="loading">Loading payment details...</p>';
+
+  try {
+    /*
+      BACKEND ACTION REQUIRED:
+      ownerPayments must return:
+      {
+        summary: {
+          outstanding: 2000,
+          nextDueAmount: 2000
+        },
+        upcoming: {
+          billingMonth: "November 2026",
+          dueDate: "2026-11-15",
+          amountDue: 2000,
+          status: "UPCOMING"
+        },
+        transactions: [
+          {
+            date: "2026-10-15",
+            billingMonth: "October 2026",
+            amount: 2000,
+            method: "UPI",
+            status: "PAID",
+            reference: "UPI123"
+          }
+        ]
+      }
+    */
+
+    const result = await api("ownerPayments", {token});
+
+    const summary = result.summary || {};
+    const upcoming = result.upcoming || {};
+
+    document.getElementById("outstandingAmount").textContent =
+      money(summary.outstanding);
+
+    document.getElementById("nextPaymentAmount").textContent =
+      money(summary.nextDueAmount);
+
+    document.getElementById("billingMonth").textContent =
+      upcoming.billingMonth || "--";
+
+    document.getElementById("paymentDueDate").textContent =
+      formatDate(upcoming.dueDate);
+
+    document.getElementById("amountDue").textContent =
+      money(upcoming.amountDue);
+
+    const status = (upcoming.status || "NOT AVAILABLE").toUpperCase();
+
+    const statusElement = document.getElementById("paymentStatus");
+    statusElement.innerHTML = "";
+
+    const badge = document.createElement("span");
+    badge.className = "badge " +
+      (status === "PAID" ? "badge-paid" :
+       status === "OVERDUE" ? "badge-overdue" : "badge-due");
+
+    badge.textContent = status;
+    statusElement.appendChild(badge);
+
+    showPaymentReminder(upcoming);
+
+    renderTransactions(result.transactions || []);
+
+  } catch (error) {
+    list.textContent = error.message;
+
+    document.getElementById("paymentMessage").innerHTML = "";
+    showMessage(
+      "paymentMessage",
+      "Payment information could not be loaded. Please contact management if this continues."
+    );
+  }
+}
+
+/* =====================================
+   PAYMENT REMINDERS
+===================================== */
+
+function showPaymentReminder(upcoming) {
+  const box = document.getElementById("paymentReminder");
+  box.innerHTML = "";
+
+  if (!upcoming.dueDate) return;
+
+  if ((upcoming.status || "").toUpperCase() === "PAID") return;
+
+  const due = new Date(upcoming.dueDate);
+  const today = new Date();
+
+  due.setHours(0,0,0,0);
+  today.setHours(0,0,0,0);
+
+  const days = Math.round((due - today) / 86400000);
+
+  let message = "";
+  let type = "warning";
+
+  if (days < 0) {
+    message = "Your payment is overdue by " + Math.abs(days) +
+      " day(s). Please clear your outstanding balance.";
+    type = "error";
+  } else if (days === 0) {
+    message = "Your monthly payment is due today. Please make your payment on time.";
+  } else if (days <= 2) {
+    message = "Your payment is due in " + days + " day(s). Please arrange your payment.";
+  } else if (days <= 5) {
+    message = "Reminder: Your upcoming payment is due in " + days + " days.";
+  } else {
+    return;
+  }
+
+  showMessage("paymentReminder", message, type);
+}
+
+/* =====================================
+   TRANSACTION HISTORY
+===================================== */
+
+function renderTransactions(transactions) {
+  const list = document.getElementById("transactionList");
+  list.innerHTML = "";
+
+  if (!transactions.length) {
+    list.innerHTML = '<p class="info">No transaction history available.</p>';
+    return;
+  }
+
+  transactions.forEach(item => {
+    const box = document.createElement("div");
+    box.className = "history-item";
+
+    const title = document.createElement("strong");
+    title.textContent = item.billingMonth || "Payment";
+
+    const date = document.createElement("div");
+    date.textContent = "Date: " + formatDate(item.date);
+
+    const amount = document.createElement("div");
+    amount.textContent = "Amount: " + money(item.amount);
+
+    const method = document.createElement("div");
+    method.textContent = "Payment Method: " + (item.method || "--");
+
+    const status = document.createElement("div");
+    status.textContent = "Status: " + (item.status || "PAID");
+
+    box.append(title, date, amount, method, status);
+
+    if (item.reference) {
+      const reference = document.createElement("div");
+      reference.textContent = "Reference: " + item.reference;
+      box.appendChild(reference);
+    }
+
+    list.appendChild(box);
+  });
+}
+
+/* =====================================
+   MOVEMENT FORM
+===================================== */
 
 function openMovement(action) {
-
   currentMovement = action;
-
   photoBase64 = "";
 
   document.getElementById("odometer").value = "";
-
   document.getElementById("odometerPhoto").value = "";
+  document.getElementById("photoPreview").classList.add("hidden");
 
-  document.getElementById("photoPreview")
-    .classList.add("hidden");
-
-  document.getElementById("movementSection")
-    .classList.remove("hidden");
+  document.getElementById("movementSection").classList.remove("hidden");
 
   document.getElementById("movementTitle").textContent =
-    action === "CHECK_OUT"
-      ? "Vehicle Check-Out"
-      : "Vehicle Check-In";
+    action === "CHECK_OUT" ? "Vehicle Check-Out" : "Vehicle Check-In";
 
   document.getElementById("movementMessage").innerHTML = "";
 
-  document.getElementById("movementSection")
-    .scrollIntoView({ behavior: "smooth" });
-
+  document.getElementById("movementSection").scrollIntoView({
+    behavior: "smooth"
+  });
 }
-
-
-// ======================================
-// CLOSE MOVEMENT FORM
-// ======================================
 
 function closeMovement() {
-
-  document.getElementById("movementSection")
-    .classList.add("hidden");
-
+  document.getElementById("movementSection").classList.add("hidden");
   photoBase64 = "";
-
 }
 
-
-// ======================================
-// PHOTO PREVIEW + VALIDATION
-// ======================================
+/* =====================================
+   PHOTO PREVIEW
+===================================== */
 
 function previewPhoto(event) {
-
   const file = event.target.files[0];
-
   if (!file) return;
 
-  const allowedTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/webp"
-  ];
+  const allowed = ["image/jpeg","image/png","image/webp"];
 
-  if (!allowedTypes.includes(file.type)) {
-
+  if (!allowed.includes(file.type)) {
     event.target.value = "";
-
-    showMessage(
-      "movementMessage",
-      "Only JPG, PNG or WEBP photos are allowed."
-    );
-
+    showMessage("movementMessage", "Only JPG, PNG or WEBP photos are allowed.");
     return;
   }
 
   if (file.size > 5 * 1024 * 1024) {
-
     event.target.value = "";
-
-    showMessage(
-      "movementMessage",
-      "Photo size must be under 5 MB."
-    );
-
+    showMessage("movementMessage", "Photo size must be under 5 MB.");
     return;
   }
 
   const reader = new FileReader();
 
   reader.onload = function(e) {
-
     photoBase64 = e.target.result;
-
     const preview = document.getElementById("photoPreview");
-
     preview.src = photoBase64;
-
     preview.classList.remove("hidden");
-
   };
 
   reader.readAsDataURL(file);
-
 }
 
-
-// ======================================
-// SUBMIT CHECK-IN / CHECK-OUT
-// ======================================
+/* =====================================
+   SUBMIT MOVEMENT
+===================================== */
 
 async function submitMovement() {
+  const button = document.getElementById("movementButton");
+  const odometer = document.getElementById("odometer").value.trim();
+  const photoInput = document.getElementById("odometerPhoto");
 
-  const odometer = document
-    .getElementById("odometer")
-    .value.trim();
-
-  const photoInput = document
-    .getElementById("odometerPhoto");
-
-  if (odometer === "" || !Number.isFinite(Number(odometer)) ||
-      Number(odometer) < 0) {
-
-    showMessage(
-      "movementMessage",
-      "Please enter a valid odometer reading."
-    );
-
+  if (odometer === "" || !Number.isFinite(Number(odometer)) || Number(odometer) < 0) {
+    showMessage("movementMessage", "Please enter a valid odometer reading.");
     return;
   }
 
   if (!photoInput.files.length || !photoBase64) {
-
-    showMessage(
-      "movementMessage",
-      "Odometer photo is mandatory."
-    );
-
+    showMessage("movementMessage", "Odometer photo is mandatory.");
     return;
   }
 
+  button.disabled = true;
+  button.textContent = "SAVING...";
+
   try {
-
-    showMessage(
-      "movementMessage",
-      "Uploading photo and saving movement...",
-      "success"
-    );
-
-    const result = await api("movement", {
-
+    await api("movement", {
       token,
-
       movement: currentMovement,
-
       odometer: Number(odometer),
-
       photo: photoBase64
-
     });
 
     showMessage(
@@ -784,150 +725,93 @@ async function submitMovement() {
     );
 
     closeMovement();
-
     await loadDashboard();
 
   } catch (error) {
-
     showMessage("movementMessage", error.message);
-
+  } finally {
+    button.disabled = false;
+    button.textContent = "CONFIRM MOVEMENT";
   }
-
 }
 
-
-// ======================================
-// MOVEMENT HISTORY
-// ======================================
+/* =====================================
+   MOVEMENT HISTORY
+===================================== */
 
 async function loadHistory() {
-
   try {
-
-    const history = await api("ownerHistory", {
-      token
-    });
-
+    const history = await api("ownerHistory", {token});
     const list = document.getElementById("historyList");
 
     list.innerHTML = "";
 
     if (!history.length) {
-
-      list.innerHTML =
-        '<p class="info">No movement history available.</p>';
-
+      list.innerHTML = '<p class="info">No movement history available.</p>';
       return;
-
     }
 
     history.forEach(item => {
-
       const box = document.createElement("div");
-
       box.className = "history-item";
 
-      const date = new Date(item.DateTime);
+      const title = document.createElement("strong");
+      title.textContent = item.Action === "CHECK_OUT" ? "CHECKED OUT" : "CHECKED IN";
 
-      const dateText = isNaN(date.getTime())
-        ? item.DateTime
-        : date.toLocaleString("en-IN");
+      const date = document.createElement("div");
+      date.textContent = new Date(item.DateTime).toLocaleString("en-IN");
 
-      const actionText =
-        item.Action === "CHECK_OUT"
-          ? "CHECKED OUT"
-          : "CHECKED IN";
+      const odo = document.createElement("div");
+      odo.textContent = "Odometer: " + item.Odometer + " KM";
 
-      const reading = document.createElement("div");
-      reading.innerHTML =
-        "<strong>" + actionText + "</strong>";
+      const distance = document.createElement("div");
+      distance.textContent = "Distance since previous reading: " + (item.Distance || 0) + " KM";
 
-      const dateElement = document.createElement("div");
-      dateElement.textContent = dateText;
-
-      const odometerElement = document.createElement("div");
-      odometerElement.textContent =
-        "Odometer: " + item.Odometer + " KM";
-
-      const distanceElement = document.createElement("div");
-      distanceElement.textContent =
-        "Distance since previous reading: " +
-        (item.Distance || 0) + " KM";
-
-      box.appendChild(reading);
-      box.appendChild(dateElement);
-      box.appendChild(odometerElement);
-      box.appendChild(distanceElement);
+      box.append(title, date, odo, distance);
 
       if (item.PhotoURL) {
-
         const link = document.createElement("a");
-
         link.href = item.PhotoURL;
-
         link.target = "_blank";
-
         link.rel = "noopener noreferrer";
-
         link.textContent = "View Odometer Photo";
-
         box.appendChild(document.createElement("br"));
-
         box.appendChild(link);
-
       }
 
       list.appendChild(box);
-
     });
 
   } catch (error) {
-
-    document.getElementById("historyList").textContent =
-      error.message;
-
+    document.getElementById("historyList").textContent = error.message;
   }
-
 }
 
-
-// ======================================
-// LOGOUT
-// ======================================
+/* =====================================
+   LOGOUT
+===================================== */
 
 function logout() {
-
   token = "";
-
   localStorage.removeItem("rpm_token");
 
-  document.getElementById("loginSection")
-    .classList.remove("hidden");
+  document.getElementById("loginSection").classList.remove("hidden");
+  document.getElementById("dashboardSection").classList.add("hidden");
+  document.getElementById("movementSection").classList.add("hidden");
 
-  document.getElementById("dashboardSection")
-    .classList.add("hidden");
-
-  document.getElementById("movementSection")
-    .classList.add("hidden");
-
+  document.getElementById("loginMessage").innerHTML = "";
+  document.getElementById("pin").value = "";
 }
 
-
-// ======================================
-// AUTO LOGIN
-// ======================================
+/* =====================================
+   AUTO LOGIN
+===================================== */
 
 window.addEventListener("load", async function() {
-
   if (token) {
-
     await loadDashboard();
-
   }
-
 });
-
 </script>
-
 </body>
 </html>
