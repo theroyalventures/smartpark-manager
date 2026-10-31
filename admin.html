@@ -1582,7 +1582,9 @@ function renderPayments() {
 
     // First retain the original latest-first order.
     // Then move the recently paid customer's records to the top.
-    const sortedPayments = filtered.slice().reverse().sort((a, b) => {
+    filtered.forEach(p => {
+    // Existing payment card HTML
+});
 
         const aRecent =
             String(a.OwnerID ?? a.ownerId ?? "") === recentlyPaidOwnerId;
