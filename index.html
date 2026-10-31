@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,7 +60,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .logout{background:transparent;color:var(--gold);border:1px solid var(--gold);margin-top:12px}
 .hidden{display:none!important}
 .info{font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px}
-.message{padding:12px;border-radius:9px;margin-bottom:14px;font-size:13px;line-height:1.5}
+.message{padding:12px;border-radius:9px;margin-bottom:14px;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
 .error{background:#48252b;color:#ffaaaa}
 .success{background:#173d30;color:#9df0c5}
 .warning{background:#493c20;color:#ffe0a0}
@@ -104,6 +103,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 }
 .payment-row:last-child{border:0}
 .payment-row span:first-child{color:var(--muted)}
+.payment-row strong{text-align:right;overflow-wrap:anywhere}
 .badge{
   display:inline-block;padding:5px 9px;
   border-radius:20px;font-size:10px;font-weight:bold
@@ -201,6 +201,20 @@ footer{text-align:center;color:#78869b;font-size:11px;padding:20px}
     </div>
 
     <div class="payment-box">
+      <h3 style="font-size:15px;margin-bottom:12px">Account Details</h3>
+
+      <div class="payment-row">
+        <span>Service Start Date</span>
+        <strong id="serviceStartDate">--</strong>
+      </div>
+
+      <div class="payment-row">
+        <span>Monthly Parking Fee</span>
+        <strong id="monthlyParkingFee">₹--</strong>
+      </div>
+    </div>
+
+    <div class="payment-box">
       <h3 style="font-size:15px;margin-bottom:12px">Upcoming Payment</h3>
 
       <div class="payment-row">
@@ -231,7 +245,9 @@ footer{text-align:center;color:#78869b;font-size:11px;padding:20px}
       Please clear your dues on time.
     </p>
 
-    <button class="secondary" onclick="loadPayments()">REFRESH PAYMENT DETAILS</button>
+    <button id="refreshPaymentButton" class="secondary" onclick="loadPayments()">
+      REFRESH PAYMENT DETAILS
+    </button>
   </div>
 
   <!-- TRANSACTION HISTORY -->
@@ -340,6 +356,8 @@ async function api(action, data = {}) {
 
 function showMessage(id, message, type="error") {
   const element = document.getElementById(id);
+  if (!element) return;
+
   element.innerHTML = "";
 
   const box = document.createElement("div");
@@ -383,6 +401,10 @@ async function login() {
 
     const result = await api("ownerLogin", {vehicle, mobile, pin});
 
+    if (!result || !result.token) {
+      throw new Error("Login response did not contain a valid session token.");
+    }
+
     token = result.token;
     localStorage.setItem("rpm_token", token);
 
@@ -411,7 +433,7 @@ async function loadDashboard() {
     document.getElementById("vehicleNumber").textContent = result.vehicle || "--";
     document.getElementById("lastOdometer").textContent = result.odometer ?? "--";
 
-    const status = result.status || "PARKED";
+    const status = String(result.status || "PARKED").toUpperCase();
 
     document.getElementById("vehicleStatus").textContent = status;
     document.getElementById("vehicleStatus").className =
@@ -441,7 +463,11 @@ async function loadDashboard() {
 ===================================== */
 
 function money(value) {
-  return "₹" + Number(value || 0).toLocaleString("en-IN", {
+  const amount = Number(value || 0);
+
+  if (!Number.isFinite(amount)) return "₹0";
+
+  return "₹" + amount.toLocaleString("en-IN", {
     maximumFractionDigits: 2
   });
 }
@@ -449,8 +475,22 @@ function money(value) {
 function formatDate(value) {
   if (!value) return "--";
 
-  const date = new Date(value);
-  if (isNaN(date.getTime())) return value;
+  // Handle yyyy-mm-dd as a local date to avoid timezone shifts.
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  let date;
+
+  if (match) {
+    date = new Date(
+      Number(match[1]),
+      Number(match[2]) - 1,
+      Number(match[3])
+    );
+  } else {
+    date = new Date(value);
+  }
+
+  if (isNaN(date.getTime())) return String(value);
 
   return date.toLocaleDateString("en-IN", {
     day: "2-digit",
@@ -461,47 +501,42 @@ function formatDate(value) {
 
 async function loadPayments() {
   const list = document.getElementById("transactionList");
+  const button = document.getElementById("refreshPaymentButton");
+
   list.innerHTML = '<p class="loading">Loading payment details...</p>';
+  document.getElementById("paymentMessage").innerHTML = "";
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "LOADING...";
+  }
 
   try {
-    /*
-      BACKEND ACTION REQUIRED:
-      ownerPayments must return:
-      {
-        summary: {
-          outstanding: 2000,
-          nextDueAmount: 2000
-        },
-        upcoming: {
-          billingMonth: "November 2026",
-          dueDate: "2026-11-15",
-          amountDue: 2000,
-          status: "UPCOMING"
-        },
-        transactions: [
-          {
-            date: "2026-10-15",
-            billingMonth: "October 2026",
-            amount: 2000,
-            method: "UPI",
-            status: "PAID",
-            reference: "UPI123"
-          }
-        ]
-      }
-    */
-
     const result = await api("ownerPayments", {token});
+
+    if (!result) {
+      throw new Error("Empty payment response received from server.");
+    }
 
     const summary = result.summary || {};
     const upcoming = result.upcoming || {};
+    const customer = result.customer || {};
 
+    // Customer account details
+    document.getElementById("serviceStartDate").textContent =
+      formatDate(customer.joiningDate || result.serviceStartDate || result.joiningDate);
+
+    document.getElementById("monthlyParkingFee").textContent =
+      money(customer.monthlyAmount ?? result.monthlyAmount);
+
+    // Payment summary
     document.getElementById("outstandingAmount").textContent =
       money(summary.outstanding);
 
     document.getElementById("nextPaymentAmount").textContent =
       money(summary.nextDueAmount);
 
+    // Upcoming payment
     document.getElementById("billingMonth").textContent =
       upcoming.billingMonth || "--";
 
@@ -511,7 +546,7 @@ async function loadPayments() {
     document.getElementById("amountDue").textContent =
       money(upcoming.amountDue);
 
-    const status = (upcoming.status || "NOT AVAILABLE").toUpperCase();
+    const status = String(upcoming.status || "NOT AVAILABLE").toUpperCase();
 
     const statusElement = document.getElementById("paymentStatus");
     statusElement.innerHTML = "";
@@ -526,18 +561,25 @@ async function loadPayments() {
 
     showPaymentReminder(upcoming);
 
-    renderTransactions(result.transactions || []);
+    renderTransactions(Array.isArray(result.transactions) ? result.transactions : []);
 
   } catch (error) {
-  list.textContent = "";
+    list.innerHTML = "";
 
-  showMessage(
-    "paymentMessage",
-    "Payment Error: " + error.message,
-    "error"
-  );
+    showMessage(
+      "paymentMessage",
+      "Payment Error: " + error.message,
+      "error"
+    );
 
-  console.error("Payment Loading Error:", error);
+    console.error("Payment Loading Error:", error);
+
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "REFRESH PAYMENT DETAILS";
+    }
+  }
 }
 
 /* =====================================
@@ -548,9 +590,9 @@ function showPaymentReminder(upcoming) {
   const box = document.getElementById("paymentReminder");
   box.innerHTML = "";
 
-  if (!upcoming.dueDate) return;
+  if (!upcoming || !upcoming.dueDate) return;
 
-  if ((upcoming.status || "").toUpperCase() === "PAID") return;
+  if (String(upcoming.status || "").toUpperCase() === "PAID") return;
 
   const due = new Date(upcoming.dueDate);
   const today = new Date();
@@ -665,12 +707,14 @@ function previewPhoto(event) {
 
   if (!allowed.includes(file.type)) {
     event.target.value = "";
+    photoBase64 = "";
     showMessage("movementMessage", "Only JPG, PNG or WEBP photos are allowed.");
     return;
   }
 
   if (file.size > 5 * 1024 * 1024) {
     event.target.value = "";
+    photoBase64 = "";
     showMessage("movementMessage", "Photo size must be under 5 MB.");
     return;
   }
@@ -679,9 +723,15 @@ function previewPhoto(event) {
 
   reader.onload = function(e) {
     photoBase64 = e.target.result;
+
     const preview = document.getElementById("photoPreview");
     preview.src = photoBase64;
     preview.classList.remove("hidden");
+  };
+
+  reader.onerror = function() {
+    photoBase64 = "";
+    showMessage("movementMessage", "Unable to read the selected photo. Please try again.");
   };
 
   reader.readAsDataURL(file);
@@ -696,7 +746,11 @@ async function submitMovement() {
   const odometer = document.getElementById("odometer").value.trim();
   const photoInput = document.getElementById("odometerPhoto");
 
-  if (odometer === "" || !Number.isFinite(Number(odometer)) || Number(odometer) < 0) {
+  if (
+    odometer === "" ||
+    !Number.isFinite(Number(odometer)) ||
+    Number(odometer) < 0
+  ) {
     showMessage("movementMessage", "Please enter a valid odometer reading.");
     return;
   }
@@ -730,6 +784,7 @@ async function submitMovement() {
 
   } catch (error) {
     showMessage("movementMessage", error.message);
+
   } finally {
     button.disabled = false;
     button.textContent = "CONFIRM MOVEMENT";
@@ -747,7 +802,7 @@ async function loadHistory() {
 
     list.innerHTML = "";
 
-    if (!history.length) {
+    if (!Array.isArray(history) || !history.length) {
       list.innerHTML = '<p class="info">No movement history available.</p>';
       return;
     }
