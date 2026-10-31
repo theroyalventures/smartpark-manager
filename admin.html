@@ -1,11 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101827">
-
-<title>Smart Parking Admin</title>
+<title>Smart Parking Management | Admin</title>
 
 <style>
 :root {
@@ -17,296 +17,82 @@
   --green:#20c77a;
   --red:#ff6262;
   --blue:#65aaff;
+  --border:#304057;
 }
-
-* {
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body {
-  background:var(--bg);
-  color:var(--white);
-  font-family:Arial,sans-serif;
-}
-
-.container {
-  max-width:650px;
-  margin:auto;
-  padding:16px;
-}
-
-header {
-  text-align:center;
-  padding:20px 0;
-}
-
-.logo {
-  width:55px;
-  height:55px;
-  border:2px solid var(--gold);
-  border-radius:15px;
-  display:grid;
-  place-items:center;
-  color:var(--gold);
-  font-size:25px;
-  font-weight:bold;
-  margin:auto;
-}
-
-header h1 {
-  margin-top:12px;
-  font-size:22px;
-}
-
-header p {
-  font-size:11px;
-  color:var(--muted);
-  margin-top:6px;
-  letter-spacing:2px;
-}
-
-.card {
-  background:var(--card);
-  border:1px solid #304057;
-  border-radius:15px;
-  padding:18px;
-  margin-bottom:15px;
-}
-
-h2 {
-  font-size:18px;
-  margin-bottom:15px;
-}
-
-h3 {
-  font-size:15px;
-  margin-bottom:12px;
-  color:var(--gold);
-}
-
-label {
-  display:block;
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:7px;
-}
-
-input,select,textarea {
-  width:100%;
-  padding:13px;
-  border:1px solid #40516a;
-  border-radius:9px;
-  background:var(--bg);
-  color:white;
-  margin-bottom:13px;
-  font-size:14px;
-}
-
-textarea {
-  resize:vertical;
-  min-height:75px;
-}
-
-button {
-  width:100%;
-  padding:13px;
-  border:0;
-  border-radius:9px;
-  font-weight:bold;
-  cursor:pointer;
-  margin-bottom:9px;
-}
-
-.primary {
-  background:var(--gold);
-  color:#111;
-}
-
-.secondary {
-  background:#344861;
-  color:white;
-}
-
-.danger {
-  background:#a93636;
-  color:white;
-}
-
-.hidden {
-  display:none!important;
-}
-
-.grid {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.stat {
-  background:#101827;
-  border-radius:11px;
-  padding:15px;
-}
-
-.stat small {
-  color:var(--muted);
-  font-size:11px;
-}
-
-.stat strong {
-  display:block;
-  font-size:23px;
-  margin-top:8px;
-}
-
-.gold {color:var(--gold);}
-.green {color:var(--green);}
-.red {color:var(--red);}
-.blue {color:var(--blue);}
-
-.nav {
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:7px;
-  margin-bottom:15px;
-}
-
-.nav button {
-  background:#293950;
-  color:white;
-  font-size:11px;
-  padding:12px 5px;
-}
-
-.nav button.active {
-  background:var(--gold);
-  color:#111;
-}
-
-.item {
-  background:#101827;
-  border-radius:10px;
-  padding:13px;
-  margin-bottom:10px;
-  font-size:13px;
-  line-height:1.8;
-  overflow-wrap:anywhere;
-}
-
-.item strong {
-  color:var(--gold);
-}
-
-.item a {
-  color:var(--blue);
-}
-
-.message {
-  padding:11px;
-  border-radius:8px;
-  margin-bottom:12px;
-  font-size:13px;
-  line-height:1.5;
-}
-
-.error {
-  background:#48252b;
-  color:#ffaaaa;
-}
-
-.success {
-  background:#173d30;
-  color:#9df0c5;
-}
-
-.muted {
-  color:var(--muted);
-  font-size:12px;
-}
-
-.topbar {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:15px;
-}
-
-.topbar button {
-  width:auto;
-  padding:9px 13px;
-  margin:0;
-}
-
-.photo {
-  display:block;
-  width:100%;
-  max-height:260px;
-  object-fit:contain;
-  border-radius:9px;
-  margin-top:8px;
-  background:#293950;
-}
-
-hr {
-  border:0;
-  border-top:1px solid #40516a;
-  margin:15px 0;
-}
-
-footer {
-  text-align:center;
-  color:#78869b;
-  padding:20px;
-  font-size:11px;
-}
-
-@media(min-width:500px) {
-  .grid {
-    grid-template-columns:repeat(3,1fr);
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:Arial,sans-serif}
+.container{max-width:850px;margin:auto;padding:15px}
+header{text-align:center;padding:20px 0}
+.logo{width:55px;height:55px;border:2px solid var(--gold);border-radius:15px;display:grid;place-items:center;color:var(--gold);font-size:25px;font-weight:bold;margin:auto}
+header h1{margin-top:12px;font-size:22px}
+header p{font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:2px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:17px;margin-bottom:15px}
+h2{font-size:18px;margin-bottom:14px}
+h3{font-size:15px;color:var(--gold);margin-bottom:10px}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}
+input,select,textarea{width:100%;padding:13px;border:1px solid #40516a;border-radius:9px;background:var(--bg);color:white;margin-bottom:13px;font-size:14px}
+textarea{resize:vertical;min-height:70px}
+button{width:100%;padding:13px;border:0;border-radius:9px;font-weight:bold;cursor:pointer;margin-bottom:9px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.primary{background:var(--gold);color:#111}
+.secondary{background:#344861;color:white}
+.danger{background:#a93636;color:white}
+.smallbtn{width:auto;padding:9px 12px;font-size:11px;margin:5px 4px 0 0}
+.hidden{display:none!important}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:var(--bg);border-radius:11px;padding:14px;min-width:0}
+.stat small{color:var(--muted);font-size:11px}
+.stat strong{display:block;font-size:22px;margin-top:8px;overflow-wrap:anywhere}
+.gold{color:var(--gold)}
+.green{color:var(--green)}
+.red{color:var(--red)}
+.blue{color:var(--blue)}
+.muted{color:var(--muted);font-size:12px;line-height:1.6}
+.nav{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:15px}
+.nav button{background:#293950;color:white;font-size:11px;padding:12px 4px;margin:0}
+.nav button.active{background:var(--gold);color:#111}
+.item{background:var(--bg);border:1px solid #304057;border-radius:11px;padding:14px;margin-bottom:10px;font-size:13px;line-height:1.8;overflow-wrap:anywhere}
+.item strong{color:var(--gold)}
+.item a{color:var(--blue)}
+.message{padding:11px;border-radius:8px;margin-bottom:12px;font-size:13px;line-height:1.5}
+.error{background:#48252b;color:#ffaaaa}
+.success{background:#173d30;color:#9df0c5}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+.topbar button{width:auto;padding:9px 13px;margin:0}
+.photo{display:block;width:100%;max-height:250px;object-fit:contain;border-radius:9px;margin-top:8px;background:#293950}
+hr{border:0;border-top:1px solid #40516a;margin:14px 0}
+footer{text-align:center;color:#78869b;padding:20px;font-size:11px}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;background:#344861;font-size:10px;margin:3px 0}
+.badge.green{background:#174a36}
+.badge.red{background:#542b30}
+.actions{display:flex;flex-wrap:wrap;gap:5px}
+.actions button{width:auto}
+@media(min-width:600px){
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .nav{grid-template-columns:repeat(6,1fr)}
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <header>
-  <div class="logo">$</div>
-  <h1>SMART PARKING</h1>
+  <div class="logo">SP</div>
+  <h1>SMART PARKING MANAGEMENT</h1>
   <p>ADMIN MANAGEMENT PANEL</p>
 </header>
 
-
-<!-- ADMIN LOGIN -->
-
+<!-- LOGIN -->
 <section id="loginSection" class="card">
-
   <h2>Admin Login</h2>
-
   <div id="loginMessage"></div>
-
   <label>Admin Security PIN</label>
-
-  <input
-    type="password"
-    id="adminPin"
-    placeholder="Enter Admin PIN"
-    inputmode="numeric"
-  >
-
-  <button class="primary" onclick="login()">
-    LOGIN TO DASHBOARD
-  </button>
-
+  <input type="password" id="adminPin" placeholder="Enter Admin PIN" inputmode="numeric">
+  <button class="primary" id="loginButton" onclick="login()">LOGIN TO DASHBOARD</button>
 </section>
 
-
-<!-- ADMIN DASHBOARD -->
-
+<!-- DASHBOARD -->
 <section id="dashboard" class="hidden">
 
   <div class="topbar">
@@ -314,132 +100,63 @@ footer {
       <h2>Dashboard</h2>
       <p class="muted">Parking Management Overview</p>
     </div>
-
-    <button class="danger" onclick="logout()">
-      LOGOUT
-    </button>
+    <button class="danger" onclick="logout()">LOGOUT</button>
   </div>
-
-
-  <!-- STATS -->
 
   <div class="card">
-
     <div class="grid">
-
-      <div class="stat">
-        <small>Total Vehicles</small>
-        <strong id="totalVehicles">0</strong>
-      </div>
-
-      <div class="stat">
-        <small>Parked</small>
-        <strong class="green" id="parked">0</strong>
-      </div>
-
-      <div class="stat">
-        <small>Outside</small>
-        <strong class="red" id="outside">0</strong>
-      </div>
-
-      <div class="stat">
-        <small>Today's Check-In</small>
-        <strong id="todayIn">0</strong>
-      </div>
-
-      <div class="stat">
-        <small>Today's Check-Out</small>
-        <strong id="todayOut">0</strong>
-      </div>
-
-      <div class="stat">
-        <small>Total Received</small>
-        <strong class="green" id="totalPaid">₹0</strong>
-      </div>
-
-      <div class="stat">
-        <small>Total Charges</small>
-        <strong class="gold" id="totalDue">₹0</strong>
-      </div>
-
-      <div class="stat">
-        <small>Outstanding</small>
-        <strong class="red" id="outstanding">₹0</strong>
-      </div>
-
+      <div class="stat"><small>Total Vehicles</small><strong id="totalVehicles">0</strong></div>
+      <div class="stat"><small>Parked</small><strong class="green" id="parked">0</strong></div>
+      <div class="stat"><small>Outside</small><strong class="red" id="outside">0</strong></div>
+      <div class="stat"><small>Today's Check-In</small><strong id="todayIn">0</strong></div>
+      <div class="stat"><small>Today's Check-Out</small><strong id="todayOut">0</strong></div>
+      <div class="stat"><small>Total Received</small><strong class="green" id="totalPaid">₹0</strong></div>
+      <div class="stat"><small>Total Charges</small><strong class="gold" id="totalDue">₹0</strong></div>
+      <div class="stat"><small>Outstanding</small><strong class="red" id="outstanding">₹0</strong></div>
     </div>
-
     <br>
-
-    <button class="secondary" onclick="refreshDashboard()">
-      REFRESH DASHBOARD
-    </button>
-
+    <button class="secondary" onclick="refreshDashboard()">REFRESH DASHBOARD</button>
+    <div id="dashboardMessage"></div>
   </div>
-
 
   <!-- NAVIGATION -->
-
   <div class="nav">
-
-    <button class="active" onclick="showTab('customers',this)">
-      CUSTOMERS
-    </button>
-
-    <button onclick="showTab('register',this)">
-      ADD CUSTOMER
-    </button>
-
-    <button onclick="showTab('billing',this)">
-      BILLING
-    </button>
-
-    <button onclick="showTab('payments',this)">
-      PAYMENTS
-    </button>
-
-    <button onclick="showTab('history',this)">
-      HISTORY
-    </button>
-
-    <button onclick="showTab('correction',this)">
-      STATUS FIX
-    </button>
-
+    <button class="active" onclick="showTab('customers',this)">CUSTOMERS</button>
+    <button onclick="showTab('register',this)">ADD CUSTOMER</button>
+    <button onclick="showTab('billing',this)">BILLING</button>
+    <button onclick="showTab('payments',this)">PAYMENTS</button>
+    <button onclick="showTab('history',this)">HISTORY</button>
+    <button onclick="showTab('correction',this)">STATUS FIX</button>
   </div>
 
-
   <!-- CUSTOMERS -->
-
   <section id="customersTab" class="tab">
-
     <div class="card">
-
       <h2>Registered Customers</h2>
-
-      <input
-        id="searchCustomer"
-        placeholder="Search vehicle / customer / mobile"
-        oninput="renderCustomers()"
-      >
-
-      <div id="customerList">
-        Loading customers...
-      </div>
-
+      <input id="searchCustomer" placeholder="Search vehicle / customer / mobile" oninput="renderCustomers()">
+      <div id="customerList">Loading customers...</div>
     </div>
 
+    <div class="card hidden" id="editJoiningCard">
+      <h2>Update Customer Details</h2>
+      <div id="joiningMessage"></div>
+      <input type="hidden" id="editOwnerId">
+      <label>Customer</label>
+      <input id="editCustomerName" disabled>
+      <label>Vehicle Number</label>
+      <input id="editCustomerVehicle" disabled>
+      <label>Service Start Date / Joining Date</label>
+      <input type="date" id="editJoiningDate">
+      <p class="muted">Changing the joining date will not delete or alter previous payment records.</p>
+      <button class="primary" onclick="updateJoiningDate()">SAVE JOINING DATE</button>
+      <button class="secondary" onclick="closeJoiningEditor()">CANCEL</button>
+    </div>
   </section>
 
-
-  <!-- REGISTER CUSTOMER -->
-
+  <!-- REGISTER -->
   <section id="registerTab" class="tab hidden">
-
     <div class="card">
-
       <h2>Register New Customer</h2>
-
       <div id="registerMessage"></div>
 
       <label>Customer Name</label>
@@ -449,56 +166,37 @@ footer {
       <input id="newVehicle" placeholder="DL01AB1234">
 
       <label>Mobile Number</label>
-      <input
-        id="newMobile"
-        type="tel"
-        maxlength="10"
-        placeholder="10 digit mobile"
-      >
+      <input id="newMobile" type="tel" maxlength="10" placeholder="10 digit mobile">
 
       <label>Customer 4 Digit PIN</label>
-      <input
-        id="newPin"
-        type="password"
-        maxlength="4"
-        inputmode="numeric"
-        placeholder="Create PIN"
-      >
+      <input id="newPin" type="password" maxlength="4" inputmode="numeric" placeholder="Create PIN">
 
-      <button class="primary" onclick="registerCustomer()">
-        REGISTER CUSTOMER
-      </button>
+      <label>Service Start Date / Joining Date</label>
+      <input type="date" id="newJoiningDate">
 
+      <label>Monthly Parking Fee (₹)</label>
+      <input type="number" id="newMonthlyAmount" min="1" placeholder="2000">
+
+      <button class="primary" onclick="registerCustomer()">REGISTER CUSTOMER</button>
     </div>
-
   </section>
 
-
   <!-- BILLING -->
-
   <section id="billingTab" class="tab hidden">
-
     <div class="card">
-
       <h2>Add Monthly Parking Charge</h2>
-
       <div id="billingMessage"></div>
 
       <label>Select Customer</label>
-      <select id="billingOwner">
-        <option value="">Loading customers...</option>
+      <select id="billingOwner" onchange="suggestCustomerAmount()">
+        <option value="">Select customer</option>
       </select>
 
       <label>Billing Month</label>
       <input type="month" id="billingMonth">
 
       <label>Monthly Parking Amount (₹)</label>
-      <input
-        type="number"
-        id="billingAmount"
-        placeholder="2000"
-        min="1"
-      >
+      <input type="number" id="billingAmount" min="1" placeholder="2000">
 
       <label>Due Date</label>
       <input type="date" id="dueDate">
@@ -506,116 +204,65 @@ footer {
       <label>Note</label>
       <textarea id="billingNote" placeholder="Optional note"></textarea>
 
-      <button class="primary" onclick="addCharge()">
-        ADD PARKING CHARGE
-      </button>
-
+      <button class="primary" onclick="addCharge()">ADD PARKING CHARGE</button>
     </div>
-
   </section>
-
 
   <!-- PAYMENTS -->
-
   <section id="paymentsTab" class="tab hidden">
-
     <div class="card">
-
       <h2>Payment Management</h2>
-
       <div id="paymentMessage"></div>
-
-      <div id="paymentList">
-        Loading payments...
-      </div>
-
+      <input id="searchPayment" placeholder="Search vehicle / customer / month" oninput="renderPayments()">
+      <div id="paymentList">Loading payments...</div>
     </div>
-
   </section>
-
 
   <!-- HISTORY -->
-
   <section id="historyTab" class="tab hidden">
-
     <div class="card">
-
-      <h2>Movement History</h2>
-
-      <p class="muted">
-        Customer Check-In / Check-Out records and odometer photos.
-      </p>
-
-      <label>Search Vehicle</label>
-
-      <input
-        id="historySearch"
-        placeholder="Enter vehicle number"
-        oninput="renderHistory()"
-      >
-
-      <div id="historyList">
-        Loading history...
-      </div>
-
+      <h2>Vehicle Movement History</h2>
+      <p class="muted">Customer Check-In / Check-Out records and odometer photos.</p>
+      <input id="historySearch" placeholder="Search vehicle number" oninput="renderHistory()">
+      <div id="historyList">Loading history...</div>
     </div>
-
   </section>
 
-
-  <!-- MANUAL STATUS CORRECTION -->
-
+  <!-- CORRECTION -->
   <section id="correctionTab" class="tab hidden">
-
     <div class="card">
-
       <h2>Manual Status Correction</h2>
-
       <div id="correctionMessage"></div>
 
       <label>Select Customer</label>
-
       <select id="correctionOwner">
         <option value="">Select customer</option>
       </select>
 
       <label>New Vehicle Status</label>
-
       <select id="correctionStatus">
         <option value="PARKED">PARKED</option>
         <option value="OUTSIDE">OUTSIDE</option>
       </select>
 
       <label>Reason for Correction</label>
+      <textarea id="correctionReason" placeholder="Enter reason"></textarea>
 
-      <textarea
-        id="correctionReason"
-        placeholder="Enter reason for status correction"
-      ></textarea>
-
-      <button class="primary" onclick="correctStatus()">
-        UPDATE VEHICLE STATUS
-      </button>
-
-      <p class="muted">
-        Every manual correction will be recorded in the movement history.
-      </p>
-
+      <button class="primary" onclick="correctStatus()">UPDATE VEHICLE STATUS</button>
+      <p class="muted">Every manual correction will be recorded in movement history.</p>
     </div>
-
   </section>
 
 </section>
 
 <footer>
-  Smart Parking Manager V3<br>
+  Smart Parking Management<br>
   Admin Management System
 </footer>
-
 </div>
 
-
 <script>
+"use strict";
 
 // ====================================
 // CONFIGURATION
@@ -624,767 +271,782 @@ footer {
 const API_URL = "https://script.google.com/macros/s/AKfycbzDxI1LyqLkIkTioRTn-xuL9JHZ_iWUH8LYrPUlniFgizDI6wbbM0X4OLtamcwwLhIQ/exec";
 
 let adminToken = localStorage.getItem("rpm_admin_token") || "";
-
 let customers = [];
-
 let movements = [];
-
 let payments = [];
-
 
 // ====================================
 // API
 // ====================================
 
-async function api(action,data={}) {
-
-  if(API_URL.includes("PASTE_YOUR")) {
-    throw new Error("Please configure Apps Script URL.");
+async function api(action, data = {}) {
+  if (!API_URL || API_URL.includes("PASTE_YOUR")) {
+    throw new Error("Apps Script URL is not configured.");
   }
 
-  const response = await fetch(API_URL,{
-    method:"POST",
-    redirect:"follow",
-    headers:{
-      "Content-Type":"text/plain;charset=utf-8"
+  const response = await fetch(API_URL, {
+    method: "POST",
+    redirect: "follow",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
     },
-    body:JSON.stringify({
-      action,
-      ...data
-    })
+    body: JSON.stringify({ action, ...data })
   });
+
+  if (!response.ok) {
+    throw new Error("Server error: " + response.status);
+  }
 
   const result = await response.json();
 
-  if(!result.success) {
+  if (!result.success) {
     throw new Error(result.error || "Request failed");
   }
 
   return result.data;
 }
 
-
 // ====================================
-// MESSAGE
+// SAFE UI HELPERS
 // ====================================
 
-function message(id,text,type="error") {
-
-  const el=document.getElementById(id);
-
-  el.innerHTML="";
-
-  const box=document.createElement("div");
-
-  box.className="message "+type;
-
-  box.textContent=text;
-
-  el.appendChild(box);
+function el(id) {
+  return document.getElementById(id);
 }
 
+function message(id, text, type = "error") {
+  const target = el(id);
+  if (!target) return;
+
+  target.innerHTML = "";
+  const box = document.createElement("div");
+  box.className = "message " + type;
+  box.textContent = text;
+  target.appendChild(box);
+}
+
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2
+  });
+}
+
+function formatDate(value) {
+  if (!value) return "Not configured";
+
+  let date;
+
+  if (value instanceof Date) {
+    date = value;
+  } else if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+    const p = String(value).split("-");
+    date = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  } else {
+    date = new Date(value);
+  }
+
+  if (isNaN(date.getTime())) return "Not configured";
+
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
+function dateInputValue(value) {
+  if (!value) return "";
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+    return String(value);
+  }
+
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "";
+
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0")
+  ].join("-");
+}
+
+function escapeText(value) {
+  return String(value ?? "");
+}
 
 // ====================================
 // LOGIN
 // ====================================
 
 async function login() {
+  const pin = el("adminPin").value.trim();
 
-  const pin=document.getElementById("adminPin").value.trim();
-
-  if(!pin) {
-    message("loginMessage","Enter admin PIN.");
+  if (!pin) {
+    message("loginMessage", "Enter admin PIN.");
     return;
   }
 
+  el("loginButton").disabled = true;
+
   try {
+    message("loginMessage", "Verifying...", "success");
 
-    message("loginMessage","Verifying...", "success");
+    const result = await api("adminLogin", { pin });
 
-    const result=await api("adminLogin",{pin});
+    adminToken = result.token;
+    if (!adminToken) throw new Error("Login token was not received.");
 
-    adminToken=result.token;
-
-    localStorage.setItem("rpm_admin_token",adminToken);
-
+    localStorage.setItem("rpm_admin_token", adminToken);
     await openDashboard();
 
-  } catch(e) {
-
-    message("loginMessage",e.message);
-
+  } catch (e) {
+    message("loginMessage", e.message);
+  } finally {
+    el("loginButton").disabled = false;
   }
-
 }
-
 
 // ====================================
 // OPEN DASHBOARD
 // ====================================
 
 async function openDashboard() {
-
-  document.getElementById("loginSection")
-    .classList.add("hidden");
-
-  document.getElementById("dashboard")
-    .classList.remove("hidden");
+  el("loginSection").classList.add("hidden");
+  el("dashboard").classList.remove("hidden");
 
   await refreshDashboard();
-
 }
 
-
 // ====================================
-// DASHBOARD STATS
+// DASHBOARD
 // ====================================
 
 async function refreshDashboard() {
-
   try {
+    message("dashboardMessage", "Refreshing dashboard...", "success");
 
-    const data=await api("adminDashboard",{
-      token:adminToken
+    const data = await api("adminDashboard", {
+      token: adminToken
     });
 
-    document.getElementById("totalVehicles").textContent =
-      data.totalVehicles;
+    el("totalVehicles").textContent = data.totalVehicles ?? 0;
+    el("parked").textContent = data.parked ?? 0;
+    el("outside").textContent = data.outside ?? 0;
+    el("todayIn").textContent = data.todayCheckIn ?? 0;
+    el("todayOut").textContent = data.todayCheckOut ?? 0;
+    el("totalPaid").textContent = money(data.totalPaid);
+    el("totalDue").textContent = money(data.totalDue);
+    el("outstanding").textContent = money(data.outstanding);
 
-    document.getElementById("parked").textContent =
-      data.parked;
+    await Promise.all([
+      loadCustomers(),
+      loadPayments(),
+      loadHistory()
+    ]);
 
-    document.getElementById("outside").textContent =
-      data.outside;
+    el("dashboardMessage").innerHTML = "";
 
-    document.getElementById("todayIn").textContent =
-      data.todayCheckIn;
+  } catch (e) {
+    message("dashboardMessage", e.message);
 
-    document.getElementById("todayOut").textContent =
-      data.todayCheckOut;
-
-    document.getElementById("totalPaid").textContent =
-      money(data.totalPaid);
-
-    document.getElementById("totalDue").textContent =
-      money(data.totalDue);
-
-    document.getElementById("outstanding").textContent =
-      money(data.outstanding);
-
-    await loadCustomers();
-
-    await loadPayments();
-
-    await loadHistory();
-
-  } catch(e) {
-
-    alert(e.message);
-
-    if(e.message.toLowerCase().includes("session")) {
+    if (/session|token|unauthorized|login/i.test(e.message)) {
       logout();
     }
-
   }
-
 }
 
-
 // ====================================
-// CURRENCY
-// ====================================
-
-function money(value) {
-
-  return "₹"+Number(value||0).toLocaleString("en-IN");
-
-}
-
-
-// ====================================
-// TABS
+// TAB NAVIGATION
 // ====================================
 
-function showTab(name,button) {
-
-  document.querySelectorAll(".tab").forEach(tab=>{
+function showTab(name, button) {
+  document.querySelectorAll(".tab").forEach(tab => {
     tab.classList.add("hidden");
   });
 
-  document.getElementById(name+"Tab")
-    .classList.remove("hidden");
+  el(name + "Tab").classList.remove("hidden");
 
-  document.querySelectorAll(".nav button").forEach(btn=>{
+  document.querySelectorAll(".nav button").forEach(btn => {
     btn.classList.remove("active");
   });
 
   button.classList.add("active");
-
 }
-
 
 // ====================================
 // LOAD CUSTOMERS
 // ====================================
 
 async function loadCustomers() {
+  const result = await api("adminOwners", {
+    token: adminToken
+  });
 
-  customers=await api("adminOwners",{
-    token:adminToken
+  if (!Array.isArray(result)) {
+    throw new Error("Invalid customer list received from server.");
+  }
+
+  customers = result.map(c => ({
+    ownerId: c.OwnerID ?? c.ownerId ?? "",
+    name: c.OwnerName ?? c.name ?? "",
+    vehicle: c.Vehicle ?? c.vehicle ?? "",
+    mobile: c.Mobile ?? c.mobile ?? "",
+    active: String(c.Active ?? c.active).toUpperCase() === "TRUE",
+    joiningDate: c.JoiningDate ?? c.joiningDate ?? "",
+    monthlyAmount: Number(c.MonthlyAmount ?? c.monthlyAmount ?? 0),
+    status: c.Status ?? c.status ?? "UNKNOWN",
+    odometer: c.Odometer ?? c.odometer ?? ""
+  }));
+
+  // Latest movement is used to display current status and odometer.
+  const latest = {};
+
+  movements.forEach(m => {
+    const id = String(m.OwnerID ?? m.OwnerId ?? m.ownerId ?? "");
+    if (!id) return;
+
+    const previous = latest[id];
+    if (!previous || new Date(m.DateTime) >= new Date(previous.DateTime)) {
+      latest[id] = m;
+    }
+  });
+
+  customers.forEach(c => {
+    const m = latest[String(c.ownerId)];
+
+    if (m) {
+      const action = String(m.Action || "").toUpperCase();
+
+      if (action.includes("CHECK_IN") || action.includes("CHECK-IN") ||
+          action === "IN" || action === "PARKED") {
+        c.status = "PARKED";
+      } else if (action.includes("CHECK_OUT") || action.includes("CHECK-OUT") ||
+                 action === "OUT" || action === "OUTSIDE") {
+        c.status = "OUTSIDE";
+      }
+
+      c.odometer = m.Odometer ?? c.odometer;
+    }
   });
 
   renderCustomers();
-
   fillCustomerDropdowns();
-
 }
 
+// ====================================
+// CUSTOMER LIST
+// ====================================
 
 function renderCustomers() {
+  const list = el("customerList");
+  const search = el("searchCustomer").value.trim().toLowerCase();
 
-  const list=document.getElementById("customerList");
+  list.innerHTML = "";
 
-  const search=document.getElementById("searchCustomer")
-    .value.toLowerCase();
-
-  list.innerHTML="";
-
-  const filtered=customers.filter(c=>
+  const filtered = customers.filter(c =>
     String(c.name).toLowerCase().includes(search) ||
     String(c.vehicle).toLowerCase().includes(search) ||
     String(c.mobile).includes(search)
   );
 
-  if(!filtered.length) {
-    list.textContent="No customers found.";
+  if (!filtered.length) {
+    list.textContent = "No customers found.";
     return;
   }
 
-  filtered.forEach(c=>{
+  filtered.forEach(c => {
+    const box = document.createElement("div");
+    box.className = "item";
 
-    const box=document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = c.vehicle || "Vehicle not available";
 
-    box.className="item";
+    const name = document.createElement("div");
+    name.textContent = "Customer: " + c.name;
 
-    const title=document.createElement("strong");
+    const mobile = document.createElement("div");
+    mobile.textContent = "Mobile: " + c.mobile;
 
-    title.textContent=c.vehicle;
+    const joining = document.createElement("div");
+    joining.textContent = "Service Started: " + formatDate(c.joiningDate);
 
-    const name=document.createElement("div");
-    name.textContent=c.name;
+    const fee = document.createElement("div");
+    fee.textContent = "Monthly Fee: " + money(c.monthlyAmount);
 
-    const mobile=document.createElement("div");
-    mobile.textContent="Mobile: "+c.mobile;
+    const status = document.createElement("div");
+    status.textContent = "Parking Status: " + c.status;
+    status.className =
+      c.status === "PARKED" ? "green" :
+      c.status === "OUTSIDE" ? "red" : "muted";
 
-    const status=document.createElement("div");
+    const account = document.createElement("div");
+    account.textContent = "Account: " + (c.active ? "ACTIVE" : "INACTIVE");
 
-    status.textContent="Status: "+c.status;
+    const reading = document.createElement("div");
+    reading.textContent = "Last Odometer: " + (c.odometer || "--") + " KM";
 
-    status.className=
-      c.status==="PARKED" ? "green":"red";
+    const edit = document.createElement("button");
+    edit.className = "secondary smallbtn";
+    edit.textContent = "EDIT JOINING DATE";
+    edit.onclick = () => openJoiningEditor(c.ownerId);
 
-    const reading=document.createElement("div");
-
-    reading.textContent=
-      "Last Odometer: "+(c.odometer||"--")+" KM";
-
-    const account=document.createElement("div");
-
-    account.textContent=
-      "Account: "+(c.active?"ACTIVE":"INACTIVE");
-
-    box.append(title,name,mobile,status,reading,account);
-
+    box.append(title, name, mobile, joining, fee, status, reading, account, edit);
     list.appendChild(box);
-
   });
-
 }
 
+// ====================================
+// JOINING DATE EDITOR
+// ====================================
+
+function openJoiningEditor(ownerId) {
+  const c = customers.find(x => String(x.ownerId) === String(ownerId));
+  if (!c) return;
+
+  el("editOwnerId").value = c.ownerId;
+  el("editCustomerName").value = c.name;
+  el("editCustomerVehicle").value = c.vehicle;
+  el("editJoiningDate").value = dateInputValue(c.joiningDate);
+
+  el("joiningMessage").innerHTML = "";
+  el("editJoiningCard").classList.remove("hidden");
+  el("editJoiningCard").scrollIntoView({ behavior: "smooth" });
+}
+
+function closeJoiningEditor() {
+  el("editJoiningCard").classList.add("hidden");
+}
+
+async function updateJoiningDate() {
+  const ownerId = el("editOwnerId").value;
+  const joiningDate = el("editJoiningDate").value;
+
+  if (!ownerId || !joiningDate) {
+    message("joiningMessage", "Select a valid joining date.");
+    return;
+  }
+
+  if (!confirm("Update this customer's service start date?")) return;
+
+  try {
+    await api("adminUpdateJoiningDate", {
+      token: adminToken,
+      ownerId,
+      joiningDate
+    });
+
+    message("joiningMessage", "Joining date updated successfully.", "success");
+
+    await loadCustomers();
+    closeJoiningEditor();
+
+  } catch (e) {
+    message("joiningMessage", e.message);
+  }
+}
+
+// ====================================
+// CUSTOMER DROPDOWNS
+// ====================================
 
 function fillCustomerDropdowns() {
+  const billing = el("billingOwner");
+  const correction = el("correctionOwner");
 
-  const billing=document.getElementById("billingOwner");
+  billing.innerHTML = '<option value="">Select customer</option>';
+  correction.innerHTML = '<option value="">Select customer</option>';
 
-  const correction=document.getElementById("correctionOwner");
-
-  billing.innerHTML='<option value="">Select customer</option>';
-
-  correction.innerHTML='<option value="">Select customer</option>';
-
-  customers.filter(c=>c.active).forEach(c=>{
-
-    const option=document.createElement("option");
-
-    option.value=c.ownerId;
-
-    option.textContent=c.name+" - "+c.vehicle;
+  customers.filter(c => c.active).forEach(c => {
+    const option = document.createElement("option");
+    option.value = c.ownerId;
+    option.textContent = c.name + " - " + c.vehicle;
 
     billing.appendChild(option.cloneNode(true));
-
     correction.appendChild(option);
-
   });
-
 }
 
+function suggestCustomerAmount() {
+  const id = el("billingOwner").value;
+  const c = customers.find(x => String(x.ownerId) === String(id));
+
+  if (c && c.monthlyAmount > 0) {
+    el("billingAmount").value = c.monthlyAmount;
+  }
+}
 
 // ====================================
 // REGISTER CUSTOMER
 // ====================================
 
 async function registerCustomer() {
+  const name = el("newName").value.trim();
+  const vehicle = el("newVehicle").value.trim().toUpperCase();
+  const mobile = el("newMobile").value.trim();
+  const pin = el("newPin").value.trim();
+  const joiningDate = el("newJoiningDate").value;
+  const monthlyAmount = Number(el("newMonthlyAmount").value);
 
-  const name=document.getElementById("newName").value.trim();
-
-  const vehicle=document.getElementById("newVehicle")
-    .value.trim().toUpperCase();
-
-  const mobile=document.getElementById("newMobile").value.trim();
-
-  const pin=document.getElementById("newPin").value.trim();
-
-  if(!name||!vehicle||!mobile||!pin) {
-    message("registerMessage","Complete all fields.");
+  if (!name || !vehicle || !mobile || !pin ||
+      !joiningDate || !monthlyAmount) {
+    message("registerMessage", "Complete all fields.");
     return;
   }
 
-  if(!/^\d{10}$/.test(mobile)) {
-    message("registerMessage","Enter valid 10 digit mobile.");
+  if (!/^\d{10}$/.test(mobile)) {
+    message("registerMessage", "Enter a valid 10-digit mobile number.");
     return;
   }
 
-  if(!/^\d{4}$/.test(pin)) {
-    message("registerMessage","PIN must be 4 digits.");
+  if (!/^\d{4}$/.test(pin)) {
+    message("registerMessage", "PIN must contain exactly 4 digits.");
+    return;
+  }
+
+  if (monthlyAmount <= 0) {
+    message("registerMessage", "Enter a valid monthly fee.");
     return;
   }
 
   try {
-
-    await api("adminRegister",{
-      token:adminToken,
+    await api("adminRegister", {
+      token: adminToken,
       name,
       vehicle,
       mobile,
-      pin
+      pin,
+      joiningDate,
+      monthlyAmount
     });
 
-    message(
-      "registerMessage",
-      "Customer registered successfully.",
-      "success"
-    );
+    message("registerMessage", "Customer registered successfully.", "success");
 
-    document.getElementById("newName").value="";
-    document.getElementById("newVehicle").value="";
-    document.getElementById("newMobile").value="";
-    document.getElementById("newPin").value="";
-
-    await loadCustomers();
+    ["newName", "newVehicle", "newMobile", "newPin",
+     "newJoiningDate", "newMonthlyAmount"].forEach(id => {
+      el(id).value = "";
+    });
 
     await refreshDashboard();
 
-  } catch(e) {
-
-    message("registerMessage",e.message);
-
+  } catch (e) {
+    message("registerMessage", e.message);
   }
-
 }
-
 
 // ====================================
 // ADD MONTHLY CHARGE
 // ====================================
 
 async function addCharge() {
+  const ownerId = el("billingOwner").value;
+  const billingMonth = el("billingMonth").value;
+  const amount = Number(el("billingAmount").value);
+  const dueDate = el("dueDate").value;
+  const note = el("billingNote").value.trim();
 
-  const ownerId=document.getElementById("billingOwner").value;
-
-  const month=document.getElementById("billingMonth").value;
-
-  const amount=document.getElementById("billingAmount").value;
-
-  const dueDate=document.getElementById("dueDate").value;
-
-  const note=document.getElementById("billingNote").value;
-
-  if(!ownerId||!month||!amount) {
-
-    message("billingMessage","Complete required fields.");
-
+  if (!ownerId || !billingMonth || !amount || amount <= 0) {
+    message("billingMessage", "Select customer, billing month and valid amount.");
     return;
-
   }
 
   try {
-
-    await api("adminAddCharge",{
-      token:adminToken,
+    await api("adminAddCharge", {
+      token: adminToken,
       ownerId,
-      month,
-      amount:Number(amount),
+      billingMonth,
+      amount,
       dueDate,
       note
     });
 
-    message(
-      "billingMessage",
-      "Parking charge added successfully.",
-      "success"
-    );
+    message("billingMessage", "Parking charge added successfully.", "success");
 
-    document.getElementById("billingAmount").value="";
-
-    document.getElementById("billingNote").value="";
-
-    await loadPayments();
+    el("billingAmount").value = "";
+    el("billingNote").value = "";
 
     await refreshDashboard();
 
-  } catch(e) {
-
-    message("billingMessage",e.message);
-
+  } catch (e) {
+    message("billingMessage", e.message);
   }
-
 }
-
 
 // ====================================
 // LOAD PAYMENTS
 // ====================================
 
 async function loadPayments() {
-
-  payments=await api("adminPayments",{
-    token:adminToken
+  const result = await api("adminPayments", {
+    token: adminToken
   });
 
+  payments = Array.isArray(result) ? result : [];
   renderPayments();
-
 }
 
+// ====================================
+// RENDER PAYMENTS
+// ====================================
 
 function renderPayments() {
+  const list = el("paymentList");
+  const search = el("searchPayment").value.trim().toLowerCase();
 
-  const list=document.getElementById("paymentList");
+  list.innerHTML = "";
 
-  list.innerHTML="";
+  const filtered = payments.filter(p =>
+    String(p.Vehicle || "").toLowerCase().includes(search) ||
+    String(p.OwnerName || "").toLowerCase().includes(search) ||
+    String(p.BillingMonth || "").toLowerCase().includes(search)
+  );
 
-  if(!payments.length) {
-    list.textContent="No payment records available.";
+  if (!filtered.length) {
+    list.textContent = "No payment records found.";
     return;
   }
 
-  payments.forEach(p=>{
+  filtered.slice().reverse().forEach(p => {
+    const dueAmount = Number(p.AmountDue || 0);
+    const paidAmount = Number(p.AmountPaid || 0);
+    const balance = Number(
+      p.Balance !== undefined ? p.Balance : dueAmount - paidAmount
+    );
 
-    const box=document.createElement("div");
+    const box = document.createElement("div");
+    box.className = "item";
 
-    box.className="item";
+    const title = document.createElement("strong");
+    title.textContent = (p.Vehicle || "") + " | " + (p.BillingMonth || "");
 
-    const title=document.createElement("strong");
+    const customer = document.createElement("div");
+    customer.textContent = "Customer: " + (p.OwnerName || "");
 
-    title.textContent=p.Vehicle+" | "+p.BillingMonth;
+    const due = document.createElement("div");
+    due.textContent = "Charge: " + money(dueAmount);
 
-    const due=document.createElement("div");
+    const paid = document.createElement("div");
+    paid.textContent = "Received: " + money(paidAmount);
 
-    due.textContent="Charge: "+money(p.AmountDue);
+    const remaining = document.createElement("div");
+    remaining.textContent = "Balance: " + money(balance);
+    remaining.className = balance > 0 ? "red" : "green";
 
-    const paid=document.createElement("div");
+    const date = document.createElement("div");
+    date.textContent = "Due Date: " + formatDate(p.DueDate);
 
-    paid.textContent="Received: "+money(p.AmountPaid);
+    const status = document.createElement("div");
+    status.textContent = "Status: " + (p.Status || (balance > 0 ? "PENDING" : "PAID"));
 
-    const balance=document.createElement("div");
+    box.append(title, customer, due, paid, remaining, date, status);
 
-    balance.textContent="Balance: "+money(p.Balance);
-
-    balance.className=Number(p.Balance)>0?"red":"green";
-
-    const status=document.createElement("div");
-
-    status.textContent="Status: "+p.Status;
-
-    box.append(title,due,paid,balance,status);
-
-    if(Number(p.Balance)>0) {
-
-      const btn=document.createElement("button");
-
-      btn.className="primary";
-
-      btn.textContent="RECORD PAYMENT";
-
-      btn.onclick=()=>recordPayment(p);
-
+    if (balance > 0) {
+      const btn = document.createElement("button");
+      btn.className = "primary smallbtn";
+      btn.textContent = "RECORD PAYMENT";
+      btn.onclick = () => recordPayment(p);
       box.appendChild(btn);
-
     }
 
     list.appendChild(box);
-
   });
-
 }
-
 
 // ====================================
 // RECORD PAYMENT
 // ====================================
 
 async function recordPayment(p) {
+  const balance = Number(
+    p.Balance !== undefined ? p.Balance :
+    Number(p.AmountDue || 0) - Number(p.AmountPaid || 0)
+  );
 
-  const amount=prompt(
-    "Outstanding: "+money(p.Balance)+
+  const amountText = prompt(
+    "Customer: " + (p.OwnerName || "") +
+    "\nOutstanding: " + money(balance) +
     "\nEnter amount received:"
   );
 
-  if(amount===null) return;
+  if (amountText === null) return;
 
-  if(!Number.isFinite(Number(amount))||Number(amount)<=0) {
-    alert("Enter valid payment amount.");
+  const amount = Number(amountText);
+
+  if (!Number.isFinite(amount) || amount <= 0 || amount > balance) {
+    alert("Enter a valid amount not exceeding the outstanding balance.");
     return;
   }
 
-  const method=prompt(
-    "Payment method: CASH / UPI / BANK",
-    "UPI"
-  );
+  const method = prompt("Payment method: CASH / UPI / BANK", "UPI");
+  if (method === null) return;
 
-  if(method===null) return;
+  const normalized = method.trim().toUpperCase();
 
-  const normalized=method.trim().toUpperCase();
-
-  if(!["CASH","UPI","BANK"].includes(normalized)) {
+  if (!["CASH", "UPI", "BANK"].includes(normalized)) {
     alert("Invalid payment method.");
     return;
   }
 
-  try {
+  const reference = prompt("Transaction reference (optional):", "");
+  if (reference === null) return;
 
-    await api("adminRecordPayment",{
-      token:adminToken,
-      paymentId:p.PaymentID,
-      amount:Number(amount),
-      method:normalized
+  const note = prompt("Payment note (optional):", "") || "";
+
+  try {
+    await api("adminRecordPayment", {
+      token: adminToken,
+      ownerId: p.OwnerID,
+      billingMonth: p.BillingMonth,
+      amount,
+      method: normalized,
+      reference,
+      paymentDate: new Date().toISOString(),
+      note
     });
 
-    message(
-      "paymentMessage",
-      "Payment recorded successfully.",
-      "success"
-    );
-
-    await loadPayments();
-
+    message("paymentMessage", "Payment recorded successfully.", "success");
     await refreshDashboard();
 
-  } catch(e) {
-
-    message("paymentMessage",e.message);
-
+  } catch (e) {
+    message("paymentMessage", e.message);
   }
-
 }
 
-
 // ====================================
-// LOAD MOVEMENT HISTORY
+// MOVEMENT HISTORY
 // ====================================
 
 async function loadHistory() {
+  const result = await api("adminMovements", {
+    token: adminToken
+  });
 
-  try {
+  movements = Array.isArray(result) ? result : [];
 
-    movements=await api("adminMovements",{
-      token:adminToken
-    });
+  renderHistory();
 
-    renderHistory();
-
-  } catch(e) {
-
-    document.getElementById("historyList").textContent =
-      "History unavailable: "+e.message;
-
-  }
-
+  // Re-render customer list with latest movement status.
+  if (customers.length) renderCustomers();
 }
 
-
 function renderHistory() {
+  const list = el("historyList");
+  const search = el("historySearch").value.trim().toUpperCase();
 
-  const list=document.getElementById("historyList");
+  list.innerHTML = "";
 
-  const search=document.getElementById("historySearch")
-    .value.trim().toUpperCase();
-
-  list.innerHTML="";
-
-  const filtered=movements.filter(m=>
-    String(m.Vehicle).toUpperCase().includes(search)
+  const filtered = movements.filter(m =>
+    String(m.Vehicle || "").toUpperCase().includes(search)
   );
 
-  if(!filtered.length) {
-
-    list.textContent="No movement records found.";
-
+  if (!filtered.length) {
+    list.textContent = "No movement records found.";
     return;
-
   }
 
-  filtered.slice().reverse().forEach(m=>{
+  filtered.slice().reverse().forEach(m => {
+    const box = document.createElement("div");
+    box.className = "item";
 
-    const box=document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = (m.Vehicle || "") + " | " + (m.Action || "");
 
-    box.className="item";
+    const customer = document.createElement("div");
+    customer.textContent = "Customer: " + (m.OwnerName || "");
 
-    const title=document.createElement("strong");
+    const reading = document.createElement("div");
+    reading.textContent = "Odometer: " + (m.Odometer || "--") + " KM";
 
-    title.textContent=m.Vehicle+" | "+m.Action;
+    const date = document.createElement("div");
+    date.textContent = "Date: " + formatDateTime(m.DateTime);
 
-    const customer=document.createElement("div");
+    const distance = document.createElement("div");
+    distance.textContent = "Distance: " + (m.Distance || 0) + " KM";
 
-    customer.textContent=m.OwnerName;
+    box.append(title, customer, reading, date, distance);
 
-    const reading=document.createElement("div");
-
-    reading.textContent="Odometer: "+m.Odometer+" KM";
-
-    const date=document.createElement("div");
-
-    date.textContent=new Date(m.DateTime).toLocaleString("en-IN");
-
-    const distance=document.createElement("div");
-
-    distance.textContent="Distance: "+(m.Distance||0)+" KM";
-
-    box.append(title,customer,reading,date,distance);
-
-    if(m.PhotoURL) {
-
-      const link=document.createElement("a");
-
-      link.href=m.PhotoURL;
-
-      link.target="_blank";
-
-      link.rel="noopener noreferrer";
-
-      link.textContent="VIEW ODOMETER PHOTO";
-
+    if (m.PhotoURL) {
+      const link = document.createElement("a");
+      link.href = m.PhotoURL;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "VIEW ODOMETER PHOTO";
       box.appendChild(document.createElement("br"));
-
       box.appendChild(link);
-
     }
 
-    if(m.Note) {
-
-      const note=document.createElement("div");
-
-      note.textContent="Note: "+m.Note;
-
+    if (m.Note) {
+      const note = document.createElement("div");
+      note.textContent = "Note: " + m.Note;
       box.appendChild(note);
-
     }
 
     list.appendChild(box);
-
   });
-
 }
 
+function formatDateTime(value) {
+  if (!value) return "--";
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? String(value) : d.toLocaleString("en-IN");
+}
 
 // ====================================
-// STATUS CORRECTION
+// MANUAL STATUS CORRECTION
 // ====================================
 
 async function correctStatus() {
+  const ownerId = el("correctionOwner").value;
+  const status = el("correctionStatus").value;
+  const reason = el("correctionReason").value.trim();
 
-  const ownerId=document.getElementById("correctionOwner").value;
-
-  const status=document.getElementById("correctionStatus").value;
-
-  const reason=document.getElementById("correctionReason").value.trim();
-
-  if(!ownerId||!reason) {
-
-    message(
-      "correctionMessage",
-      "Select customer and enter correction reason."
-    );
-
-    return;
-
-  }
-
-  if(!confirm("Confirm manual vehicle status correction?")) {
+  if (!ownerId || !reason) {
+    message("correctionMessage", "Select customer and enter a reason.");
     return;
   }
+
+  if (!confirm("Confirm manual vehicle status correction?")) return;
 
   try {
-
-    await api("adminCorrectStatus",{
-      token:adminToken,
+    await api("adminCorrectStatus", {
+      token: adminToken,
       ownerId,
       status,
       reason
     });
 
-    message(
-      "correctionMessage",
-      "Vehicle status corrected successfully.",
-      "success"
-    );
-
-    document.getElementById("correctionReason").value="";
+    message("correctionMessage", "Vehicle status corrected successfully.", "success");
+    el("correctionReason").value = "";
 
     await refreshDashboard();
 
-  } catch(e) {
-
-    message("correctionMessage",e.message);
-
+  } catch (e) {
+    message("correctionMessage", e.message);
   }
-
 }
-
 
 // ====================================
 // LOGOUT
 // ====================================
 
 function logout() {
-
-  adminToken="";
-
+  adminToken = "";
   localStorage.removeItem("rpm_admin_token");
 
-  document.getElementById("dashboard")
-    .classList.add("hidden");
-
-  document.getElementById("loginSection")
-    .classList.remove("hidden");
-
+  el("dashboard").classList.add("hidden");
+  el("loginSection").classList.remove("hidden");
+  el("adminPin").value = "";
 }
-
 
 // ====================================
 // STARTUP
 // ====================================
 
-window.addEventListener("load",async()=>{
-
-  if(adminToken) {
-
+window.addEventListener("load", async () => {
+  if (adminToken) {
     await openDashboard();
-
   }
-
 });
-
 </script>
-
 </body>
 </html>
