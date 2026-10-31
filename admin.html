@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+
+<title>Royal Parking Admin</title>
+
+<style>
+:root {
+  --bg:#101827;
+  --card:#1b293c;
+  --gold:#e9bd58;
+  --white:#fff;
+  --muted:#aab5c5;
+  --green:#20c77a;
+  --red:#ff6262;
+  --blue:#65aaff;
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body {
+  background:var(--bg);
+  color:var(--white);
+  font-family:Arial,sans-serif;
+}
+
+.container {
+  max-width:650px;
+  margin:auto;
+  padding:16px;
+}
+
+header {
+  text-align:center;
+  padding:20px 0;
+}
+
+.logo {
+  width:55px;
+  height:55px;
+  border:2px solid var(--gold);
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  color:var(--gold);
+  font-size:25px;
+  font-weight:bold;
+  margin:auto;
+}
+
+header h1 {
+  margin-top:12px;
+  font-size:22px;
+}
+
+header p {
+  font-size:11px;
+  color:var(--muted);
+  margin-top:6px;
+  letter-spacing:2px;
+}
+
+.card {
+  background:var(--card);
+  border:1px solid #304057;
+  border-radius:15px;
+  padding:18px;
+  margin-bottom:15px;
+}
+
+h2 {
+  font-size:18px;
+  margin-bottom:15px;
+}
+
+h3 {
+  font-size:15px;
+  margin-bottom:12px;
+  color:var(--gold);
+}
+
+label {
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+
+input,select,textarea {
+  width:100%;
+  padding:13px;
+  border:1px solid #40516a;
+  border-radius:9px;
+  background:var(--bg);
+  color:white;
+  margin-bottom:13px;
+  font-size:14px;
+}
+
+textarea {
+  resize:vertical;
+  min-height:75px;
+}
+
+button {
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:9px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-bottom:9px;
+}
+
+.primary {
+  background:var(--gold);
+  color:#111;
+}
+
+.secondary {
+  background:#344861;
+  color:white;
+}
+
+.danger {
+  background:#a93636;
+  color:white;
+}
+
+.hidden {
+  display:none!important;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.stat {
+  background:#101827;
+  border-radius:11px;
+  padding:15px;
+}
+
+.stat small {
+  color:var(--muted);
+  font-size:11px;
+}
+
+.stat strong {
+  display:block;
+  font-size:23px;
+  margin-top:8px;
+}
+
+.gold {color:var(--gold);}
+.green {color:var(--green);}
+.red {color:var(--red);}
+.blue {color:var(--blue);}
+
+.nav {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-bottom:15px;
+}
+
+.nav button {
+  background:#293950;
+  color:white;
+  font-size:11px;
+  padding:12px 5px;
+}
+
+.nav button.active {
+  background:var(--gold);
+  color:#111;
+}
+
+.item {
+  background:#101827;
+  border-radius:10px;
+  padding:13px;
+  margin-bottom:10px;
+  font-size:13px;
+  line-height:1.8;
+  overflow-wrap:anywhere;
+}
+
+.item strong {
+  color:var(--gold);
+}
+
+.item a {
+  color:var(--blue);
+}
+
+.message {
+  padding:11px;
+  border-radius:8px;
+  margin-bottom:12px;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.error {
+  background:#48252b;
+  color:#ffaaaa;
+}
+
+.success {
+  background:#173d30;
+  color:#9df0c5;
+}
+
+.muted {
+  color:var(--muted);
+  font-size:12px;
+}
+
+.topbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:15px;
+}
+
+.topbar button {
+  width:auto;
+  padding:9px 13px;
+  margin:0;
+}
+
+.photo {
+  display:block;
+  width:100%;
+  max-height:260px;
+  object-fit:contain;
+  border-radius:9px;
+  margin-top:8px;
+  background:#293950;
+}
+
+hr {
+  border:0;
+  border-top:1px solid #40516a;
+  margin:15px 0;
+}
+
+footer {
+  text-align:center;
+  color:#78869b;
+  padding:20px;
+  font-size:11px;
+}
+
+@media(min-width:500px) {
+  .grid {
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <div class="logo">R</div>
+  <h1>ROYAL PARKING</h1>
+  <p>ADMIN MANAGEMENT PANEL</p>
+</header>
+
+
+<!-- ADMIN LOGIN -->
+
+<section id="loginSection" class="card">
+
+  <h2>Admin Login</h2>
+
+  <div id="loginMessage"></div>
+
+  <label>Admin Security PIN</label>
+
+  <input
+    type="password"
+    id="adminPin"
+    placeholder="Enter Admin PIN"
+    inputmode="numeric"
+  >
+
+  <button class="primary" onclick="login()">
+    LOGIN TO DASHBOARD
+  </button>
+
+</section>
+
+
+<!-- ADMIN DASHBOARD -->
+
+<section id="dashboard" class="hidden">
+
+  <div class="topbar">
+    <div>
+      <h2>Dashboard</h2>
+      <p class="muted">Parking Management Overview</p>
+    </div>
+
+    <button class="danger" onclick="logout()">
+      LOGOUT
+    </button>
+  </div>
+
+
+  <!-- STATS -->
+
+  <div class="card">
+
+    <div class="grid">
+
+      <div class="stat">
+        <small>Total Vehicles</small>
+        <strong id="totalVehicles">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>Parked</small>
+        <strong class="green" id="parked">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>Outside</small>
+        <strong class="red" id="outside">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>Today's Check-In</small>
+        <strong id="todayIn">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>Today's Check-Out</small>
+        <strong id="todayOut">0</strong>
+      </div>
+
+      <div class="stat">
+        <small>Total Received</small>
+        <strong class="green" id="totalPaid">₹0</strong>
+      </div>
+
+      <div class="stat">
+        <small>Total Charges</small>
+        <strong class="gold" id="totalDue">₹0</strong>
+      </div>
+
+      <div class="stat">
+        <small>Outstanding</small>
+        <strong class="red" id="outstanding">₹0</strong>
+      </div>
+
+    </div>
+
+    <br>
+
+    <button class="secondary" onclick="refreshDashboard()">
+      REFRESH DASHBOARD
+    </button>
+
+  </div>
+
+
+  <!-- NAVIGATION -->
+
+  <div class="nav">
+
+    <button class="active" onclick="showTab('customers',this)">
+      CUSTOMERS
+    </button>
+
+    <button onclick="showTab('register',this)">
+      ADD CUSTOMER
+    </button>
+
+    <button onclick="showTab('billing',this)">
+      BILLING
+    </button>
+
+    <button onclick="showTab('payments',this)">
+      PAYMENTS
+    </button>
+
+    <button onclick="showTab('history',this)">
+      HISTORY
+    </button>
+
+    <button onclick="showTab('correction',this)">
+      STATUS FIX
+    </button>
+
+  </div>
+
+
+  <!-- CUSTOMERS -->
+
+  <section id="customersTab" class="tab">
+
+    <div class="card">
+
+      <h2>Registered Customers</h2>
+
+      <input
+        id="searchCustomer"
+        placeholder="Search vehicle / customer / mobile"
+        oninput="renderCustomers()"
+      >
+
+      <div id="customerList">
+        Loading customers...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- REGISTER CUSTOMER -->
+
+  <section id="registerTab" class="tab hidden">
+
+    <div class="card">
+
+      <h2>Register New Customer</h2>
+
+      <div id="registerMessage"></div>
+
+      <label>Customer Name</label>
+      <input id="newName" placeholder="Full Name">
+
+      <label>Vehicle Number</label>
+      <input id="newVehicle" placeholder="DL01AB1234">
+
+      <label>Mobile Number</label>
+      <input
+        id="newMobile"
+        type="tel"
+        maxlength="10"
+        placeholder="10 digit mobile"
+      >
+
+      <label>Customer 4 Digit PIN</label>
+      <input
+        id="newPin"
+        type="password"
+        maxlength="4"
+        inputmode="numeric"
+        placeholder="Create PIN"
+      >
+
+      <button class="primary" onclick="registerCustomer()">
+        REGISTER CUSTOMER
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- BILLING -->
+
+  <section id="billingTab" class="tab hidden">
+
+    <div class="card">
+
+      <h2>Add Monthly Parking Charge</h2>
+
+      <div id="billingMessage"></div>
+
+      <label>Select Customer</label>
+      <select id="billingOwner">
+        <option value="">Loading customers...</option>
+      </select>
+
+      <label>Billing Month</label>
+      <input type="month" id="billingMonth">
+
+      <label>Monthly Parking Amount (₹)</label>
+      <input
+        type="number"
+        id="billingAmount"
+        placeholder="2000"
+        min="1"
+      >
+
+      <label>Due Date</label>
+      <input type="date" id="dueDate">
+
+      <label>Note</label>
+      <textarea id="billingNote" placeholder="Optional note"></textarea>
+
+      <button class="primary" onclick="addCharge()">
+        ADD PARKING CHARGE
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- PAYMENTS -->
+
+  <section id="paymentsTab" class="tab hidden">
+
+    <div class="card">
+
+      <h2>Payment Management</h2>
+
+      <div id="paymentMessage"></div>
+
+      <div id="paymentList">
+        Loading payments...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- HISTORY -->
+
+  <section id="historyTab" class="tab hidden">
+
+    <div class="card">
+
+      <h2>Movement History</h2>
+
+      <p class="muted">
+        Customer Check-In / Check-Out records and odometer photos.
+      </p>
+
+      <label>Search Vehicle</label>
+
+      <input
+        id="historySearch"
+        placeholder="Enter vehicle number"
+        oninput="renderHistory()"
+      >
+
+      <div id="historyList">
+        Loading history...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- MANUAL STATUS CORRECTION -->
+
+  <section id="correctionTab" class="tab hidden">
+
+    <div class="card">
+
+      <h2>Manual Status Correction</h2>
+
+      <div id="correctionMessage"></div>
+
+      <label>Select Customer</label>
+
+      <select id="correctionOwner">
+        <option value="">Select customer</option>
+      </select>
+
+      <label>New Vehicle Status</label>
+
+      <select id="correctionStatus">
+        <option value="PARKED">PARKED</option>
+        <option value="OUTSIDE">OUTSIDE</option>
+      </select>
+
+      <label>Reason for Correction</label>
+
+      <textarea
+        id="correctionReason"
+        placeholder="Enter reason for status correction"
+      ></textarea>
+
+      <button class="primary" onclick="correctStatus()">
+        UPDATE VEHICLE STATUS
+      </button>
+
+      <p class="muted">
+        Every manual correction will be recorded in the movement history.
+      </p>
+
+    </div>
+
+  </section>
+
+</section>
+
+<footer>
+  Royal Parking Manager V3<br>
+  Admin Management System
+</footer>
+
+</div>
+
+
+<script>
+
+// ====================================
+// CONFIGURATION
+// ====================================
+
+const API_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+let adminToken = localStorage.getItem("rpm_admin_token") || "";
+
+let customers = [];
+
+let movements = [];
+
+let payments = [];
+
+
+// ====================================
+// API
+// ====================================
+
+async function api(action,data={}) {
+
+  if(API_URL.includes("PASTE_YOUR")) {
+    throw new Error("Please configure Apps Script URL.");
+  }
+
+  const response = await fetch(API_URL,{
+    method:"POST",
+    redirect:"follow",
+    headers:{
+      "Content-Type":"text/plain;charset=utf-8"
+    },
+    body:JSON.stringify({
+      action,
+      ...data
+    })
+  });
+
+  const result = await response.json();
+
+  if(!result.success) {
+    throw new Error(result.error || "Request failed");
+  }
+
+  return result.data;
+}
+
+
+// ====================================
+// MESSAGE
+// ====================================
+
+function message(id,text,type="error") {
+
+  const el=document.getElementById(id);
+
+  el.innerHTML="";
+
+  const box=document.createElement("div");
+
+  box.className="message "+type;
+
+  box.textContent=text;
+
+  el.appendChild(box);
+}
+
+
+// ====================================
+// LOGIN
+// ====================================
+
+async function login() {
+
+  const pin=document.getElementById("adminPin").value.trim();
+
+  if(!pin) {
+    message("loginMessage","Enter admin PIN.");
+    return;
+  }
+
+  try {
+
+    message("loginMessage","Verifying...", "success");
+
+    const result=await api("adminLogin",{pin});
+
+    adminToken=result.token;
+
+    localStorage.setItem("rpm_admin_token",adminToken);
+
+    await openDashboard();
+
+  } catch(e) {
+
+    message("loginMessage",e.message);
+
+  }
+
+}
+
+
+// ====================================
+// OPEN DASHBOARD
+// ====================================
+
+async function openDashboard() {
+
+  document.getElementById("loginSection")
+    .classList.add("hidden");
+
+  document.getElementById("dashboard")
+    .classList.remove("hidden");
+
+  await refreshDashboard();
+
+}
+
+
+// ====================================
+// DASHBOARD STATS
+// ====================================
+
+async function refreshDashboard() {
+
+  try {
+
+    const data=await api("adminDashboard",{
+      token:adminToken
+    });
+
+    document.getElementById("totalVehicles").textContent =
+      data.totalVehicles;
+
+    document.getElementById("parked").textContent =
+      data.parked;
+
+    document.getElementById("outside").textContent =
+      data.outside;
+
+    document.getElementById("todayIn").textContent =
+      data.todayCheckIn;
+
+    document.getElementById("todayOut").textContent =
+      data.todayCheckOut;
+
+    document.getElementById("totalPaid").textContent =
+      money(data.totalPaid);
+
+    document.getElementById("totalDue").textContent =
+      money(data.totalDue);
+
+    document.getElementById("outstanding").textContent =
+      money(data.outstanding);
+
+    await loadCustomers();
+
+    await loadPayments();
+
+    await loadHistory();
+
+  } catch(e) {
+
+    alert(e.message);
+
+    if(e.message.toLowerCase().includes("session")) {
+      logout();
+    }
+
+  }
+
+}
+
+
+// ====================================
+// CURRENCY
+// ====================================
+
+function money(value) {
+
+  return "₹"+Number(value||0).toLocaleString("en-IN");
+
+}
+
+
+// ====================================
+// TABS
+// ====================================
+
+function showTab(name,button) {
+
+  document.querySelectorAll(".tab").forEach(tab=>{
+    tab.classList.add("hidden");
+  });
+
+  document.getElementById(name+"Tab")
+    .classList.remove("hidden");
+
+  document.querySelectorAll(".nav button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+}
+
+
+// ====================================
+// LOAD CUSTOMERS
+// ====================================
+
+async function loadCustomers() {
+
+  customers=await api("adminOwners",{
+    token:adminToken
+  });
+
+  renderCustomers();
+
+  fillCustomerDropdowns();
+
+}
+
+
+function renderCustomers() {
+
+  const list=document.getElementById("customerList");
+
+  const search=document.getElementById("searchCustomer")
+    .value.toLowerCase();
+
+  list.innerHTML="";
+
+  const filtered=customers.filter(c=>
+    String(c.name).toLowerCase().includes(search) ||
+    String(c.vehicle).toLowerCase().includes(search) ||
+    String(c.mobile).includes(search)
+  );
+
+  if(!filtered.length) {
+    list.textContent="No customers found.";
+    return;
+  }
+
+  filtered.forEach(c=>{
+
+    const box=document.createElement("div");
+
+    box.className="item";
+
+    const title=document.createElement("strong");
+
+    title.textContent=c.vehicle;
+
+    const name=document.createElement("div");
+    name.textContent=c.name;
+
+    const mobile=document.createElement("div");
+    mobile.textContent="Mobile: "+c.mobile;
+
+    const status=document.createElement("div");
+
+    status.textContent="Status: "+c.status;
+
+    status.className=
+      c.status==="PARKED" ? "green":"red";
+
+    const reading=document.createElement("div");
+
+    reading.textContent=
+      "Last Odometer: "+(c.odometer||"--")+" KM";
+
+    const account=document.createElement("div");
+
+    account.textContent=
+      "Account: "+(c.active?"ACTIVE":"INACTIVE");
+
+    box.append(title,name,mobile,status,reading,account);
+
+    list.appendChild(box);
+
+  });
+
+}
+
+
+function fillCustomerDropdowns() {
+
+  const billing=document.getElementById("billingOwner");
+
+  const correction=document.getElementById("correctionOwner");
+
+  billing.innerHTML='<option value="">Select customer</option>';
+
+  correction.innerHTML='<option value="">Select customer</option>';
+
+  customers.filter(c=>c.active).forEach(c=>{
+
+    const option=document.createElement("option");
+
+    option.value=c.ownerId;
+
+    option.textContent=c.name+" - "+c.vehicle;
+
+    billing.appendChild(option.cloneNode(true));
+
+    correction.appendChild(option);
+
+  });
+
+}
+
+
+// ====================================
+// REGISTER CUSTOMER
+// ====================================
+
+async function registerCustomer() {
+
+  const name=document.getElementById("newName").value.trim();
+
+  const vehicle=document.getElementById("newVehicle")
+    .value.trim().toUpperCase();
+
+  const mobile=document.getElementById("newMobile").value.trim();
+
+  const pin=document.getElementById("newPin").value.trim();
+
+  if(!name||!vehicle||!mobile||!pin) {
+    message("registerMessage","Complete all fields.");
+    return;
+  }
+
+  if(!/^\d{10}$/.test(mobile)) {
+    message("registerMessage","Enter valid 10 digit mobile.");
+    return;
+  }
+
+  if(!/^\d{4}$/.test(pin)) {
+    message("registerMessage","PIN must be 4 digits.");
+    return;
+  }
+
+  try {
+
+    await api("adminRegister",{
+      token:adminToken,
+      name,
+      vehicle,
+      mobile,
+      pin
+    });
+
+    message(
+      "registerMessage",
+      "Customer registered successfully.",
+      "success"
+    );
+
+    document.getElementById("newName").value="";
+    document.getElementById("newVehicle").value="";
+    document.getElementById("newMobile").value="";
+    document.getElementById("newPin").value="";
+
+    await loadCustomers();
+
+    await refreshDashboard();
+
+  } catch(e) {
+
+    message("registerMessage",e.message);
+
+  }
+
+}
+
+
+// ====================================
+// ADD MONTHLY CHARGE
+// ====================================
+
+async function addCharge() {
+
+  const ownerId=document.getElementById("billingOwner").value;
+
+  const month=document.getElementById("billingMonth").value;
+
+  const amount=document.getElementById("billingAmount").value;
+
+  const dueDate=document.getElementById("dueDate").value;
+
+  const note=document.getElementById("billingNote").value;
+
+  if(!ownerId||!month||!amount) {
+
+    message("billingMessage","Complete required fields.");
+
+    return;
+
+  }
+
+  try {
+
+    await api("adminAddCharge",{
+      token:adminToken,
+      ownerId,
+      month,
+      amount:Number(amount),
+      dueDate,
+      note
+    });
+
+    message(
+      "billingMessage",
+      "Parking charge added successfully.",
+      "success"
+    );
+
+    document.getElementById("billingAmount").value="";
+
+    document.getElementById("billingNote").value="";
+
+    await loadPayments();
+
+    await refreshDashboard();
+
+  } catch(e) {
+
+    message("billingMessage",e.message);
+
+  }
+
+}
+
+
+// ====================================
+// LOAD PAYMENTS
+// ====================================
+
+async function loadPayments() {
+
+  payments=await api("adminPayments",{
+    token:adminToken
+  });
+
+  renderPayments();
+
+}
+
+
+function renderPayments() {
+
+  const list=document.getElementById("paymentList");
+
+  list.innerHTML="";
+
+  if(!payments.length) {
+    list.textContent="No payment records available.";
+    return;
+  }
+
+  payments.forEach(p=>{
+
+    const box=document.createElement("div");
+
+    box.className="item";
+
+    const title=document.createElement("strong");
+
+    title.textContent=p.Vehicle+" | "+p.BillingMonth;
+
+    const due=document.createElement("div");
+
+    due.textContent="Charge: "+money(p.AmountDue);
+
+    const paid=document.createElement("div");
+
+    paid.textContent="Received: "+money(p.AmountPaid);
+
+    const balance=document.createElement("div");
+
+    balance.textContent="Balance: "+money(p.Balance);
+
+    balance.className=Number(p.Balance)>0?"red":"green";
+
+    const status=document.createElement("div");
+
+    status.textContent="Status: "+p.Status;
+
+    box.append(title,due,paid,balance,status);
+
+    if(Number(p.Balance)>0) {
+
+      const btn=document.createElement("button");
+
+      btn.className="primary";
+
+      btn.textContent="RECORD PAYMENT";
+
+      btn.onclick=()=>recordPayment(p);
+
+      box.appendChild(btn);
+
+    }
+
+    list.appendChild(box);
+
+  });
+
+}
+
+
+// ====================================
+// RECORD PAYMENT
+// ====================================
+
+async function recordPayment(p) {
+
+  const amount=prompt(
+    "Outstanding: "+money(p.Balance)+
+    "\nEnter amount received:"
+  );
+
+  if(amount===null) return;
+
+  if(!Number.isFinite(Number(amount))||Number(amount)<=0) {
+    alert("Enter valid payment amount.");
+    return;
+  }
+
+  const method=prompt(
+    "Payment method: CASH / UPI / BANK",
+    "UPI"
+  );
+
+  if(method===null) return;
+
+  const normalized=method.trim().toUpperCase();
+
+  if(!["CASH","UPI","BANK"].includes(normalized)) {
+    alert("Invalid payment method.");
+    return;
+  }
+
+  try {
+
+    await api("adminRecordPayment",{
+      token:adminToken,
+      paymentId:p.PaymentID,
+      amount:Number(amount),
+      method:normalized
+    });
+
+    message(
+      "paymentMessage",
+      "Payment recorded successfully.",
+      "success"
+    );
+
+    await loadPayments();
+
+    await refreshDashboard();
+
+  } catch(e) {
+
+    message("paymentMessage",e.message);
+
+  }
+
+}
+
+
+// ====================================
+// LOAD MOVEMENT HISTORY
+// ====================================
+
+async function loadHistory() {
+
+  try {
+
+    movements=await api("adminMovements",{
+      token:adminToken
+    });
+
+    renderHistory();
+
+  } catch(e) {
+
+    document.getElementById("historyList").textContent =
+      "History unavailable: "+e.message;
+
+  }
+
+}
+
+
+function renderHistory() {
+
+  const list=document.getElementById("historyList");
+
+  const search=document.getElementById("historySearch")
+    .value.trim().toUpperCase();
+
+  list.innerHTML="";
+
+  const filtered=movements.filter(m=>
+    String(m.Vehicle).toUpperCase().includes(search)
+  );
+
+  if(!filtered.length) {
+
+    list.textContent="No movement records found.";
+
+    return;
+
+  }
+
+  filtered.slice().reverse().forEach(m=>{
+
+    const box=document.createElement("div");
+
+    box.className="item";
+
+    const title=document.createElement("strong");
+
+    title.textContent=m.Vehicle+" | "+m.Action;
+
+    const customer=document.createElement("div");
+
+    customer.textContent=m.OwnerName;
+
+    const reading=document.createElement("div");
+
+    reading.textContent="Odometer: "+m.Odometer+" KM";
+
+    const date=document.createElement("div");
+
+    date.textContent=new Date(m.DateTime).toLocaleString("en-IN");
+
+    const distance=document.createElement("div");
+
+    distance.textContent="Distance: "+(m.Distance||0)+" KM";
+
+    box.append(title,customer,reading,date,distance);
+
+    if(m.PhotoURL) {
+
+      const link=document.createElement("a");
+
+      link.href=m.PhotoURL;
+
+      link.target="_blank";
+
+      link.rel="noopener noreferrer";
+
+      link.textContent="VIEW ODOMETER PHOTO";
+
+      box.appendChild(document.createElement("br"));
+
+      box.appendChild(link);
+
+    }
+
+    if(m.Note) {
+
+      const note=document.createElement("div");
+
+      note.textContent="Note: "+m.Note;
+
+      box.appendChild(note);
+
+    }
+
+    list.appendChild(box);
+
+  });
+
+}
+
+
+// ====================================
+// STATUS CORRECTION
+// ====================================
+
+async function correctStatus() {
+
+  const ownerId=document.getElementById("correctionOwner").value;
+
+  const status=document.getElementById("correctionStatus").value;
+
+  const reason=document.getElementById("correctionReason").value.trim();
+
+  if(!ownerId||!reason) {
+
+    message(
+      "correctionMessage",
+      "Select customer and enter correction reason."
+    );
+
+    return;
+
+  }
+
+  if(!confirm("Confirm manual vehicle status correction?")) {
+    return;
+  }
+
+  try {
+
+    await api("adminCorrectStatus",{
+      token:adminToken,
+      ownerId,
+      status,
+      reason
+    });
+
+    message(
+      "correctionMessage",
+      "Vehicle status corrected successfully.",
+      "success"
+    );
+
+    document.getElementById("correctionReason").value="";
+
+    await refreshDashboard();
+
+  } catch(e) {
+
+    message("correctionMessage",e.message);
+
+  }
+
+}
+
+
+// ====================================
+// LOGOUT
+// ====================================
+
+function logout() {
+
+  adminToken="";
+
+  localStorage.removeItem("rpm_admin_token");
+
+  document.getElementById("dashboard")
+    .classList.add("hidden");
+
+  document.getElementById("loginSection")
+    .classList.remove("hidden");
+
+}
+
+
+// ====================================
+// STARTUP
+// ====================================
+
+window.addEventListener("load",async()=>{
+
+  if(adminToken) {
+
+    await openDashboard();
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>
