@@ -1,1994 +1,1624 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#101827">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Parking | Admin</title>
 
-    <title>Smart Parking Management | Admin</title>
-
-    <style>
-        :root {
-            --bg: #101827;
-            --card: #1b293c;
-            --gold: #e9bd58;
-            --white: #fff;
-            --muted: #aab5c5;
-            --green: #20c77a;
-            --red: #ff6262;
-            --blue: #65aaff;
-            --border: #304057;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--white);
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            max-width: 850px;
-            margin: auto;
-            padding: 15px;
-        }
-
-        header {
-            text-align: center;
-            padding: 20px 0;
-        }
-
-        .logo {
-            width: 55px;
-            height: 55px;
-            border: 2px solid var(--gold);
-            border-radius: 15px;
-            display: grid;
-            place-items: center;
-            color: var(--gold);
-            font-size: 25px;
-            font-weight: bold;
-            margin: auto;
-        }
-
-        header h1 {
-            margin-top: 12px;
-            font-size: 22px;
-        }
-
-        header p {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 6px;
-            letter-spacing: 2px;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 17px;
-            margin-bottom: 15px;
-        }
-
-        h2 {
-            font-size: 18px;
-            margin-bottom: 14px;
-        }
-
-        h3 {
-            font-size: 15px;
-            color: var(--gold);
-            margin-bottom: 10px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            color: var(--muted);
-            margin-bottom: 7px;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #40516a;
-            border-radius: 9px;
-            background: var(--bg);
-            color: white;
-            margin-bottom: 13px;
-            font-size: 14px;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 70px;
-        }
-
-        button {
-            width: 100%;
-            padding: 13px;
-            border: 0;
-            border-radius: 9px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 9px;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .primary {
-            background: var(--gold);
-            color: #111;
-        }
-
-        .secondary {
-            background: #344861;
-            color: white;
-        }
-
-        .danger {
-            background: #a93636;
-            color: white;
-        }
-
-        .smallbtn {
-            width: auto;
-            padding: 9px 12px;
-            font-size: 11px;
-            margin: 5px 4px 0 0;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-        }
-
-        .stat {
-            background: var(--bg);
-            border-radius: 11px;
-            padding: 14px;
-            min-width: 0;
-        }
-
-        .stat small {
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .stat strong {
-            display: block;
-            font-size: 22px;
-            margin-top: 8px;
-            overflow-wrap: anywhere;
-        }
-
-        .gold { color: var(--gold); }
-        .green { color: var(--green); }
-        .red { color: var(--red); }
-        .blue { color: var(--blue); }
-
-        .muted {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.6;
-        }
-
-        .nav {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 7px;
-            margin-bottom: 15px;
-        }
-
-        .nav button {
-            background: #293950;
-            color: white;
-            font-size: 11px;
-            padding: 12px 4px;
-            margin: 0;
-        }
-
-        .nav button.active {
-            background: var(--gold);
-            color: #111;
-        }
-
-        .item {
-            background: var(--bg);
-            border: 1px solid #304057;
-            border-radius: 11px;
-            padding: 14px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            line-height: 1.8;
-            overflow-wrap: anywhere;
-        }
-
-        .item strong {
-            color: var(--gold);
-        }
-
-        .item a {
-            color: var(--blue);
-        }
-
-        .message {
-            padding: 11px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .error {
-            background: #48252b;
-            color: #ffaaaa;
-        }
-
-        .success {
-            background: #173d30;
-            color: #9df0c5;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 20px;
-            background: #344861;
-            font-size: 10px;
-            margin: 3px 0;
-        }
-
-        .badge.green {
-            background: #174a36;
-        }
-
-        .badge.red {
-            background: #542b30;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .topbar button {
-            width: auto;
-            padding: 9px 13px;
-            margin: 0;
-        }
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .actions button {
-            width: auto;
-        }
-
-        .photo {
-            display: block;
-            width: 100%;
-            max-height: 250px;
-            object-fit: contain;
-            border-radius: 9px;
-            margin-top: 8px;
-            background: #293950;
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid #40516a;
-            margin: 14px 0;
-        }
-
-        footer {
-            text-align: center;
-            color: #78869b;
-            padding: 20px;
-            font-size: 11px;
-        }
-
-        @media (min-width: 600px) {
-            .grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-
-            .nav {
-                grid-template-columns: repeat(6, 1fr);
-            }
-        }
-    </style>
+<style>
+:root{
+  --bg:#080d18;
+  --panel:#111a2b;
+  --panel2:#172238;
+  --gold:#e8b84b;
+  --gold2:#ffd978;
+  --text:#f3f5fa;
+  --muted:#91a0b8;
+  --green:#28c98b;
+  --red:#ff6577;
+  --blue:#61a9ff;
+  --border:rgba(255,255,255,.09);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+#loginScreen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:
+    radial-gradient(circle at top right,#263654 0,transparent 45%),
+    var(--bg);
+}
+.login-card{
+  width:100%;
+  max-width:390px;
+  padding:32px;
+  border:1px solid var(--border);
+  border-radius:24px;
+  background:var(--panel);
+  box-shadow:0 25px 70px #0008;
+}
+.logo{
+  width:60px;height:60px;
+  border-radius:18px;
+  background:var(--gold);
+  color:#111;
+  display:grid;
+  place-items:center;
+  font-size:28px;
+  margin-bottom:22px;
+}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:25px}
+h2{font-size:21px}
+h3{font-size:16px}
+.subtitle{color:var(--muted);font-size:13px;line-height:1.6}
+input,select,textarea{
+  width:100%;
+  padding:13px 14px;
+  background:#0b1424;
+  color:white;
+  border:1px solid var(--border);
+  border-radius:11px;
+  outline:none;
+  margin-top:7px;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:15px;
+}
+button{
+  border:0;
+  border-radius:10px;
+  padding:12px 16px;
+  font-weight:700;
+}
+.primary{
+  background:var(--gold);
+  color:#17120a;
+}
+.secondary{
+  background:#263650;
+  color:white;
+}
+.danger{
+  background:#512431;
+  color:#ff9aa7;
+}
+.success{
+  background:#143e35;
+  color:#68e8b5;
+}
+.small{
+  padding:8px 10px;
+  font-size:11px;
+}
+.full{width:100%;margin-top:20px}
+#app{display:none;min-height:100vh}
+.sidebar{
+  width:245px;
+  position:fixed;
+  top:0;bottom:0;left:0;
+  background:#0d1627;
+  border-right:1px solid var(--border);
+  padding:22px 15px;
+  z-index:10;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:5px 8px 25px;
+}
+.brand-icon{
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  background:var(--gold);
+  color:#111;
+  border-radius:13px;
+  font-size:21px;
+}
+.brand strong{display:block;font-size:15px}
+.brand span{font-size:10px;color:var(--muted)}
+.nav-title{
+  color:#697994;
+  font-size:10px;
+  letter-spacing:1.5px;
+  padding:15px 10px 8px;
+}
+.nav-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+  color:#9ba9bf;
+  background:transparent;
+  padding:13px 12px;
+  margin:3px 0;
+  border-radius:10px;
+}
+.nav-btn.active,.nav-btn:hover{
+  background:#263650;
+  color:var(--gold2);
+}
+.nav-btn span:first-child{width:22px;text-align:center}
+.sidebar-bottom{
+  position:absolute;
+  bottom:20px;left:15px;right:15px;
+}
+.main{
+  margin-left:245px;
+  padding:27px;
+  max-width:1600px;
+}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:25px;
+}
+.topbar h1{margin:0}
+.topbar small{color:var(--muted)}
+.section{display:none}
+.section.active{display:block}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:22px;
+}
+.stat{
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:19px;
+  border-radius:16px;
+}
+.stat .label{font-size:12px;color:var(--muted)}
+.stat .value{font-size:26px;font-weight:800;margin-top:12px}
+.stat .hint{font-size:11px;color:var(--muted);margin-top:6px}
+.gold{color:var(--gold)}
+.green{color:var(--green)}
+.red{color:var(--red)}
+.blue{color:var(--blue)}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:18px;
+}
+.panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:16px;
+}
+.panel-head h2,.panel-head h3{margin:0}
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+.toolbar input{max-width:300px;margin:0}
+.toolbar select{max-width:180px;margin:0}
+.table-wrap{overflow-x:auto}
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:700px;
+}
+th{
+  text-align:left;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:600;
+  padding:13px 10px;
+  border-bottom:1px solid var(--border);
+}
+td{
+  padding:13px 10px;
+  font-size:12px;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+td strong{font-size:13px}
+.badge{
+  display:inline-block;
+  padding:6px 9px;
+  border-radius:20px;
+  font-size:10px;
+  font-weight:800;
+}
+.badge.parked,.badge.paid{
+  background:#123c32;color:#61e3ae;
+}
+.badge.outside,.badge.unpaid{
+  background:#49232d;color:#ff8796;
+}
+.badge.partial{
+  background:#46391d;color:#f5ce69;
+}
+.badge.active{
+  background:#163e34;color:#65e4b1;
+}
+.badge.inactive{
+  background:#3b2830;color:#ff8e9b;
+}
+.muted{color:var(--muted)}
+.empty{
+  text-align:center;
+  padding:35px;
+  color:var(--muted);
+}
+.customer-card{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:16px;
+  margin-bottom:12px;
+}
+.customer-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.customer-name{font-weight:800;font-size:15px}
+.vehicle-number{
+  color:var(--gold2);
+  font-weight:800;
+  letter-spacing:1px;
+}
+.customer-info{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+.info-item small{
+  display:block;color:var(--muted);font-size:10px;
+  margin-bottom:5px;
+}
+.info-item strong{font-size:12px}
+.card-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:15px;
+}
+.photo-thumb{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:12px;
+  background:#0b1424;
+  margin-top:12px;
+}
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:50;
+  background:#000b;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+}
+.modal.show{display:flex}
+.modal-box{
+  width:100%;
+  max-width:650px;
+  max-height:90vh;
+  overflow:auto;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+}
+.modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:15px;
+}
+.modal-head h2{margin:0}
+.close{
+  background:#263650;color:white;
+  padding:8px 12px;
+}
+.photo-preview{
+  width:100%;
+  max-height:260px;
+  object-fit:cover;
+  border-radius:13px;
+  margin-top:12px;
+  display:none;
+}
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:100;
+  background:#20314b;
+  color:white;
+  padding:14px 18px;
+  border-radius:12px;
+  box-shadow:0 8px 30px #0008;
+  display:none;
+  max-width:340px;
+  font-size:13px;
+}
+.toast.show{display:block}
+.loading{opacity:.55;pointer-events:none}
+.mobile-menu{display:none}
+@media(max-width:1000px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:720px){
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:sticky;
+    top:0;
+    bottom:auto;
+    padding:10px;
+    border-right:0;
+    border-bottom:1px solid var(--border);
+  }
+  .brand{padding:3px 5px 10px}
+  .brand-icon{width:35px;height:35px}
+  .nav-title,.sidebar-bottom{display:none}
+  .nav-list{
+    display:flex;
+    overflow-x:auto;
+    gap:5px;
+  }
+  .nav-btn{
+    width:auto;
+    flex:0 0 auto;
+    padding:10px;
+    font-size:11px;
+  }
+  .nav-btn span:first-child{width:auto}
+  .main{margin:0;padding:16px}
+  .topbar{align-items:flex-start}
+  .topbar h1{font-size:21px}
+  .stats{gap:9px}
+  .stat{padding:13px}
+  .stat .value{font-size:21px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .customer-info{grid-template-columns:repeat(2,1fr)}
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
-
-    <header>
-        <div class="logo">SP</div>
-        <h1>SMART PARKING MANAGEMENT</h1>
-        <p>ADMIN MANAGEMENT PANEL</p>
-    </header>
-
-    <!-- ADMIN LOGIN -->
-
-    <section id="loginSection" class="card">
-
-        <h2>Admin Login</h2>
-
-        <div id="loginMessage"></div>
-
-        <label>Admin Security PIN</label>
-
-        <input
-            type="password"
-            id="adminPin"
-            placeholder="Enter Admin PIN"
-            inputmode="numeric"
-        >
-
-        <button
-            class="primary"
-            id="loginButton"
-            onclick="login()"
-        >
-            LOGIN TO DASHBOARD
-        </button>
-
-    </section>
-
-    <!-- MAIN DASHBOARD -->
-
-    <section id="dashboard" class="hidden">
-
-        <div class="topbar">
-
-            <div>
-                <h2>Dashboard</h2>
-                <p class="muted">Parking Management Overview</p>
-            </div>
-
-            <button class="danger" onclick="logout()">
-                LOGOUT
-            </button>
-
-        </div>
-
-        <!-- DASHBOARD STATISTICS -->
-
-        <div class="card">
-
-            <div class="grid">
-
-                <div class="stat">
-                    <small>Total Vehicles</small>
-                    <strong id="totalVehicles">0</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Parked</small>
-                    <strong class="green" id="parked">0</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Outside</small>
-                    <strong class="red" id="outside">0</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Today's Check-In</small>
-                    <strong id="todayIn">0</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Today's Check-Out</small>
-                    <strong id="todayOut">0</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Total Charges</small>
-                    <strong class="gold" id="totalDue">₹0</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Total Received</small>
-                    <strong class="green" id="totalPaid">₹0</strong>
-                </div>
-
-                <div class="stat">
-                    <small>Outstanding</small>
-                    <strong class="red" id="outstanding">₹0</strong>
-                </div>
-
-            </div>
-
-            <br>
-
-            <button
-                class="secondary"
-                onclick="refreshDashboard()"
-            >
-                REFRESH DASHBOARD
-            </button>
-
-            <div id="dashboardMessage"></div>
-
-        </div>
-
-        <!-- NAVIGATION -->
-
-        <div class="nav">
-
-            <button
-                class="active"
-                onclick="showTab('customers', this)"
-            >
-                CUSTOMERS
-            </button>
-
-            <button onclick="showTab('register', this)">
-                ADD CUSTOMER
-            </button>
-
-            <button onclick="showTab('billing', this)">
-                BILLING
-            </button>
-
-            <button onclick="showTab('payments', this)">
-                PAYMENTS
-            </button>
-
-            <button onclick="showTab('history', this)">
-                HISTORY
-            </button>
-
-            <button onclick="showTab('correction', this)">
-                STATUS FIX
-            </button>
-
-        </div>
-
-        <!-- CUSTOMERS TAB -->
-
-        <section id="customersTab" class="tab">
-
-            <div class="card">
-
-                <h2>Registered Customers</h2>
-
-                <input
-                    id="searchCustomer"
-                    placeholder="Search vehicle / customer / mobile"
-                    oninput="renderCustomers()"
-                >
-
-                <div id="customerList">
-                    Loading customers...
-                </div>
-
-            </div>
-
-            <div class="card hidden" id="editJoiningCard">
-
-                <h2>Update Customer Details</h2>
-
-                <div id="joiningMessage"></div>
-
-                <input type="hidden" id="editOwnerId">
-
-                <label>Customer</label>
-                <input id="editCustomerName" disabled>
-
-                <label>Vehicle Number</label>
-                <input id="editCustomerVehicle" disabled>
-
-                <label>Service Start Date / Joining Date</label>
-
-                <input
-                    type="date"
-                    id="editJoiningDate"
-                >
-
-                <p class="muted">
-                    Changing the joining date will not delete or alter
-                    previous payment records.
-                </p>
-
-                <button
-                    class="primary"
-                    onclick="updateJoiningDate()"
-                >
-                    SAVE JOINING DATE
-                </button>
-
-                <button
-                    class="secondary"
-                    onclick="closeJoiningEditor()"
-                >
-                    CANCEL
-                </button>
-
-            </div>
-
-        </section>
-
-        <!-- REGISTER CUSTOMER TAB -->
-
-        <section id="registerTab" class="tab hidden">
-
-            <div class="card">
-
-                <h2>Register New Customer</h2>
-
-                <div id="registerMessage"></div>
-
-                <label>Customer Name</label>
-                <input id="newName" placeholder="Full Name">
-
-                <label>Vehicle Number</label>
-                <input id="newVehicle" placeholder="DL01AB1234">
-
-                <label>Mobile Number</label>
-                <input
-                    id="newMobile"
-                    type="tel"
-                    maxlength="10"
-                    placeholder="10 digit mobile"
-                >
-
-                <label>Customer 4 Digit PIN</label>
-                <input
-                    id="newPin"
-                    type="password"
-                    maxlength="4"
-                    inputmode="numeric"
-                    placeholder="Create PIN"
-                >
-
-                <label>Service Start Date / Joining Date</label>
-                <input type="date" id="newJoiningDate">
-
-                <label>Monthly Parking Fee (₹)</label>
-                <input
-                    type="number"
-                    id="newMonthlyAmount"
-                    min="1"
-                    placeholder="2000"
-                >
-
-                <button
-                    class="primary"
-                    onclick="registerCustomer()"
-                >
-                    REGISTER CUSTOMER
-                </button>
-
-            </div>
-
-        </section>
-
-        <!-- BILLING TAB -->
-
-        <section id="billingTab" class="tab hidden">
-
-            <div class="card">
-
-                <h2>Add Monthly Parking Charge</h2>
-
-                <div id="billingMessage"></div>
-
-                <label>Select Customer</label>
-
-                <select
-                    id="billingOwner"
-                    onchange="suggestCustomerAmount()"
-                >
-                    <option value="">Select customer</option>
-                </select>
-
-                <label>Billing Month</label>
-                <input type="month" id="billingMonth">
-
-                <label>Monthly Parking Amount (₹)</label>
-                <input
-                    type="number"
-                    id="billingAmount"
-                    min="1"
-                    placeholder="2000"
-                >
-
-                <label>Due Date</label>
-                <input type="date" id="dueDate">
-
-                <label>Note</label>
-                <textarea
-                    id="billingNote"
-                    placeholder="Optional note"
-                ></textarea>
-
-                <button
-                    class="primary"
-                    onclick="addCharge()"
-                >
-                    ADD PARKING CHARGE
-                </button>
-
-            </div>
-
-        </section>
-
-        <!-- PAYMENTS TAB -->
-
-        <section id="paymentsTab" class="tab hidden">
-
-            <div class="card">
-
-                <h2>Payment Management</h2>
-
-                <div id="paymentMessage"></div>
-
-                <input
-                    id="searchPayment"
-                    placeholder="Search vehicle / customer / month"
-                    oninput="renderPayments()"
-                >
-
-                <div id="paymentList">
-                    Loading payments...
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- MOVEMENT HISTORY TAB -->
-
-        <section id="historyTab" class="tab hidden">
-
-            <div class="card">
-
-                <h2>Vehicle Movement History</h2>
-
-                <p class="muted">
-                    Customer Check-In / Check-Out records and odometer photos.
-                </p>
-
-                <input
-                    id="historySearch"
-                    placeholder="Search vehicle number"
-                    oninput="renderHistory()"
-                >
-
-                <div id="historyList">
-                    Loading history...
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- STATUS CORRECTION TAB -->
-
-        <section id="correctionTab" class="tab hidden">
-
-            <div class="card">
-
-                <h2>Manual Status Correction</h2>
-
-                <div id="correctionMessage"></div>
-
-                <label>Select Customer</label>
-
-                <select id="correctionOwner">
-                    <option value="">Select customer</option>
-                </select>
-
-                <label>New Vehicle Status</label>
-
-                <select id="correctionStatus">
-                    <option value="PARKED">PARKED</option>
-                    <option value="OUTSIDE">OUTSIDE</option>
-                </select>
-
-                <label>Reason for Correction</label>
-
-                <textarea
-                    id="correctionReason"
-                    placeholder="Enter reason"
-                ></textarea>
-
-                <button
-                    class="primary"
-                    onclick="correctStatus()"
-                >
-                    UPDATE VEHICLE STATUS
-                </button>
-
-                <p class="muted">
-                    Every manual correction will be recorded in movement history.
-                </p>
-
-            </div>
-
-        </section>
-
-    </section>
-
-    <footer>
-        Smart Parking Management
-    </footer>
-
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="logo">P</div>
+    <h1>Smart Parking</h1>
+    <p class="subtitle">Management dashboard · Administrator access</p>
+
+    <label>Admin PIN</label>
+    <input id="adminPin" type="password" inputmode="numeric"
+      placeholder="Enter admin PIN">
+
+    <button class="primary full" onclick="login()">LOGIN TO DASHBOARD</button>
+    <p class="subtitle" id="loginMessage"></p>
+  </div>
 </div>
 
+<!-- APPLICATION -->
+<div id="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">P</div>
+      <div>
+        <strong>SMART PARKING</strong>
+        <span>ADMIN MANAGEMENT</span>
+      </div>
+    </div>
+
+    <div class="nav-title">MAIN MENU</div>
+    <div class="nav-list">
+      <button class="nav-btn active" onclick="showSection('dashboard',this)">
+        <span>▦</span> Dashboard
+      </button>
+      <button class="nav-btn" onclick="showSection('customers',this)">
+        <span>♙</span> Customers
+      </button>
+      <button class="nav-btn" onclick="showSection('register',this)">
+        <span>＋</span> Add Customer
+      </button>
+      <button class="nav-btn" onclick="showSection('billing',this)">
+        <span>₹</span> Billing
+      </button>
+      <button class="nav-btn" onclick="showSection('payments',this)">
+        <span>▤</span> Payments
+      </button>
+      <button class="nav-btn" onclick="showSection('history',this)">
+        <span>◷</span> History
+      </button>
+      <button class="nav-btn" onclick="showSection('statusfix',this)">
+        <span>⚙</span> Status Fix
+      </button>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="nav-btn" onclick="logout()">↪ Logout</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <small>Smart Parking Management System</small>
+      </div>
+      <button class="secondary small" onclick="refreshAll()">↻ Refresh</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section class="section active" id="dashboard">
+      <div class="stats">
+        <div class="stat">
+          <div class="label">TOTAL CUSTOMERS</div>
+          <div class="value gold" id="sTotal">0</div>
+          <div class="hint">Registered vehicles</div>
+        </div>
+        <div class="stat">
+          <div class="label">PARKED VEHICLES</div>
+          <div class="value green" id="sParked">0</div>
+          <div class="hint">Currently inside</div>
+        </div>
+        <div class="stat">
+          <div class="label">OUTSIDE VEHICLES</div>
+          <div class="value red" id="sOutside">0</div>
+          <div class="hint">Currently checked out</div>
+        </div>
+        <div class="stat">
+          <div class="label">TODAY'S CHECK-INS</div>
+          <div class="value blue" id="sCheckin">0</div>
+          <div class="hint">Today's activity</div>
+        </div>
+        <div class="stat">
+          <div class="label">TODAY'S CHECK-OUTS</div>
+          <div class="value blue" id="sCheckout">0</div>
+          <div class="hint">Today's activity</div>
+        </div>
+        <div class="stat">
+          <div class="label">TOTAL BILLED</div>
+          <div class="value gold" id="sDue">₹0</div>
+          <div class="hint">All generated charges</div>
+        </div>
+        <div class="stat">
+          <div class="label">TOTAL RECEIVED</div>
+          <div class="value green" id="sPaid">₹0</div>
+          <div class="hint">Recorded transactions</div>
+        </div>
+        <div class="stat">
+          <div class="label">OUTSTANDING</div>
+          <div class="value red" id="sOutstanding">₹0</div>
+          <div class="hint">Pending balance</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Recent Customer Activity</h2>
+          <button class="secondary small"
+            onclick="showSection('history')">View History</button>
+        </div>
+        <div id="recentActivity" class="muted">Loading activity...</div>
+      </div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section class="section" id="customers">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Customer Management</h2>
+          <button class="primary small"
+            onclick="showSection('register')">+ Add Customer</button>
+        </div>
+
+        <div class="toolbar">
+          <input id="customerSearch" placeholder="Search name, vehicle, mobile..."
+            oninput="renderCustomers()">
+          <select id="customerFilter" onchange="renderCustomers()">
+            <option value="ALL">All Status</option>
+            <option value="PARKED">Parked</option>
+            <option value="OUTSIDE">Outside</option>
+          </select>
+        </div>
+
+        <div id="customerList">Loading customers...</div>
+      </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section class="section" id="register">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Register New Customer</h2>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <label>Customer Name *</label>
+            <input id="regName" placeholder="Full name">
+          </div>
+          <div>
+            <label>Vehicle Number *</label>
+            <input id="regVehicle" placeholder="DL01AB1234">
+          </div>
+          <div>
+            <label>Mobile Number *</label>
+            <input id="regMobile" type="tel" placeholder="10 digit mobile">
+          </div>
+          <div>
+            <label>Customer Login PIN *</label>
+            <input id="regPin" type="password" inputmode="numeric"
+              maxlength="4" placeholder="4 digit PIN">
+          </div>
+          <div>
+            <label>Joining Date *</label>
+            <input id="regJoining" type="date">
+          </div>
+          <div>
+            <label>Monthly Parking Fee (₹) *</label>
+            <input id="regAmount" type="number" min="1" placeholder="2000">
+          </div>
+        </div>
+
+        <button class="primary full" onclick="registerCustomer()">
+          REGISTER CUSTOMER
+        </button>
+      </div>
+    </section>
+
+    <!-- BILLING -->
+    <section class="section" id="billing">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Generate Monthly Bill</h2>
+        </div>
+
+        <label>Select Customer</label>
+        <select id="billOwner"></select>
+
+        <div class="grid2">
+          <div>
+            <label>Billing Month</label>
+            <input id="billMonth" type="month">
+          </div>
+          <div>
+            <label>Charge Amount (₹)</label>
+            <input id="billAmount" type="number" min="1">
+          </div>
+        </div>
+
+        <label>Note (Optional)</label>
+        <input id="billNote" placeholder="Monthly parking charge">
+
+        <button class="primary full" onclick="generateBill()">
+          GENERATE MONTHLY BILL
+        </button>
+        <p class="subtitle">
+          A customer can have only one generated charge for each billing month.
+          Previous unpaid balances remain separate.
+        </p>
+      </div>
+    </section>
+
+    <!-- PAYMENTS -->
+    <section class="section" id="payments">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Record Customer Payment</h2>
+        </div>
+
+        <label>Select Customer</label>
+        <select id="payOwner" onchange="loadCustomerCharges()"></select>
+
+        <label>Select Billing Month</label>
+        <select id="payMonth"></select>
+
+        <div class="grid2">
+          <div>
+            <label>Payment Amount (₹)</label>
+            <input id="payAmount" type="number" min="1" placeholder="Amount">
+          </div>
+          <div>
+            <label>Payment Date</label>
+            <input id="payDate" type="date">
+          </div>
+          <div>
+            <label>Payment Method</label>
+            <select id="payMethod">
+              <option value="CASH">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="BANK TRANSFER">Bank Transfer</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <div>
+            <label>Reference / UTR</label>
+            <input id="payReference" placeholder="Optional reference">
+          </div>
+        </div>
+
+        <label>Note</label>
+        <input id="payNote" placeholder="Payment note">
+
+        <div id="payBalance" class="subtitle" style="margin-top:12px"></div>
+
+        <button class="primary full" onclick="recordPayment()">
+          SAVE PAYMENT
+        </button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Payment Records</h2>
+          <button class="secondary small" onclick="loadPayments()">↻ Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Vehicle</th>
+                <th>Billing Month</th>
+                <th>Bill</th>
+                <th>Paid</th>
+                <th>Balance</th>
+                <th>Status</th>
+                <th>Last Payment</th>
+              </tr>
+            </thead>
+            <tbody id="paymentRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="section" id="history">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Vehicle Movement History</h2>
+          <button class="secondary small" onclick="loadHistory()">↻ Refresh</button>
+        </div>
+        <div class="toolbar">
+          <input id="historySearch" placeholder="Search customer or vehicle..."
+            oninput="renderHistory()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Customer</th>
+                <th>Vehicle</th>
+                <th>Action</th>
+                <th>Odometer</th>
+                <th>Distance</th>
+                <th>Photo</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody id="historyRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATUS FIX -->
+    <section class="section" id="statusfix">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Manual Parking Status Correction</h2>
+        </div>
+
+        <label>Select Customer</label>
+        <select id="fixOwner"></select>
+
+        <label>Correct Status</label>
+        <select id="fixStatus">
+          <option value="PARKED">PARKED</option>
+          <option value="OUTSIDE">OUTSIDE</option>
+        </select>
+
+        <label>Current Odometer Reading</label>
+        <input id="fixOdometer" type="number" min="0"
+          placeholder="Enter odometer reading">
+
+        <label>Reason for Correction</label>
+        <textarea id="fixNote" rows="3"
+          placeholder="Explain why this correction is required"></textarea>
+
+        <button class="primary full" onclick="correctStatus()">
+          UPDATE PARKING STATUS
+        </button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- CUSTOMER DETAILS MODAL -->
+<div class="modal" id="detailsModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Customer Details</h2>
+      <button class="close" onclick="closeModal('detailsModal')">✕</button>
+    </div>
+    <div id="detailsContent"></div>
+  </div>
+</div>
+
+<!-- PHOTO UPLOAD MODAL -->
+<div class="modal" id="photoModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Customer Car Photo</h2>
+      <button class="close" onclick="closeModal('photoModal')">✕</button>
+    </div>
+
+    <input type="hidden" id="photoOwnerId">
+
+    <p class="subtitle" id="photoCustomerName"></p>
+
+    <label>Select car photo (JPG / PNG / WEBP, max 5 MB)</label>
+    <input type="file" id="carPhotoFile"
+      accept="image/jpeg,image/png,image/webp"
+      onchange="previewCarPhoto(event)">
+
+    <img id="carPhotoPreview" class="photo-preview" alt="Car preview">
+
+    <button class="primary full" onclick="uploadCarPhoto()">
+      UPLOAD CAR PHOTO
+    </button>
+
+    <button class="danger full" onclick="removeCarPhoto()">
+      REMOVE CURRENT PHOTO
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-"use strict";
-
-// ====================================
-// 1. CONFIGURATION
-// ====================================
-
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbzDxI1LyqLkIkTioRTn-xuL9JHZ_iWUH8LYrPUlniFgizDI6wbbM0X4OLtamcwwLhIQ/exec";
+"https://script.google.com/macros/s/AKfycbzDxI1LyqLkIkTioRTn-xuL9JHZ_iWUH8LYrPUlniFgizDI6wbbM0X4OLtamcwwLhIQ/exec";
 
-let adminToken = localStorage.getItem("rpm_admin_token") || "";
-
+let adminToken = localStorage.getItem("smartpark_admin_token") || "";
 let customers = [];
-let movements = [];
 let payments = [];
+let movements = [];
+let selectedPhotoData = "";
 
-// Stores the customer whose payment was most recently recorded.
-// This priority lasts until the page is reloaded.
-let recentlyPaidOwnerId = "";
+const $ = id => document.getElementById(id);
 
+function money(value){
+  return "₹" + Number(value || 0).toLocaleString("en-IN",{
+    maximumFractionDigits:2
+  });
+}
 
-// ====================================
-// 2. API HANDLER
-// ====================================
+function escapeHTML(value){
+  return String(value == null ? "" : value).replace(/[&<>"']/g,c=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
 
-async function api(action, data = {}) {
+function formatDate(value){
+  if(!value) return "—";
+  const d = new Date(value);
+  if(isNaN(d)) return escapeHTML(value);
+  return d.toLocaleString("en-IN",{
+    day:"2-digit",month:"short",year:"numeric",
+    hour:"2-digit",minute:"2-digit"
+  });
+}
 
-    if (!API_URL || API_URL.includes("PASTE_YOUR")) {
-        throw new Error("Apps Script URL is not configured.");
-    }
+function toast(message){
+  const el=$("toast");
+  el.textContent=message;
+  el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"),3500);
+}
 
-    const response = await fetch(API_URL, {
-        method: "POST",
-        redirect: "follow",
-        headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({
-            action,
-            ...data
-        })
+async function api(action,data={}){
+  const response=await fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({
+      action,
+      token:adminToken,
+      ...data
+    })
+  });
+
+  const result=await response.json();
+
+  if(!result.success){
+    throw new Error(result.message || "Request failed");
+  }
+
+  return result;
+}
+
+// ---------------- LOGIN ----------------
+
+async function login(){
+  const pin=$("adminPin").value.trim();
+
+  if(!pin){
+    $("loginMessage").textContent="Enter admin PIN.";
+    return;
+  }
+
+  $("loginMessage").textContent="Checking login...";
+
+  try{
+    const response=await fetch(API_URL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action:"adminLogin",pin})
     });
 
-    if (!response.ok) {
-        throw new Error("Server error: " + response.status);
-    }
+    const result=await response.json();
 
-    const result = await response.json();
+    if(!result.success) throw new Error(result.message);
 
-    if (!result.success) {
-        throw new Error(result.error || "Request failed");
-    }
+    adminToken=result.token;
+    localStorage.setItem("smartpark_admin_token",adminToken);
 
-    return result.data;
+    openApp();
+
+  }catch(error){
+    $("loginMessage").textContent=error.message;
+  }
 }
 
-
-// ====================================
-// 3. SAFE UI HELPERS
-// ====================================
-
-function el(id) {
-    return document.getElementById(id);
+function openApp(){
+  $("loginScreen").style.display="none";
+  $("app").style.display="block";
+  refreshAll();
 }
 
-
-function message(id, text, type = "error") {
-
-    const target = el(id);
-
-    if (!target) return;
-
-    target.innerHTML = "";
-
-    const box = document.createElement("div");
-
-    box.className = "message " + type;
-    box.textContent = text;
-
-    target.appendChild(box);
+function logout(){
+  localStorage.removeItem("smartpark_admin_token");
+  adminToken="";
+  $("app").style.display="none";
+  $("loginScreen").style.display="flex";
+  $("adminPin").value="";
 }
 
-
-function money(value) {
-
-    return "₹" + Number(value || 0).toLocaleString("en-IN", {
-        maximumFractionDigits: 2
-    });
-}
-
-
-function formatDate(value) {
-
-    if (!value) return "Not configured";
-
-    let date;
-
-    if (value instanceof Date) {
-
-        date = value;
-
-    } else if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
-
-        const p = String(value).split("-");
-
-        date = new Date(
-            Number(p[0]),
-            Number(p[1]) - 1,
-            Number(p[2])
-        );
-
-    } else {
-
-        date = new Date(value);
-    }
-
-    if (isNaN(date.getTime())) {
-        return "Not configured";
-    }
-
-    return date.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-    });
-}
-
-
-function dateInputValue(value) {
-
-    if (!value) return "";
-
-    if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
-        return String(value);
-    }
-
-    const d = new Date(value);
-
-    if (isNaN(d.getTime())) return "";
-
-    return [
-        d.getFullYear(),
-        String(d.getMonth() + 1).padStart(2, "0"),
-        String(d.getDate()).padStart(2, "0")
-    ].join("-");
-}
-
-
-function escapeText(value) {
-    return String(value ?? "");
-}
-
-
-// ====================================
-// 4. ADMIN LOGIN
-// ====================================
-
-async function login() {
-
-    const pin = el("adminPin").value.trim();
-
-    if (!pin) {
-        message("loginMessage", "Enter admin PIN.");
-        return;
-    }
-
-    el("loginButton").disabled = true;
-
-    try {
-
-        message("loginMessage", "Verifying...", "success");
-
-        const result = await api("adminLogin", {
-            pin
-        });
-
-        adminToken = result.token;
-
-        if (!adminToken) {
-            throw new Error("Login token was not received.");
-        }
-
-        localStorage.setItem("rpm_admin_token", adminToken);
-
-        await openDashboard();
-
-    } catch (e) {
-
-        message("loginMessage", e.message);
-
-    } finally {
-
-        el("loginButton").disabled = false;
-    }
-}
-
-
-// ====================================
-// 5. OPEN DASHBOARD
-// ====================================
-
-async function openDashboard() {
-
-    el("loginSection").classList.add("hidden");
-
-    el("dashboard").classList.remove("hidden");
-
-    await refreshDashboard();
-}
-
-
-// ====================================
-// 6. DASHBOARD DATA
-// ====================================
-
-async function refreshDashboard() {
-
-    try {
-
-        message(
-            "dashboardMessage",
-            "Refreshing dashboard...",
-            "success"
-        );
-
-        const data = await api("adminDashboard", {
-            token: adminToken
-        });
-
-        el("totalVehicles").textContent =
-            data.totalVehicles ?? 0;
-
-        el("parked").textContent =
-            data.parked ?? 0;
-
-        el("outside").textContent =
-            data.outside ?? 0;
-
-        el("todayIn").textContent =
-            data.todayCheckIn ?? 0;
-
-        el("todayOut").textContent =
-            data.todayCheckOut ?? 0;
-
-        el("totalPaid").textContent =
-            money(data.totalPaid);
-
-        el("totalDue").textContent =
-            money(data.totalDue);
-
-        el("outstanding").textContent =
-            money(data.outstanding);
-
-        await Promise.all([
-            loadCustomers(),
-            loadPayments(),
-            loadHistory()
-        ]);
-
-        el("dashboardMessage").innerHTML = "";
-
-    } catch (e) {
-
-        message("dashboardMessage", e.message);
-
-        if (/session|token|unauthorized|login/i.test(e.message)) {
-            logout();
-        }
-    }
-}
-
-
-// ====================================
-// 7. TAB NAVIGATION
-// ====================================
-
-function showTab(name, button) {
-
-    document.querySelectorAll(".tab").forEach(tab => {
-        tab.classList.add("hidden");
-    });
-
-    el(name + "Tab").classList.remove("hidden");
-
-    document.querySelectorAll(".nav button").forEach(btn => {
-        btn.classList.remove("active");
-    });
-
-    button.classList.add("active");
-}
-
-
-// ====================================
-// 8. LOAD CUSTOMERS
-// ====================================
-
-async function loadCustomers() {
-
-    const result = await api("adminOwners", {
-        token: adminToken
-    });
-
-    if (!Array.isArray(result)) {
-        throw new Error("Invalid customer list received from server.");
-    }
-
-    customers = result.map(c => ({
-
-        ownerId: c.OwnerID ?? c.ownerId ?? "",
-        name: c.OwnerName ?? c.name ?? "",
-        vehicle: c.Vehicle ?? c.vehicle ?? "",
-        mobile: c.Mobile ?? c.mobile ?? "",
-
-        active:
-            String(c.Active ?? c.active).toUpperCase() === "TRUE",
-
-        joiningDate:
-            c.JoiningDate ?? c.joiningDate ?? "",
-
-        monthlyAmount:
-            Number(c.MonthlyAmount ?? c.monthlyAmount ?? 0),
-
-        status:
-            c.Status ?? c.status ?? "UNKNOWN",
-
-        odometer:
-            c.Odometer ?? c.odometer ?? ""
-
-    }));
-
-    const latest = {};
-
-    movements.forEach(m => {
-
-        const id = String(
-            m.OwnerID ?? m.OwnerId ?? m.ownerId ?? ""
-        );
-
-        if (!id) return;
-
-        const previous = latest[id];
-
-        if (
-            !previous ||
-            new Date(m.DateTime) >= new Date(previous.DateTime)
-        ) {
-            latest[id] = m;
-        }
-    });
-
-    customers.forEach(c => {
-
-        const m = latest[String(c.ownerId)];
-
-        if (m) {
-
-            const action = String(m.Action || "").toUpperCase();
-
-            if (
-                action.includes("CHECK_IN") ||
-                action.includes("CHECK-IN") ||
-                action === "IN" ||
-                action === "PARKED"
-            ) {
-
-                c.status = "PARKED";
-
-            } else if (
-                action.includes("CHECK_OUT") ||
-                action.includes("CHECK-OUT") ||
-                action === "OUT" ||
-                action === "OUTSIDE"
-            ) {
-
-                c.status = "OUTSIDE";
-            }
-
-            c.odometer = m.Odometer ?? c.odometer;
-        }
-    });
-
-    renderCustomers();
-
-    fillCustomerDropdowns();
-}
-
-
-// ====================================
-// 9. CUSTOMER LIST
-// ====================================
-
-function renderCustomers() {
-
-    const list = el("customerList");
-
-    const search = el("searchCustomer")
-        .value.trim().toLowerCase();
-
-    list.innerHTML = "";
-
-    const filtered = customers.filter(c =>
-
-        String(c.name).toLowerCase().includes(search) ||
-        String(c.vehicle).toLowerCase().includes(search) ||
-        String(c.mobile).includes(search)
-
-    );
-
-    if (!filtered.length) {
-
-        list.textContent = "No customers found.";
-
-        return;
-    }
-
-    filtered.forEach(c => {
-
-        const box = document.createElement("div");
-
-        box.className = "item";
-
-        const title = document.createElement("strong");
-
-        title.textContent =
-            c.vehicle || "Vehicle not available";
-
-        const name = document.createElement("div");
-
-        name.textContent =
-            "Customer: " + c.name;
-
-        const mobile = document.createElement("div");
-
-        mobile.textContent =
-            "Mobile: " + c.mobile;
-
-        const joining = document.createElement("div");
-
-        joining.textContent =
-            "Service Started: " + formatDate(c.joiningDate);
-
-        const fee = document.createElement("div");
-
-        fee.textContent =
-            "Monthly Fee: " + money(c.monthlyAmount);
-
-        const status = document.createElement("div");
-
-        status.textContent =
-            "Parking Status: " + c.status;
-
-        status.className =
-            c.status === "PARKED" ? "green" :
-            c.status === "OUTSIDE" ? "red" : "muted";
-
-        const account = document.createElement("div");
-
-        account.textContent =
-            "Account: " + (c.active ? "ACTIVE" : "INACTIVE");
-
-        const reading = document.createElement("div");
-
-        reading.textContent =
-            "Last Odometer: " + (c.odometer || "--") + " KM";
-
-        const edit = document.createElement("button");
-
-        edit.className = "secondary smallbtn";
-
-        edit.textContent = "EDIT JOINING DATE";
-
-        edit.onclick = () => openJoiningEditor(c.ownerId);
-
-        box.append(
-            title,
-            name,
-            mobile,
-            joining,
-            fee,
-            status,
-            reading,
-            account,
-            edit
-        );
-
-        list.appendChild(box);
-
-    });
-}
-
-
-// ====================================
-// 10. JOINING DATE EDITOR
-// ====================================
-
-function openJoiningEditor(ownerId) {
-
-    const c = customers.find(
-        x => String(x.ownerId) === String(ownerId)
-    );
-
-    if (!c) return;
-
-    el("editOwnerId").value = c.ownerId;
-
-    el("editCustomerName").value = c.name;
-
-    el("editCustomerVehicle").value = c.vehicle;
-
-    el("editJoiningDate").value =
-        dateInputValue(c.joiningDate);
-
-    el("joiningMessage").innerHTML = "";
-
-    el("editJoiningCard").classList.remove("hidden");
-
-    el("editJoiningCard").scrollIntoView({
-        behavior: "smooth"
-    });
-}
-
-
-function closeJoiningEditor() {
-
-    el("editJoiningCard").classList.add("hidden");
-}
-
-
-async function updateJoiningDate() {
-
-    const ownerId = el("editOwnerId").value;
-
-    const joiningDate = el("editJoiningDate").value;
-
-    if (!ownerId || !joiningDate) {
-
-        message(
-            "joiningMessage",
-            "Select a valid joining date."
-        );
-
-        return;
-    }
-
-    if (!confirm("Update this customer's service start date?")) {
-        return;
-    }
-
-    try {
-
-        await api("adminUpdateJoiningDate", {
-            token: adminToken,
-            ownerId,
-            joiningDate
-        });
-
-        message(
-            "joiningMessage",
-            "Joining date updated successfully.",
-            "success"
-        );
-
-        await loadCustomers();
-
-        closeJoiningEditor();
-
-    } catch (e) {
-
-        message("joiningMessage", e.message);
-    }
-}
-
-
-// ====================================
-// 11. CUSTOMER DROPDOWNS
-// ====================================
-
-function fillCustomerDropdowns() {
-
-    const billing = el("billingOwner");
-
-    const correction = el("correctionOwner");
-
-    billing.innerHTML =
-        '<option value="">Select customer</option>';
-
-    correction.innerHTML =
-        '<option value="">Select customer</option>';
-
-    customers
-        .filter(c => c.active)
-        .forEach(c => {
-
-            const option = document.createElement("option");
-
-            option.value = c.ownerId;
-
-            option.textContent =
-                c.name + " - " + c.vehicle;
-
-            billing.appendChild(option.cloneNode(true));
-
-            correction.appendChild(option);
-
-        });
-}
-
-
-function suggestCustomerAmount() {
-
-    const id = el("billingOwner").value;
-
-    const c = customers.find(
-        x => String(x.ownerId) === String(id)
-    );
-
-    if (c && c.monthlyAmount > 0) {
-
-        el("billingAmount").value =
-            c.monthlyAmount;
-    }
-}
-
-
-// ====================================
-// 12. REGISTER CUSTOMER
-// ====================================
-
-async function registerCustomer() {
-
-    const name = el("newName").value.trim();
-
-    const vehicle = el("newVehicle")
-        .value.trim().toUpperCase();
-
-    const mobile = el("newMobile").value.trim();
-
-    const pin = el("newPin").value.trim();
-
-    const joiningDate = el("newJoiningDate").value;
-
-    const monthlyAmount =
-        Number(el("newMonthlyAmount").value);
-
-    if (
-        !name ||
-        !vehicle ||
-        !mobile ||
-        !pin ||
-        !joiningDate ||
-        !monthlyAmount
-    ) {
-
-        message(
-            "registerMessage",
-            "Complete all fields."
-        );
-
-        return;
-    }
-
-    if (!/^\d{10}$/.test(mobile)) {
-
-        message(
-            "registerMessage",
-            "Enter a valid 10-digit mobile number."
-        );
-
-        return;
-    }
-
-    if (!/^\d{4}$/.test(pin)) {
-
-        message(
-            "registerMessage",
-            "PIN must contain exactly 4 digits."
-        );
-
-        return;
-    }
-
-    if (monthlyAmount <= 0) {
-
-        message(
-            "registerMessage",
-            "Enter a valid monthly fee."
-        );
-
-        return;
-    }
-
-    try {
-
-        await api("adminRegister", {
-            token: adminToken,
-            name,
-            vehicle,
-            mobile,
-            pin,
-            joiningDate,
-            monthlyAmount
-        });
-
-        message(
-            "registerMessage",
-            "Customer registered successfully.",
-            "success"
-        );
-
-        [
-            "newName",
-            "newVehicle",
-            "newMobile",
-            "newPin",
-            "newJoiningDate",
-            "newMonthlyAmount"
-        ].forEach(id => {
-
-            el(id).value = "";
-
-        });
-
-        await refreshDashboard();
-
-    } catch (e) {
-
-        message("registerMessage", e.message);
-    }
-}
-
-
-// ====================================
-// 13. ADD MONTHLY PARKING CHARGE
-// ====================================
-
-async function addCharge() {
-
-    const ownerId = el("billingOwner").value;
-
-    const billingMonth = el("billingMonth").value;
-
-    const amount = Number(el("billingAmount").value);
-
-    const dueDate = el("dueDate").value;
-
-    const note = el("billingNote").value.trim();
-
-    if (
-        !ownerId ||
-        !billingMonth ||
-        !amount ||
-        amount <= 0
-    ) {
-
-        message(
-            "billingMessage",
-            "Select customer, billing month and valid amount."
-        );
-
-        return;
-    }
-
-    try {
-
-        await api("adminAddCharge", {
-            token: adminToken,
-            ownerId,
-            billingMonth,
-            amount,
-            dueDate,
-            note
-        });
-
-        message(
-            "billingMessage",
-            "Parking charge added successfully.",
-            "success"
-        );
-
-        el("billingAmount").value = "";
-
-        el("billingNote").value = "";
-
-        await refreshDashboard();
-
-    } catch (e) {
-
-        message("billingMessage", e.message);
-    }
-}
-
-
-// ====================================
-// 14. LOAD PAYMENTS
-// ====================================
-
-async function loadPayments() {
-
-    const result = await api("adminPayments", {
-        token: adminToken
-    });
-
-    payments = Array.isArray(result) ? result : [];
-
-    renderPayments();
-}
-
-
-// ====================================
-// 15. RENDER PAYMENTS
-// ====================================
-
-function renderPayments() {
-
-    const list = el("paymentList");
-
-    const search = el("searchPayment")
-        .value.trim().toLowerCase();
-
-    list.innerHTML = "";
-
-    const filtered = payments.filter(p =>
-
-        String(p.Vehicle || "").toLowerCase().includes(search) ||
-        String(p.OwnerName || "").toLowerCase().includes(search) ||
-        String(p.BillingMonth || "").toLowerCase().includes(search)
-
-    );
-
-    if (!filtered.length) {
-
-        list.textContent = "No payment records found.";
-
-        return;
-    }
-
-    // First retain the original latest-first order.
-    // Then move the recently paid customer's records to the top.
-    const sortedPayments = filtered.slice().reverse().sort((a, b) => {
-
-        const aRecent =
-            String(a.OwnerID ?? a.ownerId ?? "") === recentlyPaidOwnerId;
-
-        const bRecent =
-            String(b.OwnerID ?? b.ownerId ?? "") === recentlyPaidOwnerId;
-
-        if (aRecent && !bRecent) return -1;
-
-        if (!aRecent && bRecent) return 1;
-
-        return 0;
-    });
-
-    sortedPayments.forEach(p => {
-
-        const dueAmount = Number(p.AmountDue || 0);
-
-        const paidAmount = Number(p.AmountPaid || 0);
-
-        const balance = Number(
-            p.Balance !== undefined
-                ? p.Balance
-                : dueAmount - paidAmount
-        );
-
-        const box = document.createElement("div");
-
-        box.className = "item";
-
-        const title = document.createElement("strong");
-
-        title.textContent =
-            (p.Vehicle || "") + " | " + (p.BillingMonth || "");
-
-        const customer = document.createElement("div");
-
-        customer.textContent =
-            "Customer: " + (p.OwnerName || "");
-
-        const due = document.createElement("div");
-
-        due.textContent =
-            "Charge: " + money(dueAmount);
-
-        const paid = document.createElement("div");
-
-        paid.textContent =
-            "Received: " + money(paidAmount);
-
-        const remaining = document.createElement("div");
-
-        remaining.textContent =
-            "Balance: " + money(balance);
-
-        remaining.className =
-            balance > 0 ? "red" : "green";
-
-        const date = document.createElement("div");
-
-        date.textContent =
-            "Due Date: " + formatDate(p.DueDate);
-
-        const status = document.createElement("div");
-
-        status.textContent =
-            "Status: " +
-            (p.Status || (balance > 0 ? "PENDING" : "PAID"));
-
-        box.append(
-            title,
-            customer,
-            due,
-            paid,
-            remaining,
-            date,
-            status
-        );
-
-        if (balance > 0) {
-
-            const btn = document.createElement("button");
-
-            btn.className = "primary smallbtn";
-
-            btn.textContent = "RECORD PAYMENT";
-
-            btn.onclick = () => recordPayment(p);
-
-            box.appendChild(btn);
-        }
-
-        list.appendChild(box);
-
-    });
-}
-
-
-// ====================================
-// 16. RECORD PAYMENT
-// ====================================
-
-async function recordPayment(p) {
-
-    const balance = Number(
-        p.Balance !== undefined
-            ? p.Balance
-            : Number(p.AmountDue || 0) -
-              Number(p.AmountPaid || 0)
-    );
-
-    const amountText = prompt(
-        "Customer: " + (p.OwnerName || "") +
-        "\nOutstanding: " + money(balance) +
-        "\nEnter amount received:"
-    );
-
-    if (amountText === null) return;
-
-    const amount = Number(amountText);
-
-    if (
-        !Number.isFinite(amount) ||
-        amount <= 0 ||
-        amount > balance
-    ) {
-
-        alert(
-            "Enter a valid amount not exceeding the outstanding balance."
-        );
-
-        return;
-    }
-
-    const method = prompt(
-        "Payment method: CASH / UPI / BANK",
-        "UPI"
-    );
-
-    if (method === null) return;
-
-    const normalized = method.trim().toUpperCase();
-
-    if (!["CASH", "UPI", "BANK"].includes(normalized)) {
-
-        alert("Invalid payment method.");
-
-        return;
-    }
-
-    const reference = prompt(
-        "Transaction reference (optional):",
-        ""
-    );
-
-    if (reference === null) return;
-
-    const note = prompt(
-        "Payment note (optional):",
-        ""
-    ) || "";
-
-    try {
-
-        await api("adminRecordPayment", {
-            token: adminToken,
-            ownerId: p.OwnerID ?? p.ownerId,
-            billingMonth: p.BillingMonth ?? p.billingMonth,
-            amount,
-            method: normalized,
-            reference,
-            paymentDate: new Date().toISOString(),
-            note
-        });
-
-        // PRIORITIZE THE CUSTOMER WHOSE PAYMENT WAS JUST RECORDED.
-        recentlyPaidOwnerId = String(
-            p.OwnerID ?? p.ownerId ?? ""
-        );
-
-        message(
-            "paymentMessage",
-            "Payment recorded successfully.",
-            "success"
-        );
-
-        await refreshDashboard();
-
-    } catch (e) {
-
-        message("paymentMessage", e.message);
-    }
-}
-
-
-// ====================================
-// 17. MOVEMENT HISTORY
-// ====================================
-
-async function loadHistory() {
-
-    const result = await api("adminMovements", {
-        token: adminToken
-    });
-
-    movements = Array.isArray(result) ? result : [];
-
-    renderHistory();
-
-    if (customers.length) {
-        renderCustomers();
-    }
-}
-
-
-function renderHistory() {
-
-    const list = el("historyList");
-
-    const search = el("historySearch")
-        .value.trim().toUpperCase();
-
-    list.innerHTML = "";
-
-    const filtered = movements.filter(m =>
-
-        String(m.Vehicle || "")
-            .toUpperCase()
-            .includes(search)
-
-    );
-
-    if (!filtered.length) {
-
-        list.textContent = "No movement records found.";
-
-        return;
-    }
-
-    filtered.slice().reverse().forEach(m => {
-
-        const box = document.createElement("div");
-
-        box.className = "item";
-
-        const title = document.createElement("strong");
-
-        title.textContent =
-            (m.Vehicle || "") + " | " + (m.Action || "");
-
-        const customer = document.createElement("div");
-
-        customer.textContent =
-            "Customer: " + (m.OwnerName || "");
-
-        const reading = document.createElement("div");
-
-        reading.textContent =
-            "Odometer: " + (m.Odometer || "--") + " KM";
-
-        const date = document.createElement("div");
-
-        date.textContent =
-            "Date: " + formatDateTime(m.DateTime);
-
-        const distance = document.createElement("div");
-
-        distance.textContent =
-            "Distance: " + (m.Distance || 0) + " KM";
-
-        box.append(
-            title,
-            customer,
-            reading,
-            date,
-            distance
-        );
-
-        if (m.PhotoURL) {
-
-            const link = document.createElement("a");
-
-            link.href = m.PhotoURL;
-
-            link.target = "_blank";
-
-            link.rel = "noopener noreferrer";
-
-            link.textContent = "VIEW ODOMETER PHOTO";
-
-            box.appendChild(document.createElement("br"));
-
-            box.appendChild(link);
-        }
-
-        if (m.Note) {
-
-            const note = document.createElement("div");
-
-            note.textContent = "Note: " + m.Note;
-
-            box.appendChild(note);
-        }
-
-        list.appendChild(box);
-
-    });
-}
-
-
-function formatDateTime(value) {
-
-    if (!value) return "--";
-
-    const d = new Date(value);
-
-    return isNaN(d.getTime())
-        ? String(value)
-        : d.toLocaleString("en-IN");
-}
-
-
-// ====================================
-// 18. MANUAL STATUS CORRECTION
-// ====================================
-
-async function correctStatus() {
-
-    const ownerId = el("correctionOwner").value;
-
-    const status = el("correctionStatus").value;
-
-    const reason = el("correctionReason").value.trim();
-
-    if (!ownerId || !reason) {
-
-        message(
-            "correctionMessage",
-            "Select customer and enter a reason."
-        );
-
-        return;
-    }
-
-    if (!confirm("Confirm manual vehicle status correction?")) {
-        return;
-    }
-
-    try {
-
-        await api("adminCorrectStatus", {
-            token: adminToken,
-            ownerId,
-            status,
-            reason
-        });
-
-        message(
-            "correctionMessage",
-            "Vehicle status corrected successfully.",
-            "success"
-        );
-
-        el("correctionReason").value = "";
-
-        await refreshDashboard();
-
-    } catch (e) {
-
-        message("correctionMessage", e.message);
-    }
-}
-
-
-// ====================================
-// 19. LOGOUT
-// ====================================
-
-function logout() {
-
-    adminToken = "";
-
-    recentlyPaidOwnerId = "";
-
-    localStorage.removeItem("rpm_admin_token");
-
-    el("dashboard").classList.add("hidden");
-
-    el("loginSection").classList.remove("hidden");
-
-    el("adminPin").value = "";
-}
-
-
-// ====================================
-// 20. APPLICATION STARTUP
-// ====================================
-
-window.addEventListener("load", async () => {
-
-    if (adminToken) {
-        await openDashboard();
-    }
-
+$("adminPin").addEventListener("keydown",e=>{
+  if(e.key==="Enter") login();
 });
 
+// ---------------- NAVIGATION ----------------
+
+function showSection(id,button){
+  document.querySelectorAll(".section").forEach(s=>
+    s.classList.remove("active")
+  );
+
+  $(id).classList.add("active");
+
+  document.querySelectorAll(".nav-btn").forEach(b=>
+    b.classList.remove("active")
+  );
+
+  if(button) button.classList.add("active");
+
+  const titles={
+    dashboard:"Dashboard",
+    customers:"Customers",
+    register:"Add Customer",
+    billing:"Monthly Billing",
+    payments:"Payments",
+    history:"Movement History",
+    statusfix:"Status Correction"
+  };
+
+  $("pageTitle").textContent=titles[id] || "Dashboard";
+
+  if(id==="customers") loadCustomers();
+  if(id==="payments") loadPayments();
+  if(id==="history") loadHistory();
+}
+
+function closeModal(id){
+  $(id).classList.remove("show");
+}
+
+// ---------------- REFRESH ----------------
+
+async function refreshAll(){
+  try{
+    await Promise.all([
+      loadDashboard(),
+      loadCustomers(),
+      loadPayments(),
+      loadHistory()
+    ]);
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+// ---------------- DASHBOARD ----------------
+
+async function loadDashboard(){
+  const r=await api("adminDashboard");
+  const s=r.stats || {};
+
+  $("sTotal").textContent=s.totalVehicles || 0;
+  $("sParked").textContent=s.parked || 0;
+  $("sOutside").textContent=s.outside || 0;
+  $("sCheckin").textContent=s.todayCheckIns || 0;
+  $("sCheckout").textContent=s.todayCheckOuts || 0;
+  $("sDue").textContent=money(s.totalDue);
+  $("sPaid").textContent=money(s.totalPaid);
+  $("sOutstanding").textContent=money(s.outstanding);
+
+  renderRecentActivity();
+}
+
+function renderRecentActivity(){
+  const rows=movements.slice(0,8);
+
+  if(!rows.length){
+    $("recentActivity").textContent="No movement activity available.";
+    return;
+  }
+
+  $("recentActivity").innerHTML=rows.map(m=>`
+    <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+      <strong>${escapeHTML(m.name)}</strong>
+      <span class="muted"> · ${escapeHTML(m.vehicle)}</span>
+      <span class="badge ${String(m.action).toUpperCase()==="CHECK-IN"?"parked":"outside"}">
+        ${escapeHTML(m.action)}
+      </span>
+      <div class="subtitle">${formatDate(m.dateTime)} · Odometer ${escapeHTML(m.odometer)}</div>
+    </div>
+  `).join("");
+}
+
+// ---------------- CUSTOMER MANAGEMENT ----------------
+
+async function loadCustomers(){
+  const r=await api("adminOwners");
+  customers=r.owners || [];
+
+  renderCustomers();
+  fillOwnerDropdowns();
+}
+
+function renderCustomers(){
+  const query=$("customerSearch").value.trim().toLowerCase();
+  const filter=$("customerFilter").value;
+
+  const filtered=customers.filter(c=>{
+    const matches=
+      String(c.name||"").toLowerCase().includes(query) ||
+      String(c.vehicle||"").toLowerCase().includes(query) ||
+      String(c.mobile||"").includes(query);
+
+    return matches && (filter==="ALL" || c.status===filter);
+  });
+
+  if(!filtered.length){
+    $("customerList").innerHTML=
+      '<div class="empty">No matching customers found.</div>';
+    return;
+  }
+
+  $("customerList").innerHTML=filtered.map(c=>{
+    const status=c.status==="PARKED"?"parked":"outside";
+
+    return `
+      <div class="customer-card">
+        <div class="customer-top">
+          <div>
+            <div class="customer-name">${escapeHTML(c.name)}</div>
+            <div class="vehicle-number">${escapeHTML(c.vehicle)}</div>
+          </div>
+          <div style="text-align:right">
+            <span class="badge ${status}">${escapeHTML(c.status)}</span>
+            <div style="margin-top:7px">
+              <span class="badge ${c.active?"active":"inactive"}">
+                ${c.active?"ACTIVE":"INACTIVE"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        ${c.carPhotoData?`
+          <img class="photo-thumb"
+            src="${c.carPhotoData}"
+            alt="Customer car">
+        `:""}
+
+        <div class="customer-info">
+          <div class="info-item">
+            <small>MOBILE</small>
+            <strong>${escapeHTML(c.mobile)}</strong>
+          </div>
+          <div class="info-item">
+            <small>MONTHLY FEE</small>
+            <strong class="gold">${money(c.monthlyAmount)}</strong>
+          </div>
+          <div class="info-item">
+            <small>JOINING DATE</small>
+            <strong>${escapeHTML(c.joiningDate||"—")}</strong>
+          </div>
+          <div class="info-item">
+            <small>LAST ODOMETER</small>
+            <strong>${escapeHTML(c.odometer||"—")}</strong>
+          </div>
+          <div class="info-item">
+            <small>LAST ACTIVITY</small>
+            <strong>${escapeHTML(c.lastMovementAction||"—")}</strong>
+          </div>
+          <div class="info-item">
+            <small>LAST UPDATED</small>
+            <strong>${formatDate(c.lastMovementDate)}</strong>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="secondary small"
+            onclick="showCustomerDetails('${escapeHTML(c.ownerId)}')">
+            VIEW DETAILS
+          </button>
+
+          <button class="primary small"
+            onclick="openPhotoModal('${escapeHTML(c.ownerId)}')">
+            ${c.carPhotoURL?"CHANGE PHOTO":"UPLOAD PHOTO"}
+          </button>
+
+          <button class="secondary small"
+            onclick="editJoiningDate('${escapeHTML(c.ownerId)}')">
+            EDIT JOINING DATE
+          </button>
+
+          <button class="secondary small"
+            onclick="quickStatusFix('${escapeHTML(c.ownerId)}')">
+            FIX STATUS
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function fillOwnerDropdowns(){
+  const active=customers.filter(c=>c.active);
+
+  const options='<option value="">Select Customer</option>'+
+    active.map(c=>
+      `<option value="${escapeHTML(c.ownerId)}">${escapeHTML(c.name)} — ${escapeHTML(c.vehicle)}</option>`
+    ).join("");
+
+  ["billOwner","payOwner","fixOwner"].forEach(id=>{
+    const old=$(id).value;
+    $(id).innerHTML=options;
+    if(active.some(c=>c.ownerId===old)) $(id).value=old;
+  });
+
+  if($("billOwner").value){
+    updateBillAmount();
+  }
+}
+
+$("billOwner").addEventListener("change",updateBillAmount);
+
+function updateBillAmount(){
+  const c=customers.find(x=>x.ownerId===$("billOwner").value);
+  $("billAmount").value=c?c.monthlyAmount:"";
+}
+
+function showCustomerDetails(ownerId){
+  const c=customers.find(x=>x.ownerId===ownerId);
+  if(!c) return;
+
+  $("detailsContent").innerHTML=`
+    <div class="customer-card">
+      ${c.carPhotoData?`
+        <img class="photo-thumb" src="${c.carPhotoData}" alt="Car">
+      `:""}
+      <h2>${escapeHTML(c.name)}</h2>
+      <div class="vehicle-number">${escapeHTML(c.vehicle)}</div>
+      <div class="customer-info">
+        <div class="info-item"><small>MOBILE</small><strong>${escapeHTML(c.mobile)}</strong></div>
+        <div class="info-item"><small>STATUS</small><strong>${escapeHTML(c.status)}</strong></div>
+        <div class="info-item"><small>MONTHLY FEE</small><strong>${money(c.monthlyAmount)}</strong></div>
+        <div class="info-item"><small>JOINING DATE</small><strong>${escapeHTML(c.joiningDate)}</strong></div>
+        <div class="info-item"><small>ODOMETER</small><strong>${escapeHTML(c.odometer||"—")}</strong></div>
+        <div class="info-item"><small>ACCOUNT</small><strong>${c.active?"ACTIVE":"INACTIVE"}</strong></div>
+      </div>
+    </div>
+    <h3>Recent Vehicle Movements</h3>
+    ${movements.filter(m=>m.ownerId===ownerId).slice(0,8).map(m=>`
+      <div style="padding:11px 0;border-bottom:1px solid var(--border)">
+        <strong>${escapeHTML(m.action)}</strong>
+        <span class="muted"> · ${escapeHTML(m.odometer)}</span>
+        <div class="subtitle">${formatDate(m.dateTime)}</div>
+      </div>
+    `).join("")||'<p class="muted">No movement history.</p>'}
+    <button class="primary full"
+      onclick="openPhotoModal('${escapeHTML(c.ownerId)}');closeModal('detailsModal')">
+      MANAGE CAR PHOTO
+    </button>
+  `;
+
+  $("detailsModal").classList.add("show");
+}
+
+// ---------------- PHOTO UPLOAD ----------------
+
+function openPhotoModal(ownerId){
+  const c=customers.find(x=>x.ownerId===ownerId);
+  if(!c) return;
+
+  $("photoOwnerId").value=ownerId;
+  $("photoCustomerName").textContent=
+    c.name+" · "+c.vehicle;
+
+  $("carPhotoFile").value="";
+  $("carPhotoPreview").style.display="none";
+  selectedPhotoData="";
+
+  if(c.carPhotoData){
+    $("carPhotoPreview").src=c.carPhotoData;
+    $("carPhotoPreview").style.display="block";
+  }
+
+  $("photoModal").classList.add("show");
+}
+
+function previewCarPhoto(event){
+  const file=event.target.files[0];
+  if(!file) return;
+
+  const allowed=["image/jpeg","image/png","image/webp"];
+
+  if(!allowed.includes(file.type)){
+    toast("Only JPG, PNG and WEBP files are allowed.");
+    event.target.value="";
+    return;
+  }
+
+  if(file.size>5*1024*1024){
+    toast("Photo must be 5 MB or smaller.");
+    event.target.value="";
+    return;
+  }
+
+  const reader=new FileReader();
+
+  reader.onload=e=>{
+    selectedPhotoData=e.target.result;
+    $("carPhotoPreview").src=selectedPhotoData;
+    $("carPhotoPreview").style.display="block";
+  };
+
+  reader.readAsDataURL(file);
+}
+
+async function uploadCarPhoto(){
+  const ownerId=$("photoOwnerId").value;
+
+  if(!ownerId) return toast("Customer not selected.");
+  if(!selectedPhotoData) return toast("Select a car photo first.");
+
+  try{
+    const r=await api("adminUploadCarPhoto",{
+      ownerId,
+      photoData:selectedPhotoData
+    });
+
+    toast(r.message);
+    closeModal("photoModal");
+    await loadCustomers();
+
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+async function removeCarPhoto(){
+  const ownerId=$("photoOwnerId").value;
+  if(!ownerId) return;
+
+  if(!confirm("Remove this customer's car photo?")) return;
+
+  try{
+    const r=await api("adminRemoveCarPhoto",{ownerId});
+    toast(r.message);
+    closeModal("photoModal");
+    await loadCustomers();
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+// ---------------- JOINING DATE ----------------
+
+async function editJoiningDate(ownerId){
+  const c=customers.find(x=>x.ownerId===ownerId);
+  if(!c) return;
+
+  const newDate=prompt(
+    "Enter new joining date (YYYY-MM-DD):",
+    c.joiningDate
+  );
+
+  if(!newDate) return;
+
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(newDate)){
+    return toast("Use YYYY-MM-DD format.");
+  }
+
+  try{
+    const r=await api("adminUpdateJoiningDate",{
+      ownerId,
+      joiningDate:newDate
+    });
+
+    toast(r.message);
+    await loadCustomers();
+
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+// ---------------- CUSTOMER REGISTRATION ----------------
+
+async function registerCustomer(){
+  const data={
+    name:$("regName").value.trim(),
+    vehicle:$("regVehicle").value.trim().toUpperCase(),
+    mobile:$("regMobile").value.trim(),
+    pin:$("regPin").value.trim(),
+    joiningDate:$("regJoining").value,
+    monthlyAmount:$("regAmount").value
+  };
+
+  if(Object.values(data).some(v=>!v)){
+    return toast("Please fill all required fields.");
+  }
+
+  if(!/^\d{4}$/.test(data.pin)){
+    return toast("PIN must be exactly 4 digits.");
+  }
+
+  if(!/^\d{10}$/.test(data.mobile)){
+    return toast("Enter a valid 10-digit mobile number.");
+  }
+
+  try{
+    const r=await api("adminRegister",data);
+    toast(r.message);
+
+    ["regName","regVehicle","regMobile","regPin",
+     "regJoining","regAmount"].forEach(id=>$(id).value="");
+
+    await loadCustomers();
+    showSection("customers");
+
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+// ---------------- BILLING ----------------
+
+async function generateBill(){
+  const ownerId=$("billOwner").value;
+  const billingMonth=$("billMonth").value;
+  const amount=$("billAmount").value;
+
+  if(!ownerId || !billingMonth || !amount){
+    return toast("Select customer, billing month and amount.");
+  }
+
+  try{
+    const r=await api("adminAddCharge",{
+      ownerId,
+      billingMonth,
+      amount,
+      note:$("billNote").value.trim()
+    });
+
+    toast(r.message);
+    $("billNote").value="";
+
+    await loadPayments();
+    await loadDashboard();
+
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+// ---------------- PAYMENT RECORDING ----------------
+
+async function loadCustomerCharges(){
+  const ownerId=$("payOwner").value;
+  $("payMonth").innerHTML="";
+  $("payAmount").value="";
+  $("payBalance").textContent="";
+
+  if(!ownerId) return;
+
+  try{
+    const c=customers.find(x=>x.ownerId===ownerId);
+
+    const rows=payments.filter(p=>
+      p.ownerId===ownerId && Number(p.balance)>0
+    );
+
+    $("payMonth").innerHTML=rows.length
+      ?rows.map(p=>`
+        <option value="${escapeHTML(p.billingMonth)}"
+          data-balance="${p.balance}">
+          ${escapeHTML(p.billingMonthLabel)} · Balance ${money(p.balance)}
+        </option>
+      `).join("")
+      :'<option value="">No pending bill found</option>';
+
+    if(rows.length){
+      $("payAmount").value="";
+      updatePaymentBalance();
+    }else{
+      $("payBalance").textContent="No outstanding generated bills for this customer.";
+    }
+
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+$("payMonth").addEventListener("change",updatePaymentBalance);
+
+function updatePaymentBalance(){
+  const option=$("payMonth").selectedOptions[0];
+  if(!option || !option.value) return;
+
+  const balance=Number(option.dataset.balance||0);
+  $("payBalance").textContent="Remaining balance for selected month: "+money(balance);
+}
+
+async function recordPayment(){
+  const ownerId=$("payOwner").value;
+  const billingMonth=$("payMonth").value;
+  const amount=Number($("payAmount").value);
+
+  if(!ownerId || !billingMonth || amount<=0){
+    return toast("Select a customer, month and valid amount.");
+  }
+
+  const data={
+    ownerId,
+    billingMonth,
+    amount,
+    paymentDate:$("payDate").value,
+    paymentMethod:$("payMethod").value,
+    reference:$("payReference").value.trim(),
+    note:$("payNote").value.trim()
+  };
+
+  try{
+    const r=await api("adminRecordPayment",data);
+    toast(r.message);
+
+    $("payAmount").value="";
+    $("payReference").value="";
+    $("payNote").value="";
+
+    await loadPayments();
+    await loadDashboard();
+    await loadCustomerCharges();
+
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+async function loadPayments(){
+  const r=await api("adminPayments");
+  payments=r.payments||[];
+
+  renderPaymentRows();
+
+  if($("payOwner").value) loadCustomerCharges();
+}
+
+function renderPaymentRows(){
+  if(!payments.length){
+    $("paymentRows").innerHTML=
+      '<tr><td colspan="8" class="empty">No billing records found.</td></tr>';
+    return;
+  }
+
+  $("paymentRows").innerHTML=payments.map(p=>{
+    const status=String(p.status||"UNPAID").toLowerCase();
+
+    return `
+      <tr>
+        <td><strong>${escapeHTML(p.name)}</strong></td>
+        <td>${escapeHTML(p.vehicle)}</td>
+        <td>${escapeHTML(p.billingMonthLabel)}</td>
+        <td>${money(p.amountDue)}</td>
+        <td class="green">${money(p.amountPaid)}</td>
+        <td class="red">${money(p.balance)}</td>
+        <td><span class="badge ${status}">${escapeHTML(p.status)}</span></td>
+        <td>${formatDate(p.lastPaymentDate||p.lastRecordedAt)}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+// ---------------- MOVEMENT HISTORY ----------------
+
+async function loadHistory(){
+  const r=await api("adminMovements");
+  movements=r.movements||[];
+
+  renderHistory();
+  renderRecentActivity();
+}
+
+function renderHistory(){
+  const query=$("historySearch").value.trim().toLowerCase();
+
+  const filtered=movements.filter(m=>
+    String(m.name||"").toLowerCase().includes(query) ||
+    String(m.vehicle||"").toLowerCase().includes(query)
+  );
+
+  if(!filtered.length){
+    $("historyRows").innerHTML=
+      '<tr><td colspan="8" class="empty">No movement records found.</td></tr>';
+    return;
+  }
+
+  $("historyRows").innerHTML=filtered.map(m=>{
+    const action=String(m.action||"").toUpperCase();
+
+    return `
+      <tr>
+        <td>${formatDate(m.dateTime)}</td>
+        <td>${escapeHTML(m.name)}</td>
+        <td><strong>${escapeHTML(m.vehicle)}</strong></td>
+        <td><span class="badge ${action==="CHECK-IN"?"parked":"outside"}">
+          ${escapeHTML(action)}
+        </span></td>
+        <td>${escapeHTML(m.odometer)}</td>
+        <td>${escapeHTML(m.distance||0)}</td>
+        <td>${m.photoURL?`
+          <a href="${escapeHTML(m.photoURL)}" target="_blank"
+            rel="noopener" style="color:var(--gold)">View Photo</a>
+        `:"—"}</td>
+        <td>${escapeHTML(m.source||"—")}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+// ---------------- STATUS CORRECTION ----------------
+
+function quickStatusFix(ownerId){
+  $("fixOwner").value=ownerId;
+
+  const c=customers.find(x=>x.ownerId===ownerId);
+
+  if(c){
+    $("fixStatus").value=c.status==="PARKED"?"OUTSIDE":"PARKED";
+    $("fixOdometer").value=c.odometer||"";
+  }
+
+  showSection("statusfix");
+}
+
+async function correctStatus(){
+  const ownerId=$("fixOwner").value;
+  const status=$("fixStatus").value;
+  const odometer=$("fixOdometer").value;
+  const note=$("fixNote").value.trim();
+
+  if(!ownerId) return toast("Select a customer.");
+  if(odometer==="") return toast("Enter odometer reading.");
+  if(!note) return toast("Enter correction reason.");
+
+  if(!confirm("Confirm manual parking status correction?")) return;
+
+  try{
+    const r=await api("adminCorrectStatus",{
+      ownerId,status,odometer,note
+    });
+
+    toast(r.message);
+    $("fixNote").value="";
+
+    await Promise.all([
+      loadDashboard(),
+      loadCustomers(),
+      loadHistory()
+    ]);
+
+  }catch(error){
+    toast(error.message);
+  }
+}
+
+// ---------------- DEFAULT DATES ----------------
+
+(function initDates(){
+  const today=new Date();
+  const iso=d=>{
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,"0");
+    const day=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  };
+
+  $("regJoining").value=iso(today);
+  $("payDate").value=iso(today);
+
+  $("billMonth").value=
+    `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`;
+})();
+
+// ---------------- AUTO LOGIN ----------------
+
+if(adminToken){
+  openApp();
+}
 </script>
 
 </body>
