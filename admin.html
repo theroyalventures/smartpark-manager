@@ -1,1891 +1,1010 @@
-/**
- * SMART PARKING MANAGEMENT SYSTEM
- * Backend: Google Apps Script
- * Database: Google Sheets
- *
- * Sheets:
- * Owners | Movements | Payments | Transactions | PaymentRequests
- *
- * Script Properties:
- * ADMIN_PIN
- * CUSTOMER_UPI_ID
- * CUSTOMER_UPI_NAME
- *
- * Run setup() ONCE.
- * Deploy as Web App:
- * Execute as: Me
- * Who has access: Anyone
- *
- * IMPORTANT:
- * - Existing records are preserved.
- * - UPI payments require admin verification.
- * - Customer movement requires an odometer photo.
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Parking | Admin Panel</title>
 
-const CONFIG = {
-  TIMEZONE: "Asia/Kolkata",
-  SESSION_SECONDS: 21600,
-  MAX_PHOTO_SIZE: 5 * 1024 * 1024,
-  PHOTO_FOLDER: "Smart Parking Movement Photos",
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-  SHEETS: {
-    Owners: [
-      "OwnerID","OwnerName","Vehicle","Mobile","PinHash",
-      "Active","CreatedAt","JoiningDate","MonthlyAmount"
-    ],
+    :root {
+      --bg:#10051e;
+      --panel:#1d0b32;
+      --panel2:#291044;
+      --purple:#8b3dff;
+      --purple2:#bd75ff;
+      --pink:#df64ff;
+      --text:#fff;
+      --muted:#bba9d1;
+      --border:rgba(202,153,255,.19);
+      --green:#4ade80;
+      --red:#fb7185;
+      --yellow:#facc15;
+    }
 
-    Movements: [
-      "MovementID","OwnerID","OwnerName","Vehicle","Action",
-      "Odometer","PhotoURL","Distance","DateTime","Note","Source"
-    ],
+    * {box-sizing:border-box}
+    body {
+      margin:0;
+      font-family:Inter,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(ellipse at 15% 0%,#42136a 0%,transparent 38%),
+        radial-gradient(ellipse at 90% 100%,#30104d 0%,transparent 40%),
+        var(--bg);
+      min-height:100vh;
+    }
+    button,input,select,textarea {font:inherit}
+    button {cursor:pointer}
+    .hidden {display:none!important}
+    .muted {color:var(--muted)}
+    .small {font-size:12px;color:var(--muted)}
+    .purple-text {color:#d9b6ff}
 
-    Payments: [
-      "PaymentID","OwnerID","OwnerName","Vehicle","BillingMonth",
-      "AmountDue","AmountPaid","DueDate","PaymentMethod","Note","CreatedAt"
-    ],
+    /* LOGIN */
+    #loginScreen {
+      min-height:100vh;display:flex;align-items:center;justify-content:center;
+      padding:20px;
+      background:radial-gradient(circle at center,#461477 0%,#1c0a30 45%,#0d0418 100%);
+    }
+    .login-card {
+      width:100%;max-width:420px;padding:35px;
+      border:1px solid var(--border);border-radius:25px;
+      background:linear-gradient(145deg,#351052,#1b092d);
+      box-shadow:0 25px 80px #0009, inset 0 1px #ffffff18;
+    }
+    .brand-icon {
+      width:65px;height:65px;border-radius:20px;
+      display:grid;place-items:center;font-size:30px;
+      background:linear-gradient(135deg,#a855f7,#6d28d9);
+      box-shadow:0 10px 35px #9333ea66;margin-bottom:20px;
+    }
+    .login-card h1 {margin:0 0 7px;font-size:25px}
+    .login-card p {color:var(--muted);font-size:13px;margin:0 0 25px}
 
-    Transactions: [
-      "TransactionID","PaymentID","OwnerID","OwnerName","Vehicle",
-      "BillingMonth","Amount","PaymentMethod","Reference","Note",
-      "PaymentDate","RecordedAt"
-    ],
+    /* APP LAYOUT */
+    #app {display:none;min-height:100vh}
+    .sidebar {
+      width:255px;position:fixed;left:0;top:0;bottom:0;z-index:20;
+      padding:22px 15px;overflow-y:auto;
+      background:linear-gradient(180deg,#321052,#1a092c 70%,#130720);
+      border-right:1px solid var(--border);
+      transition:transform .25s;
+    }
+    .logo {display:flex;align-items:center;gap:12px;padding:5px 10px 25px}
+    .logo-mark {
+      width:43px;height:43px;border-radius:14px;display:grid;place-items:center;
+      font-size:22px;background:linear-gradient(135deg,#c084fc,#7c3aed);
+    }
+    .logo strong {display:block;font-size:14px}
+    .logo small {font-size:10px;color:#d2b7f1}
+    .nav-label {
+      color:#9c82b8;font-size:10px;font-weight:800;
+      letter-spacing:1.5px;padding:15px 12px 8px;
+    }
+    .nav-btn {
+      width:100%;border:0;background:transparent;color:#d8c6ec;
+      padding:12px 13px;border-radius:12px;text-align:left;
+      display:flex;align-items:center;gap:12px;margin:3px 0;
+      font-size:13px;font-weight:600;transition:.2s;
+    }
+    .nav-btn:hover,.nav-btn.active {
+      color:#fff;background:linear-gradient(100deg,#8738d9,#6020a5);
+      box-shadow:0 7px 22px #842be344;
+    }
+    .nav-icon {width:22px;text-align:center;font-size:17px}
+    .sidebar-bottom {margin-top:30px;border-top:1px solid var(--border);padding-top:15px}
+    .logout-btn {color:#ff9eb1}
+    .main {margin-left:255px;min-height:100vh;padding:25px 30px 50px}
+    .topbar {display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:25px}
+    .topbar h2 {margin:0;font-size:22px}
+    .topbar p {margin:5px 0 0;color:var(--muted);font-size:12px}
+    .top-actions {display:flex;align-items:center;gap:10px}
+    .admin-pill {
+      padding:9px 14px;border-radius:30px;background:#672ba1;
+      font-size:12px;border:1px solid #bd75ff55;
+    }
+    .menu-btn {display:none}
 
-    PaymentRequests: [
-      "RequestID","PaymentID","OwnerID","OwnerName","Vehicle",
-      "BillingMonth","Amount","UTR","CustomerNote","Status",
-      "CreatedAt","ReviewedAt","ReviewedBy","AdminNote"
-    ]
-  }
+    /* COMPONENTS */
+    .section {display:none}
+    .section.active {display:block}
+    .grid {display:grid;gap:17px}
+    .stats-grid {grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:18px}
+    .status-grid {grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:20px}
+    .card {
+      background:linear-gradient(145deg,rgba(75,31,112,.86),rgba(29,10,48,.96));
+      border:1px solid var(--border);border-radius:19px;padding:20px;
+      box-shadow:0 12px 35px #0002,inset 0 1px #ffffff0b;
+      min-width:0;
+    }
+    .stat-top {display:flex;align-items:center;justify-content:space-between}
+    .stat-icon {
+      width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
+      font-size:20px;background:linear-gradient(135deg,#a855f7,#6b21a8);
+    }
+    .stat-label {font-size:12px;color:#d4c0e9}
+    .stat-value {font-size:27px;font-weight:800;margin-top:13px}
+    .status-card {cursor:pointer;transition:.2s}
+    .status-card:hover {transform:translateY(-3px);border-color:#c084fc}
+    .status-number {font-size:25px;font-weight:800;margin-top:10px}
+    .inside {color:var(--green)}
+    .outside {color:#fbbf24}
+    .section-heading {
+      display:flex;justify-content:space-between;align-items:center;
+      gap:12px;margin:24px 0 15px;flex-wrap:wrap;
+    }
+    .section-heading h3 {font-size:16px;margin:0}
+    .btn {
+      border:0;border-radius:11px;padding:11px 16px;color:white;
+      font-weight:700;font-size:12px;
+      background:linear-gradient(110deg,#a855f7,#7028c6);
+      box-shadow:0 5px 18px #8b3dff35;
+    }
+    .btn:hover {filter:brightness(1.12)}
+    .btn.secondary {background:#482366;border:1px solid var(--border);box-shadow:none}
+    .btn.danger {background:linear-gradient(110deg,#e04475,#9f1239)}
+    .btn.success {background:linear-gradient(110deg,#16a36a,#08744b)}
+    .btn.small-btn {padding:8px 11px;font-size:11px}
+    .form-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .field {display:flex;flex-direction:column;gap:7px;min-width:0}
+    .field.full {grid-column:1/-1}
+    label {font-size:12px;color:#ddc9f3;font-weight:600}
+    input,select,textarea {
+      width:100%;min-width:0;border:1px solid #784c9c;
+      border-radius:10px;padding:12px 13px;
+      background:#190b29;color:white;outline:none;font-size:13px;
+    }
+    input:focus,select:focus,textarea:focus {border-color:#c084fc;box-shadow:0 0 0 3px #a855f722}
+    select option {background:#251039;color:white}
+    input::placeholder,textarea::placeholder {color:#907aa8}
+    textarea {resize:vertical;min-height:75px}
+    .form-actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+    .toolbar {display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+    .toolbar input,.toolbar select {max-width:260px}
+    .table-wrap {overflow-x:auto;border:1px solid var(--border);border-radius:14px}
+    table {width:100%;border-collapse:collapse;min-width:650px}
+    th,td {padding:13px 14px;text-align:left;border-bottom:1px solid #ffffff10;font-size:12px}
+    th {background:#3a1857;color:#e8d7fa;font-size:11px;white-space:nowrap}
+    td {color:#f0e7fa}
+    tr:last-child td {border-bottom:0}
+    tbody tr:hover {background:#ffffff08}
+    .badge {
+      display:inline-flex;padding:5px 9px;border-radius:30px;
+      font-size:10px;font-weight:800;background:#553076;color:#ead7ff;
+      white-space:nowrap;
+    }
+    .badge.green {background:#145b42;color:#9ff3c8}
+    .badge.red {background:#70213c;color:#ffc0d0}
+    .badge.yellow {background:#654d17;color:#ffe39b}
+    .badge.purple {background:#602e91;color:#e8ccff}
+    .empty {padding:35px;text-align:center;color:var(--muted);font-size:13px}
+    .photo-preview {
+      width:100%;max-width:230px;height:145px;object-fit:cover;
+      border-radius:13px;border:1px solid var(--border);display:none;
+    }
+    
+    .avatar-photo {width:45px;height:36px;object-fit:cover;border-radius:7px}
+    .detail-photo {width:100%;max-width:300px;height:190px;object-fit:cover;border-radius:15px}
+    .notice {padding:12px 14px;border-radius:11px;background:#532d741c;border:1px solid var(--border);color:#ddc7f2;font-size:12px}
+    .two-col {display:grid;grid-template-columns:1fr 1fr;gap:17px}
+    .quick-list {display:grid;gap:10px}
+    .quick-item {padding:13px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff10;display:flex;justify-content:space-between;gap:12px;font-size:12px}
+    .modal {
+      display:none;position:fixed;inset:0;z-index:100;
+      background:#08020dcc;align-items:center;justify-content:center;padding:18px;
+    }
+    .modal.show {display:flex}
+    .modal-box {
+      width:100%;max-width:850px;max-height:90vh;overflow-y:auto;
+      background:linear-gradient(145deg,#351450,#1b092c);
+      border:1px solid #b77ae966;border-radius:20px;padding:22px;
+      box-shadow:0 25px 90px #000b;
+    }
+    .modal-head {display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .modal-head h3 {margin:0;font-size:17px}
+    .close-btn {background:#552675;border:0;color:white;border-radius:9px;padding:8px 12px}
+    #toast {
+      position:fixed;right:20px;bottom:20px;z-index:200;
+      padding:13px 18px;border-radius:12px;background:#57258b;
+      border:1px solid #c084fc;color:white;font-size:13px;
+      box-shadow:0 10px 35px #0008;display:none;max-width:90vw;
+    }
+    .loading {opacity:.55;pointer-events:none}
+    .mobile-overlay {display:none}
+
+    @media(max-width:900px) {
+      .sidebar {transform:translateX(-100%)}
+      .sidebar.open {transform:translateX(0)}
+      .main {margin-left:0;padding:20px}
+      .menu-btn {display:block}
+      .mobile-overlay.show {display:block;position:fixed;inset:0;background:#0009;z-index:15}
+    }
+    @media(max-width:600px) {
+      .main {padding:16px 13px 35px}
+      .stats-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .status-grid {gap:10px}
+      .card {padding:14px;border-radius:15px}
+      .stat-value {font-size:22px}
+      .stat-label {font-size:10px}
+      .topbar h2 {font-size:18px}
+      .admin-pill {font-size:10px;padding:8px}
+      .form-grid,.two-col {grid-template-columns:1fr}
+      .field.full {grid-column:auto}
+      .toolbar input,.toolbar select {max-width:100%;flex:1}
+      .login-card {padding:25px}
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="brand-icon">🅿</div>
+    <h1>Smart Parking</h1>
+    <p>Administrator Portal · Secure Login</p>
+    <form id="loginForm">
+      <div class="field">
+        <label>ADMIN PIN</label>
+        <input id="adminPin" type="password" placeholder="Enter your admin PIN" required>
+      </div>
+      <div class="form-actions">
+        <button class="btn" style="width:100%" type="submit">Login to Dashboard →</button>
+      </div>
+    </form>
+    <div class="small" style="margin-top:18px;text-align:center">Secure Parking Management System</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="mobile-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">🅿</div>
+      <div><strong>SMART PARKING</strong><small>MANAGEMENT SYSTEM</small></div>
+    </div>
+
+    <div class="nav-label">MAIN MENU</div>
+    <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span>Dashboard</button>
+    <button class="nav-btn" data-page="customers"><span class="nav-icon">♙</span>Customers & Vehicles</button>
+    <button class="nav-btn" data-page="register"><span class="nav-icon">＋</span>Register Customer</button>
+
+    <div class="nav-label">FINANCIAL MANAGEMENT</div>
+    <button class="nav-btn" data-page="charges"><span class="nav-icon">▤</span>Monthly Charges</button>
+    <button class="nav-btn" data-page="payments"><span class="nav-icon">₹</span>Payments</button>
+    <button class="nav-btn" data-page="requests"><span class="nav-icon">⇄</span>UPI Requests</button>
+
+    <div class="nav-label">PARKING OPERATIONS</div>
+    <button class="nav-btn" data-page="movements"><span class="nav-icon">⇆</span>Vehicle Movements</button>
+
+    <div class="nav-label">SYSTEM</div>
+    <button class="nav-btn" data-page="settings"><span class="nav-icon">⚙</span>Settings</button>
+
+    <div class="sidebar-bottom">
+      <button class="nav-btn logout-btn" onclick="logout()"><span class="nav-icon">↪</span>Logout</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="btn menu-btn" onclick="toggleSidebar()">☰</button>
+        <div>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p id="pageSubtitle">Your parking business at a glance</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="admin-pill">● ADMIN PANEL</span>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="section active" id="page-dashboard">
+      <div class="grid stats-grid">
+        <div class="card">
+          <div class="stat-top"><span class="stat-label">TOTAL VEHICLES</span><span class="stat-icon">🚘</span></div>
+          <div class="stat-value" id="totalVehicles">0</div>
+        </div>
+        <div class="card">
+          <div class="stat-top"><span class="stat-label">OUTSTANDING</span><span class="stat-icon">💳</span></div>
+          <div class="stat-value" id="totalOutstanding">₹0</div>
+        </div>
+        <div class="card">
+          <div class="stat-top"><span class="stat-label">TOTAL COLLECTED</span><span class="stat-icon">💰</span></div>
+          <div class="stat-value" id="totalCollected">₹0</div>
+        </div>
+      </div>
+
+      <div class="grid status-grid">
+        <div class="card status-card" onclick="showVehicleStatus('PARKED')">
+          <div class="stat-top"><span class="stat-label">PARKED · INSIDE</span><span class="stat-icon">🟢</span></div>
+          <div class="status-number inside" id="parkedVehicles">0 Vehicles</div>
+          <div class="small" style="margin-top:7px">Click to view parked vehicles →</div>
+        </div>
+        <div class="card status-card" onclick="showVehicleStatus('OUTSIDE')">
+          <div class="stat-top"><span class="stat-label">OUTSIDE</span><span class="stat-icon">🟠</span></div>
+          <div class="status-number outside" id="outsideVehicles">0 Vehicles</div>
+          <div class="small" style="margin-top:7px">Click to view outside vehicles →</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="section-heading" style="margin-top:0">
+            <h3>Recent Vehicle Activity</h3>
+            <button class="btn secondary small-btn" onclick="navigate('movements')">View All</button>
+          </div>
+          <div class="quick-list" id="recentActivity"><div class="empty">Loading activity...</div></div>
+        </div>
+        <div class="card">
+          <div class="section-heading" style="margin-top:0">
+            <h3>Payment Requests</h3>
+            <button class="btn secondary small-btn" onclick="navigate('requests')">Review</button>
+          </div>
+          <div class="quick-list" id="recentRequests"><div class="empty">Loading requests...</div></div>
+          <div class="notice" style="margin-top:15px">Verify UTR details before approving customer payment requests.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section class="section" id="page-customers">
+      <div class="section-heading" style="margin-top:0">
+        <h3>Customers & Vehicles</h3>
+        <button class="btn" onclick="navigate('register')">＋ Register Customer</button>
+      </div>
+      <div class="toolbar">
+        <input id="customerSearch" placeholder="Search name / vehicle / mobile..." oninput="renderCustomers()">
+        <select id="customerStatusFilter" onchange="renderCustomers()">
+          <option value="ALL">All Customers</option>
+          <option value="PARKED">Parked Inside</option>
+          <option value="OUTSIDE">Outside</option>
+          <option value="INACTIVE">Inactive</option>
+        </select>
+      </div>
+      <div class="card" style="padding:0">
+        <div class="table-wrap" style="border:0">
+          <table>
+            <thead><tr>
+              <th>PHOTO</th><th>CUSTOMER</th><th>VEHICLE</th><th>STATUS</th><th>MONTHLY CHARGE</th><th>ACTION</th>
+            </tr></thead>
+            <tbody id="customersTable"><tr><td colspan="6" class="empty">Loading customers...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section class="section" id="page-register">
+      <div class="card">
+        <div class="section-heading" style="margin-top:0"><h3>Register New Customer</h3></div>
+        <form id="registerForm">
+          <div class="form-grid">
+            <div class="field"><label>Customer Name *</label><input name="ownerName" required placeholder="Full name"></div>
+            <div class="field"><label>Vehicle Number *</label><input name="vehicle" required placeholder="DL XX XX XXXX"></div>
+            <div class="field"><label>Mobile Number *</label><input name="mobile" required inputmode="numeric" maxlength="10" placeholder="10 digit mobile"></div>
+            <div class="field"><label>Customer PIN *</label><input name="pin" required inputmode="numeric" maxlength="4" placeholder="4 digit PIN"></div>
+            <div class="field"><label>Joining Date *</label><input name="joiningDate" type="date" required></div>
+            <div class="field"><label>Monthly Parking Charge (₹) *</label><input name="monthlyAmount" type="number" min="0" step="0.01" required placeholder="2000"></div>
+            <div class="field full">
+              <label>Vehicle Photo (Optional)</label>
+              <input id="carPhoto" type="file" accept="image/*">
+              <img id="carPhotoPreview" class="photo-preview" alt="Vehicle preview">
+              <div class="small">Upload a clear vehicle photo. Maximum 5 MB.</div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" type="submit">Register Customer</button>
+            <button class="btn secondary" type="reset" onclick="clearPhotoPreview()">Reset Form</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- CHARGES -->
+    <section class="section" id="page-charges">
+      <div class="two-col">
+        <div class="card">
+          <div class="section-heading" style="margin-top:0"><h3>Add Monthly Charge</h3></div>
+          <form id="chargeForm">
+            <div class="field"><label>Select Customer *</label><select name="ownerId" id="chargeOwner" required><option value="">Select customer</option></select></div>
+            <div class="field" style="margin-top:13px"><label>Billing Month *</label><input name="billingMonth" type="month" required></div>
+            <div class="field" style="margin-top:13px"><label>Amount Due (₹) *</label><input name="amountDue" type="number" min="0" step="0.01" required></div>
+            <div class="field" style="margin-top:13px"><label>Due Date *</label><input name="dueDate" type="date" required></div>
+            <div class="form-actions"><button class="btn" type="submit">Add Charge</button></div>
+          </form>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;font-size:16px">Billing Information</h3>
+          <div class="notice">Add charges for the required billing month. The backend manages outstanding balances and payment allocation according to its billing rules.</div>
+          <div class="quick-list" style="margin-top:15px">
+            <div class="quick-item"><span>Billing cycle</span><strong>Monthly</strong></div>
+            <div class="quick-item"><span>Unpaid balance</span><strong>Carried forward</strong></div>
+            <div class="quick-item"><span>Payment allocation</span><strong>Oldest dues first</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-heading"><h3>Billing Records</h3><button class="btn secondary small-btn" onclick="loadPayments()">↻ Refresh</button></div>
+      <div class="card" style="padding:0"><div class="table-wrap" style="border:0">
+        <table><thead><tr><th>CUSTOMER</th><th>VEHICLE</th><th>MONTH</th><th>DUE</th><th>PAID</th><th>BALANCE</th><th>STATUS</th></tr></thead>
+        <tbody id="chargesTable"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody></table>
+      </div></div>
+    </section>
+
+    <!-- PAYMENTS -->
+    <section class="section" id="page-payments">
+      <div class="two-col">
+        <div class="card">
+          <div class="section-heading" style="margin-top:0"><h3>Record Payment</h3></div>
+          <form id="paymentForm">
+            <div class="field"><label>Unpaid Bill *</label><select name="paymentID" id="paymentBill" required><option value="">Select unpaid bill</option></select></div>
+            <div class="field" style="margin-top:13px"><label>Payment Amount (₹) *</label><input name="amount" type="number" min="0.01" step="0.01" required></div>
+            <div class="field" style="margin-top:13px"><label>Payment Method *</label>
+              <select name="paymentMethod" required><option value="CASH">Cash</option><option value="UPI">UPI</option><option value="BANK TRANSFER">Bank Transfer</option><option value="OTHER">Other</option></select>
+            </div>
+            <div class="field" style="margin-top:13px"><label>Reference / UTR</label><input name="reference" placeholder="Transaction reference"></div>
+            <div class="field" style="margin-top:13px"><label>Note</label><textarea name="note" placeholder="Optional note"></textarea></div>
+            <div class="form-actions"><button class="btn success" type="submit">Save Payment</button></div>
+          </form>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;font-size:16px">Payment Records</h3>
+          <div class="notice">Record payments against the correct bill. Partial payments are supported only if permitted by the backend billing logic.</div>
+          <button class="btn secondary" style="margin-top:15px" onclick="loadPayments()">Refresh Payment Records</button>
+        </div>
+      </div>
+      <div class="section-heading"><h3>All Bills & Payment Status</h3></div>
+      <div class="card" style="padding:0"><div class="table-wrap" style="border:0">
+        <table><thead><tr><th>CUSTOMER</th><th>VEHICLE</th><th>BILLING MONTH</th><th>DUE</th><th>PAID</th><th>BALANCE</th><th>STATUS</th></tr></thead>
+        <tbody id="paymentsTable"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody></table>
+      </div></div>
+    </section>
+
+    <!-- PAYMENT REQUESTS -->
+    <section class="section" id="page-requests">
+      <div class="section-heading" style="margin-top:0">
+        <h3>Customer UPI Payment Requests</h3>
+        <button class="btn secondary small-btn" onclick="loadRequests()">↻ Refresh</button>
+      </div>
+      <div class="toolbar">
+        <select id="requestFilter" onchange="loadRequests()">
+          <option value="ALL">All Requests</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+      </div>
+      <div class="card" style="padding:0"><div class="table-wrap" style="border:0">
+        <table><thead><tr><th>CUSTOMER</th><th>VEHICLE</th><th>MONTH</th><th>AMOUNT</th><th>UTR</th><th>DATE</th><th>STATUS</th><th>ACTION</th></tr></thead>
+        <tbody id="requestsTable"><tr><td colspan="8" class="empty">Loading...</td></tr></tbody></table>
+      </div></div>
+    </section>
+
+    <!-- MOVEMENTS -->
+    <section class="section" id="page-movements">
+      <div class="section-heading" style="margin-top:0">
+        <h3>Vehicle Movement History</h3>
+        <button class="btn secondary small-btn" onclick="loadMovements()">↻ Refresh</button>
+      </div>
+      <div class="toolbar">
+        <input id="movementSearch" placeholder="Search customer / vehicle..." oninput="renderMovements()">
+        <select id="movementFilter" onchange="renderMovements()">
+          <option value="ALL">All Movements</option>
+          <option value="IN">Check-In</option>
+          <option value="OUT">Check-Out</option>
+        </select>
+      </div>
+      <div class="card" style="padding:0"><div class="table-wrap" style="border:0">
+        <table><thead><tr><th>DATE & TIME</th><th>CUSTOMER</th><th>VEHICLE</th><th>ACTION</th><th>ODOMETER</th><th>DISTANCE</th><th>PHOTO</th></tr></thead>
+        <tbody id="movementsTable"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody></table>
+      </div></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="section" id="page-settings">
+      <div class="two-col">
+        <div class="card">
+          <div class="section-heading" style="margin-top:0"><h3>UPI Payment Settings</h3></div>
+          <form id="settingsForm">
+            <div class="field"><label>UPI ID</label><input name="upiId" id="settingsUpiId" placeholder="yourname@upi"></div>
+            <div class="field" style="margin-top:13px"><label>UPI Account Name</label><input name="upiName" id="settingsUpiName" placeholder="Account holder name"></div>
+            <div class="form-actions"><button class="btn" type="submit">Save UPI Settings</button></div>
+          </form>
+          <div class="notice" style="margin-top:15px">Saving these settings requires the matching secure backend action in Code.gs.</div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0;font-size:16px">Parking System</h3>
+          <div class="quick-list">
+            <div class="quick-item"><span>Application</span><strong>Smart Parking</strong></div>
+            <div class="quick-item"><span>Portal</span><strong>Administrator</strong></div>
+            <div class="quick-item"><span>Timezone</span><strong>Asia/Kolkata</strong></div>
+            <div class="quick-item"><span>Security</span><strong>PIN + Session</strong></div>
+          </div>
+          <button class="btn danger" style="margin-top:17px" onclick="logout()">Logout from Admin</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- CUSTOMER DETAIL MODAL -->
+<div class="modal" id="detailModal">
+  <div class="modal-box">
+    <div class="modal-head"><h3>Customer Details</h3><button class="close-btn" onclick="closeModal('detailModal')">✕</button></div>
+    <div id="customerDetailsContent"><div class="empty">Loading...</div></div>
+  </div>
+</div>
+
+<!-- REVIEW REQUEST MODAL -->
+<div class="modal" id="reviewModal">
+  <div class="modal-box" style="max-width:500px">
+    <div class="modal-head"><h3>Review Payment Request</h3><button class="close-btn" onclick="closeModal('reviewModal')">✕</button></div>
+    <form id="reviewForm">
+      <input type="hidden" name="requestId" id="reviewRequestId">
+      <div class="field"><label>Decision *</label><select name="decision" id="reviewDecision"><option value="APPROVED">Approve Payment</option><option value="REJECTED">Reject Request</option></select></div>
+      <div class="field" style="margin-top:13px"><label>Admin Note</label><textarea name="adminNote" placeholder="Optional note"></textarea></div>
+      <div class="form-actions"><button class="btn" type="submit">Submit Decision</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   SMART PARKING ADMIN
+   API contract: Google Apps Script Code.gs
+========================================================= */
+
+const API_URL = "https://script.google.com/macros/s/AKfycbzDxI1LyqLkIkTioRTn-xuL9JHZ_iWUH8LYrPUlniFgizDI6wbbM0X4OLtamcwwLhIQ/exec";
+const SESSION_KEY = "parkingAdminToken";
+
+let adminToken = sessionStorage.getItem(SESSION_KEY) || "";
+let owners = [];
+let payments = [];
+let movements = [];
+let requests = [];
+let currentDashboard = {};
+
+const pageInfo = {
+  dashboard:["Dashboard","Your parking business at a glance"],
+  customers:["Customers & Vehicles","Manage registered parking customers"],
+  register:["Register Customer","Add a new customer and vehicle"],
+  charges:["Monthly Charges","Create monthly parking bills"],
+  payments:["Payments","Record and track customer payments"],
+  requests:["UPI Payment Requests","Verify customer UPI transactions"],
+  movements:["Vehicle Movements","Track vehicle entry and exit"],
+  settings:["Settings","Configure your parking system"]
 };
 
-
-/* =====================================================
-   1. INITIAL SETUP
-===================================================== */
-
-function setup() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-
-  Object.keys(CONFIG.SHEETS).forEach(function(name) {
-    ensureSheet_(ss, name, CONFIG.SHEETS[name]);
-  });
-
-  const props = PropertiesService.getScriptProperties();
-
-  if (!props.getProperty("ADMIN_PIN")) {
-    throw new Error(
-      "Set ADMIN_PIN in Project Settings > Script Properties first."
-    );
-  }
-
-  if (!props.getProperty("CUSTOMER_UPI_NAME")) {
-    props.setProperty(
-      "CUSTOMER_UPI_NAME",
-      "Smart Parking Management"
-    );
-  }
-
-  if (!props.getProperty("CUSTOMER_UPI_ID")) {
-    props.setProperty("CUSTOMER_UPI_ID", "");
-  }
-
-  let folderId = props.getProperty("PHOTO_FOLDER_ID");
-
-  if (!folderId) {
-    const folder = DriveApp.createFolder(CONFIG.PHOTO_FOLDER);
-    folderId = folder.getId();
-    props.setProperty("PHOTO_FOLDER_ID", folderId);
-  }
-
-  return "Setup complete. Existing records have been preserved.";
+function toast(message) {
+  const el=document.getElementById("toast");
+  el.textContent=message;el.style.display="block";
+  clearTimeout(window.toastTimer);
+  window.toastTimer=setTimeout(()=>el.style.display="none",3500);
 }
 
+function money(value) {
+  return "₹"+Number(value||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+}
+function esc(value) {
+  return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function fmtDate(value) {
+  if(!value)return "—";
+  const d=new Date(value);
+  return isNaN(d) ? esc(value) : d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+}
+function fmtDateTime(value) {
+  if(!value)return "—";
+  const d=new Date(value);
+  return isNaN(d) ? esc(value) : d.toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+}
+function badge(status) {
+  const s=String(status||"").toUpperCase();
+  let cls="purple";
+  if(["IN","PARKED","APPROVED","PAID","ACTIVE","COMPLETE"].includes(s))cls="green";
+  if(["OUT","OUTSIDE","REJECTED","INACTIVE","CANCELLED"].includes(s))cls="red";
+  if(["PENDING","PARTIAL","DUE"].includes(s))cls="yellow";
+  return `<span class="badge ${cls}">${esc(s||"—")}</span>`;
+}
+function getToken() {return adminToken;}
 
-/**
- * Creates missing sheets and appends missing headers.
- * Does not delete or clear existing rows.
- */
-function ensureSheet_(ss, name, headers) {
-  let sh = ss.getSheetByName(name);
+async function api(action,data={}) {
+  const payload={action,...data};
+  if(action!=="adminLogin") payload.adminToken=getToken();
 
-  if (!sh) {
-    sh = ss.insertSheet(name);
-  }
-
-  if (sh.getLastRow() === 0) {
-    sh.appendRow(headers);
-    return sh;
-  }
-
-  const existing = sh.getRange(
-    1, 1, 1, Math.max(sh.getLastColumn(), 1)
-  ).getDisplayValues()[0];
-
-  headers.forEach(function(header) {
-    if (existing.indexOf(header) === -1) {
-      sh.getRange(1, sh.getLastColumn() + 1).setValue(header);
-      existing.push(header);
-    }
+  const response=await fetch(API_URL,{
+    method:"POST",
+    body:new URLSearchParams(
+      Object.entries(payload).map(([k,v])=>[k,typeof v==="object"&&v!==null?JSON.stringify(v):String(v??"")])
+    )
   });
-
-  return sh;
+  const result=await response.json();
+  if(!response.ok || result.ok===false) throw new Error(result.message||result.error||"Request failed");
+  return result;
 }
 
-
-function doGet() {
-  return json_({
-    ok: true,
-    message: "Smart Parking Management API is running."
-  });
+function showLogin() {
+  document.getElementById("loginScreen").style.display="flex";
+  document.getElementById("app").style.display="none";
+}
+function showApp() {
+  document.getElementById("loginScreen").style.display="none";
+  document.getElementById("app").style.display="block";
+}
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  adminToken="";
+  showLogin();
+  document.getElementById("adminPin").value="";
+  toast("Logged out successfully");
 }
 
-
-/* =====================================================
-   2. API ROUTER
-===================================================== */
-
-function doPost(e) {
+document.getElementById("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const pin=document.getElementById("adminPin").value.trim();
+  if(!pin)return toast("Enter admin PIN");
   try {
-    const p = parseRequest_(e);
-    let result;
+    const r=await api("adminLogin",{adminPin:pin});
+    adminToken=r.adminToken||r.token||"";
+    if(!adminToken)throw new Error("Admin token missing in server response");
+    sessionStorage.setItem(SESSION_KEY,adminToken);
+    showApp();navigate("dashboard");toast("Login successful");
+  } catch(err) {toast(err.message);}
+});
 
-    switch (p.action) {
-
-      /* CUSTOMER */
-
-      case "ownerLogin":
-        result = ownerLogin_(p);
-        break;
-
-      case "ownerStatus":
-        result = ownerStatus_(p);
-        break;
-
-      case "ownerPayments":
-        result = ownerPayments_(p);
-        break;
-
-      case "ownerHistory":
-        result = ownerHistory_(p);
-        break;
-
-      case "movement":
-        result = recordMovement_(p);
-        break;
-
-      case "getPaymentConfig":
-        result = getPaymentConfig_();
-        break;
-
-      case "createPaymentRequest":
-        result = createPaymentRequest_(p);
-        break;
-
-
-      /* ADMIN */
-
-      case "adminLogin":
-        result = adminLogin_(p);
-        break;
-
-      case "adminDashboard":
-        result = adminDashboard_(p);
-        break;
-
-      case "adminOwners":
-        result = adminOwners_(p);
-        break;
-
-      case "adminCustomerDetails":
-        result = adminCustomerDetails_(p);
-        break;
-
-      case "adminRegister":
-        result = adminRegister_(p);
-        break;
-
-      case "adminUpdateJoiningDate":
-        result = adminUpdateJoiningDate_(p);
-        break;
-
-      case "adminAddCharge":
-        result = adminAddCharge_(p);
-        break;
-
-      case "adminRecordPayment":
-        result = adminRecordPayment_(p);
-        break;
-
-      case "adminPayments":
-        result = adminPayments_(p);
-        break;
-
-      case "adminPaymentRequests":
-        result = adminPaymentRequests_(p);
-        break;
-
-      case "adminReviewPaymentRequest":
-        result = adminReviewPaymentRequest_(p);
-        break;
-
-      case "adminMovements":
-        result = adminMovements_(p);
-        break;
-
-      case "adminCorrectStatus":
-        result = adminCorrectStatus_(p);
-        break;
-
-      default:
-        throw new Error(
-          "Invalid action: " + String(p.action || "")
-        );
-    }
-
-    return json_(Object.assign({ok:true}, result || {}));
-
-  } catch (err) {
-    return json_({
-      ok: false,
-      message: err && err.message
-        ? err.message
-        : "Unexpected server error."
-    });
+async function verifySession() {
+  if(!adminToken){showLogin();return;}
+  try {
+    await loadDashboard();
+    showApp();
+    navigate("dashboard");
+  } catch(e) {
+    sessionStorage.removeItem(SESSION_KEY);adminToken="";showLogin();
   }
 }
 
+function navigate(page) {
+  if(!pageInfo[page])return;
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".nav-btn[data-page]").forEach(x=>x.classList.remove("active"));
+  document.getElementById("page-"+page).classList.add("active");
+  const nav=document.querySelector(`.nav-btn[data-page="${page}"]`);
+  if(nav)nav.classList.add("active");
+  document.getElementById("pageTitle").textContent=pageInfo[page][0];
+  document.getElementById("pageSubtitle").textContent=pageInfo[page][1];
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
 
-function parseRequest_(e) {
-  let p = e && e.parameter
-    ? Object.assign({}, e.parameter)
-    : {};
+  const loaders={
+    dashboard:loadDashboard,
+    customers:loadOwners,
+    charges:loadPayments,
+    payments:loadPayments,
+    requests:loadRequests,
+    movements:loadMovements
+  };
+  if(loaders[page])loaders[page]();
+}
+document.querySelectorAll(".nav-btn[data-page]").forEach(btn=>{
+  btn.addEventListener("click",()=>navigate(btn.dataset.page));
+});
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
+}
 
-  if (e && e.postData && e.postData.contents) {
+/* DASHBOARD */
+async function loadDashboard() {
+  try {
+    const [d,o,m,r]=await Promise.all([
+      api("adminDashboard"),
+      api("adminOwners"),
+      api("adminMovements"),
+      api("adminPaymentRequests",{status:"PENDING"})
+    ]);
+    currentDashboard=d.dashboard||{};
+    owners=o.owners||[];
+    movements=m.movements||[];
+    requests=r.requests||[];
+
+    const dash=currentDashboard;
+    document.getElementById("totalVehicles").textContent=dash.totalVehicles??owners.filter(x=>x.active!==false).length;
+    document.getElementById("totalOutstanding").textContent=money(dash.totalOutstanding);
+    document.getElementById("totalCollected").textContent=money(dash.totalCollected);
+
+    const statuses=calculateStatuses(owners,movements);
+    document.getElementById("parkedVehicles").textContent=statuses.parked.length+" Vehicles";
+    document.getElementById("outsideVehicles").textContent=statuses.outside.length+" Vehicles";
+
+    document.getElementById("recentActivity").innerHTML=movements.slice(0,5).map(m=>`
+      <div class="quick-item"><div><strong>${esc(m.vehicle)}</strong><div class="small">${esc(m.ownerName)} · ${fmtDateTime(m.dateTime)}</div></div>${badge(m.action)}</div>
+    `).join("")||'<div class="empty">No recent activity</div>';
+
+    document.getElementById("recentRequests").innerHTML=requests.slice(0,5).map(x=>`
+      <div class="quick-item"><div><strong>${esc(x.ownerName)}</strong><div class="small">${esc(x.vehicle)} · ${money(x.amount)}</div></div>${badge(x.status)}</div>
+    `).join("")||'<div class="empty">No pending requests</div>';
+  } catch(e) {toast("Dashboard: "+e.message);}
+}
+
+function calculateStatuses(ownerList,movementList) {
+  const latest={};
+  movementList.forEach(m=>{
+    const id=m.ownerId;
+    if(id && (!latest[id] || new Date(m.dateTime)>new Date(latest[id].dateTime)))latest[id]=m;
+  });
+  const active=ownerList.filter(o=>o.active!==false && String(o.active).toLowerCase()!=="false");
+  const parked=[],outside=[];
+  active.forEach(o=>{
+    const action=String(latest[o.ownerId]?.action||"IN").toUpperCase();
+    if(action==="OUT")outside.push(o);else parked.push(o);
+  });
+  return {parked,outside};
+}
+function showVehicleStatus(status) {
+  navigate("customers");
+  document.getElementById("customerStatusFilter").value=status;
+  renderCustomers();
+}
+
+/* CUSTOMERS */
+async function loadOwners() {
+  try {
+    const r=await api("adminOwners");
+    owners=r.owners||[];
+    renderCustomers();
+    fillOwnerSelects();
+  } catch(e){toast(e.message);}
+}
+function renderCustomers() {
+  const q=(document.getElementById("customerSearch").value||"").toLowerCase();
+  const filter=document.getElementById("customerStatusFilter").value;
+  const statuses=calculateStatuses(owners,movements);
+  const statusById={};
+  statuses.parked.forEach(x=>statusById[x.ownerId]="PARKED");
+  statuses.outside.forEach(x=>statusById[x.ownerId]="OUTSIDE");
+
+  const list=owners.filter(o=>{
+    const search=[o.ownerName,o.vehicle,o.mobile].join(" ").toLowerCase().includes(q);
+    const status=statusById[o.ownerId]||"INACTIVE";
+    return search&&(filter==="ALL"||filter===status);
+  });
+  document.getElementById("customersTable").innerHTML=list.map(o=>{
+    const status=statusById[o.ownerId]||"INACTIVE";
+    const photo=o.carPhotoURL||o.photoURL||"";
+    return `<tr>
+      <td>${photo?`<img class="avatar-photo" src="${esc(photo)}" alt="Car">`:"🚘"}</td>
+      <td><strong>${esc(o.ownerName)}</strong><div class="small">${esc(o.mobile)}</div></td>
+      <td><strong>${esc(o.vehicle)}</strong></td>
+      <td>${badge(status)}</td>
+      <td>${money(o.monthlyAmount)}</td>
+      <td><button class="btn small-btn" onclick="viewCustomer('${esc(o.ownerId)}')">View Details</button></td>
+    </tr>`;
+  }).join("")||'<tr><td colspan="6" class="empty">No customers found</td></tr>';
+}
+function fillOwnerSelects() {
+  const options='<option value="">Select customer</option>'+owners.map(o=>
+    `<option value="${esc(o.ownerId)}">${esc(o.ownerName)} · ${esc(o.vehicle)}</option>`
+  ).join("");
+  document.getElementById("chargeOwner").innerHTML=options;
+}
+
+/* REGISTER CUSTOMER + OPTIONAL PHOTO */
+document.getElementById("carPhoto").addEventListener("change",()=>{
+  const file=document.getElementById("carPhoto").files[0];
+  const preview=document.getElementById("carPhotoPreview");
+  if(!file){preview.style.display="none";return;}
+  if(file.size>5*1024*1024){toast("Photo must be 5 MB or less");document.getElementById("carPhoto").value="";return;}
+  preview.src=URL.createObjectURL(file);preview.style.display="block";
+});
+function clearPhotoPreview() {
+  document.getElementById("carPhotoPreview").style.display="none";
+}
+function fileToBase64(file) {
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+document.getElementById("registerForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const form=e.currentTarget;
+  const data=Object.fromEntries(new FormData(form).entries());
+  const file=document.getElementById("carPhoto").files[0];
+  try {
+    const r=await api("adminRegister",data);
+    const ownerId=r.ownerId||r.customer?.ownerId||r.owner?.ownerId;
+    if(file) {
+      if(!ownerId)throw new Error("Customer registered, but server did not return ownerId. Photo upload needs the ownerId.");
+      const image=await fileToBase64(file);
+      await api("adminUploadCarPhoto",{ownerId,imageData:image,fileName:file.name,mimeType:file.type});
+    }
+    toast(file?"Customer registered with vehicle photo":"Customer registered successfully");
+    form.reset();clearPhotoPreview();await loadOwners();navigate("customers");
+  } catch(err){toast(err.message);}
+});
+
+/* CUSTOMER DETAIL */
+async function viewCustomer(ownerId) {
+  document.getElementById("detailModal").classList.add("show");
+  const box=document.getElementById("customerDetailsContent");
+  box.innerHTML='<div class="empty">Loading customer details...</div>';
+  try {
+    const r=await api("adminCustomerDetails",{ownerId});
+    const c=r.customer||{};
+    const summary=r.summary||{};
+    const photo=c.carPhotoURL||c.photoURL||"";
+    box.innerHTML=`
+      <div class="two-col">
+        <div>
+          ${photo?`<img class="detail-photo" src="${esc(photo)}" alt="Vehicle">`:'<div class="detail-photo" style="display:grid;place-items:center;background:#32164b;font-size:50px">🚘</div>'}
+          <div style="margin-top:12px"><strong>${esc(c.ownerName)}</strong><div class="small">${esc(c.vehicle)} · ${esc(c.mobile)}</div></div>
+          <div class="form-actions">
+            <button class="btn secondary small-btn" onclick="replaceCarPhoto('${esc(ownerId)}')">Replace Photo</button>
+            <button class="btn secondary small-btn" onclick="editJoiningDate('${esc(ownerId)}','${esc(c.joiningDate||"")}')">Edit Joining Date</button>
+          </div>
+        </div>
+        <div class="quick-list">
+          <div class="quick-item"><span>Vehicle Status</span>${badge(c.status||"—")}</div>
+          <div class="quick-item"><span>Monthly Charge</span><strong>${money(c.monthlyAmount)}</strong></div>
+          <div class="quick-item"><span>Outstanding</span><strong>${money(summary.outstanding)}</strong></div>
+          <div class="quick-item"><span>Total Paid</span><strong>${money(summary.totalPaid)}</strong></div>
+          <div class="quick-item"><span>Joining Date</span><strong>${fmtDate(c.joiningDate)}</strong></div>
+        </div>
+      </div>
+      ${detailTable("Payment History",r.paymentHistory||[],["billingMonth","amountDue","amountPaid","balance","status"])}
+      ${detailTable("Transactions",r.transactions||[],["paymentDate","amount","paymentMethod","reference"])}
+      ${detailTable("Recent Movements",r.recentMovements||[],["dateTime","action","odometer","distance"])}
+      ${detailTable("UPI Requests",r.paymentRequests||[],["billingMonth","amount","utr","status"])}
+    `;
+  } catch(e){box.innerHTML=`<div class="empty">${esc(e.message)}</div>`;}
+}
+function detailTable(title,rows,keys) {
+  if(!rows.length)return `<h3 style="font-size:14px;margin-top:24px">${title}</h3><div class="empty">No records</div>`;
+  return `<h3 style="font-size:14px;margin-top:24px">${title}</h3><div class="table-wrap"><table><thead><tr>${keys.map(k=>`<th>${esc(k)}</th>`).join("")}</tr></thead><tbody>${rows.map(row=>`<tr>${keys.map(k=>`<td>${esc(row[k]??"—")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function replaceCarPhoto(ownerId) {
+  const input=document.createElement("input");
+  input.type="file";input.accept="image/*";
+  input.onchange=async()=>{
+    const file=input.files[0];if(!file)return;
+    if(file.size>5*1024*1024)return toast("Photo must be 5 MB or less");
     try {
-      p = Object.assign(
-        p,
-        JSON.parse(e.postData.contents)
-      );
-    } catch (_) {}
-  }
-
-  return p;
-}
-
-
-/* =====================================================
-   3. CUSTOMER LOGIN AND SESSION
-===================================================== */
-
-function ownerLogin_(p) {
-  const vehicle = normVehicle_(p.vehicle);
-  const mobile = String(p.mobile || "").trim();
-  const pin = String(p.pin || "").trim();
-
-  if (
-    !vehicle ||
-    !/^\d{10}$/.test(mobile) ||
-    !/^\d{4}$/.test(pin)
-  ) {
-    throw new Error(
-      "Enter vehicle number, registered 10-digit mobile and 4-digit PIN."
-    );
-  }
-
-  const owner = rows_("Owners").find(function(r) {
-    return normVehicle_(r.Vehicle) === vehicle &&
-      String(r.Mobile).trim() === mobile &&
-      String(r.PinHash) === hash_(pin) &&
-      isActive_(r.Active);
-  });
-
-  if (!owner) {
-    throw new Error("Login details do not match our records.");
-  }
-
-  const token = newToken_();
-
-  CacheService.getScriptCache().put(
-    "owner_" + token,
-    String(owner.OwnerID),
-    CONFIG.SESSION_SECONDS
-  );
-
-  return {
-    token: token,
-    customerToken: token,
-    customer: publicOwner_(owner)
+      const image=await fileToBase64(file);
+      await api("adminUploadCarPhoto",{ownerId,imageData:image,fileName:file.name,mimeType:file.type});
+      toast("Vehicle photo updated");viewCustomer(ownerId);loadOwners();
+    } catch(e){toast(e.message);}
   };
+  input.click();
 }
-
-
-function ownerFromToken_(token) {
-  if (!token) {
-    throw new Error("Session expired. Please log in again.");
-  }
-
-  const id = CacheService.getScriptCache().get(
-    "owner_" + String(token)
-  );
-
-  if (!id) {
-    throw new Error("Session expired. Please log in again.");
-  }
-
-  const owner = rows_("Owners").find(function(r) {
-    return String(r.OwnerID) === String(id) &&
-      isActive_(r.Active);
-  });
-
-  if (!owner) {
-    throw new Error("Customer account is inactive or unavailable.");
-  }
-
-  return owner;
-}
-
-
-/* =====================================================
-   4. CUSTOMER STATUS AND MOVEMENT HISTORY
-===================================================== */
-
-function ownerStatus_(p) {
-  const owner = ownerFromToken_(p.token);
-  const status = ownerStatusData_(owner);
-
-  return {
-    status: status,
-    customer: publicOwner_(owner),
-    owner: publicOwner_(owner)
-  };
-}
-
-
-function ownerStatusData_(owner) {
-  const list = rows_("Movements")
-    .filter(function(r) {
-      return String(r.OwnerID) === String(owner.OwnerID);
-    })
-    .sort(function(a,b) {
-      return dateValue_(b.DateTime) - dateValue_(a.DateTime);
-    });
-
-  const last = list[0];
-
-  return {
-    ownerId: owner.OwnerID,
-    ownerName: String(owner.OwnerName),
-    vehicle: String(owner.Vehicle),
-
-    status: !last ||
-      String(last.Action).toUpperCase() === "IN"
-        ? "PARKED"
-        : "OUTSIDE",
-
-    lastAction: last
-      ? String(last.Action).toUpperCase()
-      : "No movement recorded",
-
-    updatedAt: last ? last.DateTime : owner.CreatedAt,
-
-    odometer: last ? number_(last.Odometer) : null,
-
-    joiningDate: owner.JoiningDate,
-    monthlyAmount: number_(owner.MonthlyAmount),
-
-    history: list.slice(0,12).map(movementPublic_)
-  };
-}
-
-
-function ownerHistory_(p) {
-  const owner = ownerFromToken_(p.token);
-
-  const list = rows_("Movements")
-    .filter(function(r) {
-      return String(r.OwnerID) === String(owner.OwnerID);
-    })
-    .sort(function(a,b) {
-      return dateValue_(b.DateTime) - dateValue_(a.DateTime);
-    });
-
-  return {
-    history: list.slice(0,100).map(movementPublic_)
-  };
-}
-
-
-/* =====================================================
-   5. CHECK-IN / CHECK-OUT
-===================================================== */
-
-function recordMovement_(p) {
-  const owner = ownerFromToken_(p.token);
-
-  /*
-   * Supports the customer portal's CHECK-IN/CHECK-OUT
-   * and the original backend's IN/OUT values.
-   */
-  let action = String(
-    p.actionType ||
-    p.movement ||
-    p.move ||
-    p.action ||
-    ""
-  ).toUpperCase().trim();
-
-  action = action.replace(/-/g," ").replace(/_/g," ");
-
-  if (
-    action === "CHECK IN" ||
-    action === "IN"
-  ) {
-    action = "IN";
-  } else if (
-    action === "CHECK OUT" ||
-    action === "OUT"
-  ) {
-    action = "OUT";
-  } else {
-    throw new Error("Invalid movement action.");
-  }
-
-  const odometer = Number(p.odometer);
-
-  if (!isFinite(odometer) || odometer < 0) {
-    throw new Error("Enter a valid odometer reading.");
-  }
-
-  const photoData = p.photoBase64 || p.photo;
-
-  if (!photoData) {
-    throw new Error("Odometer photo is mandatory.");
-  }
-
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-
+async function editJoiningDate(ownerId,currentDate) {
+  const date=prompt("Enter new joining date (YYYY-MM-DD)",currentDate);
+  if(!date)return;
   try {
-    const current = ownerStatusData_(owner);
-
-    if (action === "OUT" && current.status !== "PARKED") {
-      throw new Error("Vehicle is already checked out.");
-    }
-
-    if (action === "IN" && current.status !== "OUTSIDE") {
-      throw new Error("Vehicle is already checked in.");
-    }
-
-    const previous = rows_("Movements")
-      .filter(function(r) {
-        return String(r.OwnerID) === String(owner.OwnerID) &&
-          r.Odometer !== "" &&
-          r.Odometer !== null;
-      })
-      .sort(function(a,b) {
-        return dateValue_(b.DateTime) - dateValue_(a.DateTime);
-      })[0];
-
-    const previousOdo = previous
-      ? number_(previous.Odometer)
-      : null;
-
-    if (
-      previousOdo !== null &&
-      odometer < previousOdo
-    ) {
-      throw new Error(
-        "Odometer cannot be lower than the previous reading (" +
-        previousOdo + " KM)."
-      );
-    }
-
-    const photoUrl = uploadPhoto_(
-      photoData,
-      p.photoName || "odometer.jpg",
-      p.photoMimeType || p.mimeType || "image/jpeg"
-    );
-
-    const distance = previousOdo === null
-      ? 0
-      : odometer - previousOdo;
-
-    sheet_("Movements").appendRow([
-      Utilities.getUuid(),
-      owner.OwnerID,
-      owner.OwnerName,
-      owner.Vehicle,
-      action,
-      odometer,
-      photoUrl,
-      distance,
-      new Date(),
-      String(p.note || ""),
-      "CUSTOMER"
-    ]);
-
-  } finally {
-    lock.releaseLock();
-  }
-
-  return {
-    status: ownerStatusData_(owner),
-    message: "Vehicle movement recorded successfully."
-  };
+    await api("adminUpdateJoiningDate",{ownerId,joiningDate:date});
+    toast("Joining date updated");viewCustomer(ownerId);loadOwners();
+  } catch(e){toast(e.message);}
 }
 
-
-function uploadPhoto_(data, name, mimeType) {
-  if (!data) {
-    throw new Error("Odometer photo is required.");
-  }
-
-  let base64 = String(data);
-
-  if (base64.indexOf(",") >= 0) {
-    base64 = base64.split(",").pop();
-  }
-
-  const bytes = Utilities.base64Decode(base64);
-
-  if (bytes.length > CONFIG.MAX_PHOTO_SIZE) {
-    throw new Error("Photo must be 5 MB or smaller.");
-  }
-
-  const props = PropertiesService.getScriptProperties();
-  let folderId = props.getProperty("PHOTO_FOLDER_ID");
-
-  if (!folderId) {
-    const folder = DriveApp.createFolder(CONFIG.PHOTO_FOLDER);
-    folderId = folder.getId();
-    props.setProperty("PHOTO_FOLDER_ID", folderId);
-  }
-
-  const blob = Utilities.newBlob(
-    bytes,
-    mimeType || "image/jpeg",
-    name || "odometer.jpg"
-  );
-
-  const file = DriveApp
-    .getFolderById(folderId)
-    .createFile(blob);
-
-  file.setSharing(
-    DriveApp.Access.ANYONE_WITH_LINK,
-    DriveApp.Permission.VIEW
-  );
-
-  return file.getUrl();
-}
-
-
-function movementPublic_(r) {
-  const action = String(r.Action || "").toUpperCase();
-
-  return {
-    movementId: r.MovementID,
-    ownerName: r.OwnerName || "",
-    vehicle: r.Vehicle || "",
-
-    action: action === "IN"
-      ? "CHECK IN"
-      : action === "OUT"
-        ? "CHECK OUT"
-        : action,
-
-    odometer: r.Odometer === "" ? "" : number_(r.Odometer),
-    photoUrl: r.PhotoURL || "",
-    distance: number_(r.Distance),
-    dateTime: r.DateTime,
-    note: r.Note || "",
-    source: r.Source || ""
-  };
-}
-
-
-/* =====================================================
-   6. CUSTOMER BILLING AND PAYMENT HISTORY
-===================================================== */
-
-function ownerPayments_(p) {
-  const owner = ownerFromToken_(p.token);
-
-  const charges = rows_("Payments")
-    .filter(function(r) {
-      return String(r.OwnerID) === String(owner.OwnerID);
-    });
-
-  const transactions = rows_("Transactions")
-    .filter(function(r) {
-      return String(r.OwnerID) === String(owner.OwnerID);
-    })
-    .sort(function(a,b) {
-      return dateValue_(b.PaymentDate || b.RecordedAt) -
-        dateValue_(a.PaymentDate || a.RecordedAt);
-    });
-
-  const requests = rows_("PaymentRequests")
-    .filter(function(r) {
-      return String(r.OwnerID) === String(owner.OwnerID);
-    })
-    .sort(function(a,b) {
-      return dateValue_(b.CreatedAt) - dateValue_(a.CreatedAt);
-    });
-
-  const outstanding = charges.reduce(function(sum,r) {
-    return sum + Math.max(
-      0,
-      number_(r.AmountDue) - number_(r.AmountPaid)
-    );
-  },0);
-
-  const next = charges
-    .filter(function(r) {
-      return number_(r.AmountDue) > number_(r.AmountPaid);
-    })
-    .sort(function(a,b) {
-      return dateValue_(a.DueDate) - dateValue_(b.DueDate);
-    })[0];
-
-  const upcoming = next
-    ? paymentPublic_(next)
-    : buildNextCharge_(owner,charges);
-
-  return {
-    customer: {
-      ownerName: String(owner.OwnerName),
-      vehicle: String(owner.Vehicle),
-      serviceStartDate: owner.JoiningDate || "",
-      monthlyAmount: number_(owner.MonthlyAmount)
-    },
-
-    summary: {
-      outstanding: outstanding,
-      nextDueAmount: next
-        ? number_(next.AmountDue)-number_(next.AmountPaid)
-        : upcoming.amountDue,
-
-      nextDueDate: upcoming.dueDate
-    },
-
-    upcoming: upcoming,
-
-    transactions: transactions.map(transactionPublic_),
-
-    /*
-     * Include all requests so customers can see
-     * approved and rejected requests too.
-     */
-    pendingRequests: requests.map(requestPublic_)
-  };
-}
-
-
-function buildNextCharge_(owner,charges) {
-  const nextDate = nextBillingDate_(
-    owner.JoiningDate,
-    charges
-  );
-
-  const month = Utilities.formatDate(
-    nextDate,
-    CONFIG.TIMEZONE,
-    "yyyy-MM"
-  );
-
-  return {
-    paymentID: "",
-    billingMonth: month,
-    billingMonthKey: month,
-    amountDue: number_(owner.MonthlyAmount),
-    amountPaid: 0,
-    dueDate: nextDate,
-    status: "UPCOMING"
-  };
-}
-
-
-/**
- * Recurring billing date follows the customer's joining day.
- * For joining dates 29, 30 or 31, shorter months use month-end.
- */
-function nextBillingDate_(joiningDate,charges) {
-  const join = toDate_(joiningDate) || new Date();
-  const today = new Date();
-
-  for (let i=0; i<240; i++) {
-    const candidate = addMonthOnDay_(join,i);
-
-    const monthKey = Utilities.formatDate(
-      candidate,
-      CONFIG.TIMEZONE,
-      "yyyy-MM"
-    );
-
-    const exists = charges.some(function(r) {
-      return normalizeBillingMonth_(r.BillingMonth) === monthKey;
-    });
-
-    if (
-      !exists &&
-      candidate >= new Date(today.getFullYear(),today.getMonth(),1)
-    ) {
-      return candidate;
-    }
-  }
-
-  return addMonthOnDay_(join,240);
-}
-
-
-function paymentPublic_(r) {
-  const due = number_(r.AmountDue);
-  const paid = number_(r.AmountPaid);
-
-  return {
-    paymentID: r.PaymentID,
-    billingMonth: normalizeBillingMonth_(r.BillingMonth),
-    billingMonthKey: normalizeBillingMonth_(r.BillingMonth),
-    amountDue: due,
-    amountPaid: paid,
-    balance: Math.max(0,due-paid),
-    dueDate: r.DueDate,
-
-    status: paid >= due
-      ? "PAID"
-      : paid > 0
-        ? "PARTIAL"
-        : "DUE"
-  };
-}
-
-
-function transactionPublic_(r) {
-  return {
-    transactionID: r.TransactionID,
-    billingMonth: normalizeBillingMonth_(r.BillingMonth),
-    amount: number_(r.Amount),
-    paymentMethod: r.PaymentMethod,
-    reference: r.Reference || "",
-    note: r.Note || "",
-    paymentDate: r.PaymentDate || r.RecordedAt
-  };
-}
-
-
-/* =====================================================
-   7. UPI CONFIGURATION
-===================================================== */
-
-function getPaymentConfig_() {
-  const props = PropertiesService.getScriptProperties();
-
-  const upiId = props.getProperty("CUSTOMER_UPI_ID") || "";
-  const payeeName = props.getProperty("CUSTOMER_UPI_NAME") ||
-    "Smart Parking Management";
-
-  return {
-    upiId: upiId,
-    payeeName: payeeName,
-
-    // Compatibility with customer portal field names
-    upiName: payeeName,
-    customerUpiId: upiId,
-    customerUpiName: payeeName
-  };
-}
-
-
-/* =====================================================
-   8. CUSTOMER UPI PAYMENT REQUEST
-===================================================== */
-
-function createPaymentRequest_(p) {
-  const owner = ownerFromToken_(p.token);
-  const amount = number_(p.amount);
-  const utr = String(p.utr || p.reference || "").trim();
-
-  if (!(amount > 0)) {
-    throw new Error("Enter a valid payment amount.");
-  }
-
-  if (utr.length < 6 || utr.length > 40) {
-    throw new Error("Enter a valid UTR / UPI reference number.");
-  }
-
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-
+/* BILLING AND PAYMENTS */
+async function loadPayments() {
   try {
-    const requests = rows_("PaymentRequests");
+    const r=await api("adminPayments");
+    payments=r.payments||[];
+    const rows=payments.map(p=>`<tr>
+      <td>${esc(p.ownerName)}</td><td>${esc(p.vehicle)}</td>
+      <td>${esc(p.billingMonth)}</td><td>${money(p.amountDue)}</td>
+      <td>${money(p.amountPaid)}</td><td>${money(p.balance)}</td>
+      <td>${badge(p.status)}</td>
+    </tr>`).join("")||'<tr><td colspan="7" class="empty">No billing records</td></tr>';
+    document.getElementById("chargesTable").innerHTML=rows;
+    document.getElementById("paymentsTable").innerHTML=rows;
 
-    const duplicate = requests.some(function(r) {
-      return String(r.UTR).toLowerCase() === utr.toLowerCase() &&
-        String(r.Status).toUpperCase() !== "REJECTED";
-    });
-
-    if (duplicate) {
-      throw new Error("This UTR/reference has already been submitted.");
-    }
-
-    let charge = null;
-
-    const paymentId = String(
-      p.paymentID || p.paymentId || ""
-    );
-
-    if (paymentId) {
-      charge = rows_("Payments").find(function(r) {
-        return String(r.PaymentID) === paymentId &&
-          String(r.OwnerID) === String(owner.OwnerID);
-      });
-    }
-
-    /*
-     * If customer portal did not send paymentID,
-     * use the oldest outstanding charge.
-     */
-    if (!charge) {
-      const month = normalizeBillingMonth_(
-        p.billingMonth || p.billingMonthKey
-      );
-
-      if (month) {
-        charge = rows_("Payments").find(function(r) {
-          return String(r.OwnerID) === String(owner.OwnerID) &&
-            normalizeBillingMonth_(r.BillingMonth) === month;
-        });
-      }
-    }
-
-    if (!charge) {
-      charge = rows_("Payments")
-        .filter(function(r) {
-          return String(r.OwnerID) === String(owner.OwnerID) &&
-            number_(r.AmountDue) > number_(r.AmountPaid);
-        })
-        .sort(function(a,b) {
-          return dateValue_(a.DueDate) - dateValue_(b.DueDate);
-        })[0];
-    }
-
-    /*
-     * A customer cannot submit a payment against a future
-     * monthly charge that has not been created by admin.
-     */
-    if (!charge) {
-      throw new Error(
-        "No outstanding monthly charge found. Contact the administrator."
-      );
-    }
-
-    const balance = Math.max(
-      0,
-      number_(charge.AmountDue) - number_(charge.AmountPaid)
-    );
-
-    if (amount > balance) {
-      throw new Error(
-        "Payment cannot exceed pending balance of ₹" +
-        balance.toFixed(2)
-      );
-    }
-
-    const id = Utilities.getUuid();
-
-    sheet_("PaymentRequests").appendRow([
-      id,
-      charge.PaymentID,
-      owner.OwnerID,
-      owner.OwnerName,
-      owner.Vehicle,
-      normalizeBillingMonth_(charge.BillingMonth),
-      amount,
-      utr,
-      String(p.note || p.customerNote || ""),
-      "PENDING",
-      new Date(),
-      "",
-      "",
-      ""
-    ]);
-
-    return {
-      message: "Payment reference submitted for admin verification.",
-      requestId: id,
-      status: "PENDING"
-    };
-
-  } finally {
-    lock.releaseLock();
-  }
+    const unpaid=payments.filter(p=>Number(p.balance)>0);
+    document.getElementById("paymentBill").innerHTML='<option value="">Select unpaid bill</option>'+unpaid.map(p=>
+      `<option value="${esc(p.paymentId||p.paymentID)}">${esc(p.ownerName)} · ${esc(p.vehicle)} · ${esc(p.billingMonth)} · Balance ${money(p.balance)}</option>`
+    ).join("");
+  } catch(e){toast(e.message);}
 }
-
-
-/* =====================================================
-   9. ADMIN LOGIN AND AUTHENTICATION
-===================================================== */
-
-function adminLogin_(p) {
-  const configured = PropertiesService
-    .getScriptProperties()
-    .getProperty("ADMIN_PIN") || "";
-
-  const entered = String(
-    p.adminPin || p.pin || ""
-  );
-
-  if (!configured || entered !== configured) {
-    throw new Error("Invalid administrator PIN.");
-  }
-
-  const token = newToken_();
-
-  CacheService.getScriptCache().put(
-    "admin_" + token,
-    "ADMIN",
-    CONFIG.SESSION_SECONDS
-  );
-
-  return {
-    adminToken: token,
-    expiresInSeconds: CONFIG.SESSION_SECONDS
-  };
-}
-
-
-function requireAdmin_(token) {
-  if (
-    !token ||
-    CacheService.getScriptCache().get("admin_" + token) !== "ADMIN"
-  ) {
-    throw new Error("Admin session expired. Please log in again.");
-  }
-}
-
-
-/* =====================================================
-   10. ADMIN CUSTOMER MANAGEMENT
-===================================================== */
-
-function adminRegister_(p) {
-  requireAdmin_(p.adminToken);
-
-  const name = String(p.ownerName || "").trim();
-  const vehicle = normVehicle_(p.vehicle);
-  const mobile = String(p.mobile || "").trim();
-  const pin = String(p.pin || "").trim();
-  const joining = toDate_(p.joiningDate);
-  const monthly = number_(p.monthlyAmount);
-
-  if (
-    !name ||
-    !vehicle ||
-    !/^\d{10}$/.test(mobile) ||
-    !/^\d{4}$/.test(pin) ||
-    !joining ||
-    !(monthly > 0)
-  ) {
-    throw new Error(
-      "Enter valid name, vehicle, mobile, 4-digit PIN, joining date and monthly fee."
-    );
-  }
-
-  const duplicate = rows_("Owners").some(function(r) {
-    return normVehicle_(r.Vehicle) === vehicle &&
-      isActive_(r.Active);
-  });
-
-  if (duplicate) {
-    throw new Error("This vehicle is already registered.");
-  }
-
-  const id = Utilities.getUuid();
-
-  sheet_("Owners").appendRow([
-    id,
-    name,
-    vehicle,
-    mobile,
-    hash_(pin),
-    true,
-    new Date(),
-    joining,
-    monthly
-  ]);
-
-  return {
-    message: "Customer registered successfully.",
-    ownerId: id
-  };
-}
-
-
-function adminOwners_(p) {
-  requireAdmin_(p.adminToken);
-
-  return {
-    owners: rows_("Owners").map(function(r) {
-      return {
-        ownerId: r.OwnerID,
-        ownerName: r.OwnerName,
-        vehicle: r.Vehicle,
-        mobile: r.Mobile,
-        active: isActive_(r.Active),
-        joiningDate: r.JoiningDate,
-        monthlyAmount: number_(r.MonthlyAmount)
-      };
-    })
-  };
-}
-
-
-function adminUpdateJoiningDate_(p) {
-  requireAdmin_(p.adminToken);
-
-  const id = String(p.ownerId || "");
-  const date = toDate_(p.joiningDate);
-
-  if (!id || !date) {
-    throw new Error("Owner ID and valid joining date are required.");
-  }
-
-  const sh = sheet_("Owners");
-  const row = findRowByValue_(sh,1,id);
-
-  if (!row) {
-    throw new Error("Customer not found.");
-  }
-
-  // Updates only joining date. Does not rewrite historical payments.
-  sh.getRange(row,8).setValue(date);
-
-  return {
-    message: "Joining date updated. Historical payment records were not changed."
-  };
-}
-
-
-/* =====================================================
-   11. ADMIN CUSTOMER DETAILS
-===================================================== */
-
-function adminCustomerDetails_(p) {
-  requireAdmin_(p.adminToken);
-
-  const ownerId = String(p.ownerId || "").trim();
-
-  if (!ownerId) {
-    throw new Error("Customer ID is required.");
-  }
-
-  const owner = rows_("Owners").find(function(r) {
-    return String(r.OwnerID) === ownerId;
-  });
-
-  if (!owner) {
-    throw new Error("Customer not found.");
-  }
-
-  const charges = rows_("Payments")
-    .filter(r => String(r.OwnerID) === ownerId)
-    .sort((a,b) => dateValue_(b.DueDate)-dateValue_(a.DueDate));
-
-  const transactions = rows_("Transactions")
-    .filter(r => String(r.OwnerID) === ownerId)
-    .sort((a,b) =>
-      dateValue_(b.PaymentDate || b.RecordedAt) -
-      dateValue_(a.PaymentDate || a.RecordedAt)
-    );
-
-  const requests = rows_("PaymentRequests")
-    .filter(r => String(r.OwnerID) === ownerId)
-    .sort((a,b) =>
-      dateValue_(b.CreatedAt)-dateValue_(a.CreatedAt)
-    );
-
-  const movements = rows_("Movements")
-    .filter(r => String(r.OwnerID) === ownerId)
-    .sort((a,b) =>
-      dateValue_(b.DateTime)-dateValue_(a.DateTime)
-    );
-
-  const outstanding = charges.reduce(function(sum,r) {
-    return sum + Math.max(
-      0,
-      number_(r.AmountDue)-number_(r.AmountPaid)
-    );
-  },0);
-
-  const totalBilled = charges.reduce(
-    (sum,r) => sum + number_(r.AmountDue),0
-  );
-
-  const totalPaid = transactions.reduce(
-    (sum,r) => sum + number_(r.Amount),0
-  );
-
-  const nextDue = charges
-    .filter(r => number_(r.AmountDue)>number_(r.AmountPaid))
-    .sort((a,b) => dateValue_(a.DueDate)-dateValue_(b.DueDate))[0];
-
-  const latestTxn = transactions[0] || null;
-  const lastMovement = movements[0] || null;
-
-  const upcoming = nextDue
-    ? paymentPublic_(nextDue)
-    : buildNextCharge_(owner,charges);
-
-  return {
-    customer: {
-      ownerId: owner.OwnerID,
-      ownerName: owner.OwnerName,
-      vehicle: owner.Vehicle,
-      mobile: owner.Mobile,
-      active: isActive_(owner.Active),
-      joiningDate: owner.JoiningDate,
-      monthlyAmount: number_(owner.MonthlyAmount),
-      createdAt: owner.CreatedAt
-    },
-
-    summary: {
-      totalBilled: totalBilled,
-      totalPaid: totalPaid,
-      outstanding: outstanding,
-
-      lastPaymentAmount: latestTxn
-        ? number_(latestTxn.Amount)
-        : 0,
-
-      lastPaymentDate: latestTxn
-        ? (latestTxn.PaymentDate || latestTxn.RecordedAt)
-        : null,
-
-      nextDueAmount: nextDue
-        ? Math.max(
-            0,
-            number_(nextDue.AmountDue)-number_(nextDue.AmountPaid)
-          )
-        : number_(upcoming.amountDue),
-
-      nextDueDate: nextDue
-        ? nextDue.DueDate
-        : upcoming.dueDate,
-
-      nextBillingMonth: nextDue
-        ? normalizeBillingMonth_(nextDue.BillingMonth)
-        : upcoming.billingMonth,
-
-      vehicleStatus: !lastMovement ||
-        String(lastMovement.Action).toUpperCase() === "IN"
-          ? "PARKED"
-          : "OUTSIDE",
-
-      lastMovement: lastMovement
-        ? lastMovement.DateTime
-        : null
-    },
-
-    upcomingPayment: upcoming,
-    paymentHistory: charges.map(paymentPublic_),
-    transactions: transactions.map(transactionPublic_),
-    paymentRequests: requests.map(requestPublic_),
-    recentMovements: movements.slice(0,20).map(movementPublic_)
-  };
-}
-
-
-/* =====================================================
-   12. ADMIN MONTHLY CHARGES
-===================================================== */
-
-function adminAddCharge_(p) {
-  requireAdmin_(p.adminToken);
-
-  const ownerId = String(p.ownerId || "");
-  const month = normalizeBillingMonth_(
-    p.billingMonth || p.month
-  );
-
-  const amount = number_(p.amountDue || p.amount);
-  const dueDate = toDate_(p.dueDate);
-
-  const owner = rows_("Owners").find(function(r) {
-    return String(r.OwnerID) === ownerId;
-  });
-
-  if (!owner) {
-    throw new Error("Customer not found.");
-  }
-
-  if (!month || !(amount > 0) || !dueDate) {
-    throw new Error(
-      "Valid billing month, amount and due date are required."
-    );
-  }
-
-  const duplicate = rows_("Payments").some(function(r) {
-    return String(r.OwnerID) === ownerId &&
-      normalizeBillingMonth_(r.BillingMonth) === month;
-  });
-
-  if (duplicate) {
-    throw new Error(
-      "Monthly charge already exists for " + month + "."
-    );
-  }
-
-  const id = Utilities.getUuid();
-
-  sheet_("Payments").appendRow([
-    id,
-    owner.OwnerID,
-    owner.OwnerName,
-    owner.Vehicle,
-    month,
-    amount,
-    0,
-    dueDate,
-    "",
-    "",
-    new Date()
-  ]);
-
-  return {
-    message: "Monthly charge added successfully.",
-    paymentId: id
-  };
-}
-
-
-/* =====================================================
-   13. ADMIN MANUAL PAYMENT ENTRY
-===================================================== */
-
-function adminRecordPayment_(p) {
-  requireAdmin_(p.adminToken);
-
-  const paymentId = String(
-    p.paymentID || p.paymentId || ""
-  );
-
-  const amount = number_(p.amount);
-
-  if (!paymentId || !(amount > 0)) {
-    throw new Error(
-      "Select a monthly charge and enter a valid amount."
-    );
-  }
-
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-
+document.getElementById("chargeForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
   try {
-    const sh = sheet_("Payments");
-
-    const charge = rows_("Payments").find(function(r) {
-      return String(r.PaymentID) === paymentId;
-    });
-
-    if (!charge) {
-      throw new Error("Monthly charge not found.");
-    }
-
-    const due = number_(charge.AmountDue);
-    const paid = number_(charge.AmountPaid);
-
-    if (amount > due-paid) {
-      throw new Error("Amount exceeds remaining charge balance.");
-    }
-
-    const row = findRowByValue_(sh,1,paymentId);
-
-    const method = String(
-      p.method || p.paymentMethod || "CASH"
-    ).trim();
-
-    const reference = String(p.reference || "").trim();
-    const note = String(p.note || "").trim();
-
-    sh.getRange(row,7).setValue(paid+amount);
-    sh.getRange(row,9).setValue(method);
-    sh.getRange(row,10).setValue(note);
-
-    sheet_("Transactions").appendRow([
-      Utilities.getUuid(),
-      paymentId,
-      charge.OwnerID,
-      charge.OwnerName,
-      charge.Vehicle,
-      normalizeBillingMonth_(charge.BillingMonth),
-      amount,
-      method,
-      reference,
-      note,
-      toDate_(p.paymentDate) || new Date(),
-      new Date()
-    ]);
-
-    return {
-      message: "Payment recorded successfully."
-    };
-
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-
-/* =====================================================
-   14. ADMIN PAYMENT LIST
-===================================================== */
-
-function adminPayments_(p) {
-  requireAdmin_(p.adminToken);
-
-  return {
-    payments: rows_("Payments")
-      .sort(function(a,b) {
-        return dateValue_(b.DueDate)-dateValue_(a.DueDate);
-      })
-      .map(function(r) {
-        const due = number_(r.AmountDue);
-        const paid = number_(r.AmountPaid);
-
-        return {
-          paymentID: r.PaymentID,
-          ownerId: r.OwnerID,
-          ownerName: r.OwnerName,
-          vehicle: r.Vehicle,
-          billingMonth: normalizeBillingMonth_(r.BillingMonth),
-          amountDue: due,
-          amountPaid: paid,
-          balance: Math.max(0,due-paid),
-          dueDate: r.DueDate,
-
-          status: paid >= due
-            ? "PAID"
-            : paid > 0
-              ? "PARTIAL"
-              : "DUE"
-        };
-      })
-  };
-}
-
-
-/* =====================================================
-   15. ADMIN PAYMENT REQUESTS
-===================================================== */
-
-function adminPaymentRequests_(p) {
-  requireAdmin_(p.adminToken);
-
-  const status = String(p.status || "ALL").toUpperCase();
-
-  const list = rows_("PaymentRequests")
-    .filter(function(r) {
-      return status === "ALL" ||
-        String(r.Status).toUpperCase() === status;
-    })
-    .sort(function(a,b) {
-      return dateValue_(b.CreatedAt)-dateValue_(a.CreatedAt);
-    });
-
-  return {
-    requests: list.map(requestPublic_)
-  };
-}
-
-
-function adminReviewPaymentRequest_(p) {
-  requireAdmin_(p.adminToken);
-
-  const requestId = String(p.requestId || "");
-  const decision = String(p.decision || "").toUpperCase();
-
-  if (
-    !requestId ||
-    !["APPROVE","REJECT"].includes(decision)
-  ) {
-    throw new Error("Invalid payment review request.");
-  }
-
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-
+    await api("adminAddCharge",data);
+    toast("Monthly charge added");e.currentTarget.reset();await loadPayments();
+  } catch(err){toast(err.message);}
+});
+document.getElementById("paymentForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
   try {
-    const requestSheet = sheet_("PaymentRequests");
+    await api("adminRecordPayment",data);
+    toast("Payment recorded successfully");e.currentTarget.reset();await loadPayments();await loadDashboard();
+  } catch(err){toast(err.message);}
+});
 
-    const request = rows_("PaymentRequests").find(function(r) {
-      return String(r.RequestID) === requestId;
-    });
-
-    if (!request) {
-      throw new Error("Payment request not found.");
-    }
-
-    if (String(request.Status).toUpperCase() !== "PENDING") {
-      throw new Error("This request has already been reviewed.");
-    }
-
-    const requestRow = findRowByValue_(
-      requestSheet,1,requestId
-    );
-
-    const adminNote = String(p.adminNote || "");
-
-    if (decision === "REJECT") {
-      requestSheet.getRange(requestRow,10).setValue("REJECTED");
-      requestSheet.getRange(requestRow,12).setValue(new Date());
-      requestSheet.getRange(requestRow,13).setValue("ADMIN");
-      requestSheet.getRange(requestRow,14).setValue(adminNote);
-
-      return {
-        message: "Payment request rejected."
-      };
-    }
-
-    const paySheet = sheet_("Payments");
-
-    const charge = rows_("Payments").find(function(r) {
-      return String(r.PaymentID) === String(request.PaymentID);
-    });
-
-    if (!charge) {
-      throw new Error("Linked monthly charge no longer exists.");
-    }
-
-    const due = number_(charge.AmountDue);
-    const paid = number_(charge.AmountPaid);
-    const amount = number_(request.Amount);
-
-    if (amount <= 0 || amount > due-paid) {
-      throw new Error(
-        "The charge balance has changed. Review this request manually."
-      );
-    }
-
-    const payRow = findRowByValue_(
-      paySheet,1,charge.PaymentID
-    );
-
-    paySheet.getRange(payRow,7).setValue(paid+amount);
-    paySheet.getRange(payRow,9).setValue("UPI");
-    paySheet.getRange(payRow,10).setValue(
-      "UPI request approved. UTR: " + request.UTR
-    );
-
-    sheet_("Transactions").appendRow([
-      Utilities.getUuid(),
-      charge.PaymentID,
-      request.OwnerID,
-      request.OwnerName,
-      request.Vehicle,
-      normalizeBillingMonth_(request.BillingMonth),
-      amount,
-      "UPI",
-      request.UTR,
-      adminNote || request.CustomerNote || "",
-      new Date(),
-      new Date()
-    ]);
-
-    /*
-     * Correctly update only the relevant columns.
-     * Preserve CreatedAt and other historical values.
-     */
-    requestSheet.getRange(requestRow,10).setValue("APPROVED");
-    requestSheet.getRange(requestRow,12).setValue(new Date());
-    requestSheet.getRange(requestRow,13).setValue("ADMIN");
-    requestSheet.getRange(requestRow,14).setValue(adminNote);
-
-    return {
-      message: "Payment approved and customer balance updated."
-    };
-
-  } finally {
-    lock.releaseLock();
-  }
+/* UPI REQUESTS */
+async function loadRequests() {
+  try {
+    const status=document.getElementById("requestFilter").value;
+    const r=await api("adminPaymentRequests",{status});
+    requests=r.requests||[];
+    document.getElementById("requestsTable").innerHTML=requests.map(x=>`
+      <tr>
+        <td><strong>${esc(x.ownerName)}</strong></td>
+        <td>${esc(x.vehicle)}</td><td>${esc(x.billingMonth)}</td>
+        <td>${money(x.amount)}</td><td>${esc(x.utr)}</td>
+        <td>${fmtDateTime(x.createdAt)}</td><td>${badge(x.status)}</td>
+        <td>${String(x.status).toUpperCase()==="PENDING"?`<button class="btn small-btn" onclick="openReview('${esc(x.requestId)}')">Review</button>`:"—"}</td>
+      </tr>`).join("")||'<tr><td colspan="8" class="empty">No payment requests</td></tr>';
+  } catch(e){toast(e.message);}
 }
-
-
-function requestPublic_(r) {
-  return {
-    requestId: r.RequestID,
-    paymentID: r.PaymentID,
-    ownerId: r.OwnerID,
-    ownerName: r.OwnerName,
-    vehicle: r.Vehicle,
-    billingMonth: normalizeBillingMonth_(r.BillingMonth),
-    amount: number_(r.Amount),
-    utr: r.UTR,
-    customerNote: r.CustomerNote || "",
-    status: r.Status,
-    createdAt: r.CreatedAt,
-    reviewedAt: r.ReviewedAt || "",
-    reviewedBy: r.ReviewedBy || "",
-    adminNote: r.AdminNote || ""
-  };
+function openReview(id) {
+  document.getElementById("reviewRequestId").value=id;
+  document.getElementById("reviewModal").classList.add("show");
 }
+document.getElementById("reviewForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
+  try {
+    await api("adminReviewPaymentRequest",data);
+    closeModal("reviewModal");toast("Payment request reviewed");
+    await loadRequests();await loadPayments();await loadDashboard();
+  } catch(err){toast(err.message);}
+});
 
-
-/* =====================================================
-   16. ADMIN DASHBOARD
-===================================================== */
-
-function adminDashboard_(p) {
-  requireAdmin_(p.adminToken);
-
-  const owners = rows_("Owners");
-  const payments = rows_("Payments");
-  const movements = rows_("Movements");
-
-  const active = owners.filter(function(r) {
-    return isActive_(r.Active);
-  });
-
-  const outstanding = payments.reduce(function(sum,r) {
-    return sum + Math.max(
-      0,
-      number_(r.AmountDue)-number_(r.AmountPaid)
-    );
-  },0);
-
-  const today = Utilities.formatDate(
-    new Date(),
-    CONFIG.TIMEZONE,
-    "yyyy-MM-dd"
+/* MOVEMENTS */
+async function loadMovements() {
+  try {
+    const r=await api("adminMovements");
+    movements=r.movements||[];
+    renderMovements();
+  } catch(e){toast(e.message);}
+}
+function renderMovements() {
+  const q=(document.getElementById("movementSearch").value||"").toLowerCase();
+  const filter=document.getElementById("movementFilter").value;
+  const list=movements.filter(m=>
+    [m.ownerName,m.vehicle].join(" ").toLowerCase().includes(q)&&
+    (filter==="ALL"||String(m.action).toUpperCase()===filter)
   );
-
-  const todayMoves = movements.filter(function(r) {
-    return formatDate_(r.DateTime,"yyyy-MM-dd") === today;
-  });
-
-  const pendingRequests = rows_("PaymentRequests")
-    .filter(function(r) {
-      return String(r.Status).toUpperCase() === "PENDING";
-    }).length;
-
-  return {
-    dashboard: {
-      totalCustomers: active.length,
-      totalVehicles: active.length,
-      totalOutstanding: outstanding,
-
-      totalCollected: payments.reduce(
-        (sum,r) => sum+number_(r.AmountPaid),0
-      ),
-
-      todayCheckIns: todayMoves.filter(function(r) {
-        return String(r.Action).toUpperCase() === "IN";
-      }).length,
-
-      todayCheckOuts: todayMoves.filter(function(r) {
-        return String(r.Action).toUpperCase() === "OUT";
-      }).length,
-
-      pendingPaymentRequests: pendingRequests
-    }
-  };
+  document.getElementById("movementsTable").innerHTML=list.map(m=>`
+    <tr>
+      <td>${fmtDateTime(m.dateTime)}</td><td>${esc(m.ownerName)}</td>
+      <td><strong>${esc(m.vehicle)}</strong></td><td>${badge(m.action)}</td>
+      <td>${esc(m.odometer??"—")}</td><td>${esc(m.distance??"—")}</td>
+      <td>${m.photoUrl?`<a href="${esc(m.photoUrl)}" target="_blank" rel="noopener" class="purple-text">View Photo ↗</a>`:"—"}</td>
+    </tr>`).join("")||'<tr><td colspan="7" class="empty">No movement records found</td></tr>';
 }
 
-
-/* =====================================================
-   17. ADMIN MOVEMENT HISTORY
-===================================================== */
-
-function adminMovements_(p) {
-  requireAdmin_(p.adminToken);
-
-  return {
-    movements: rows_("Movements")
-      .sort(function(a,b) {
-        return dateValue_(b.DateTime)-dateValue_(a.DateTime);
-      })
-      .slice(0,500)
-      .map(function(r) {
-        const item = movementPublic_(r);
-        item.ownerName = r.OwnerName || "";
-        item.source = r.Source || "";
-        return item;
-      })
-  };
-}
-
-
-/* =====================================================
-   18. ADMIN STATUS CORRECTION
-===================================================== */
-
-function adminCorrectStatus_(p) {
-  requireAdmin_(p.adminToken);
-
-  const ownerId = String(p.ownerId || "");
-  const action = String(
-    p.status || p.actionType || ""
-  ).toUpperCase();
-
-  if (
-    !ownerId ||
-    !["IN","OUT","PARKED","OUTSIDE"].includes(action)
-  ) {
-    throw new Error("Invalid status correction.");
-  }
-
-  const owner = rows_("Owners").find(function(r) {
-    return String(r.OwnerID) === ownerId;
-  });
-
-  if (!owner) {
-    throw new Error("Customer not found.");
-  }
-
-  const movement =
-    action === "IN" || action === "PARKED"
-      ? "IN"
-      : "OUT";
-
-  sheet_("Movements").appendRow([
-    Utilities.getUuid(),
-    owner.OwnerID,
-    owner.OwnerName,
-    owner.Vehicle,
-    movement,
-    "",
-    "",
-    "",
-    new Date(),
-    String(p.note || "Admin status correction"),
-    "ADMIN"
-  ]);
-
-  return {
-    message: "Vehicle status corrected successfully."
-  };
-}
-
-
-/* =====================================================
-   19. GENERAL SHEET HELPERS
-===================================================== */
-
-function sheet_(name) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sh = ss.getSheetByName(name);
-
-  if (!sh) {
-    throw new Error(
-      "Missing sheet: " + name + ". Run setup() first."
-    );
-  }
-
-  return sh;
-}
-
-
-function rows_(name) {
-  const sh = sheet_(name);
-  const values = sh.getDataRange().getValues();
-
-  if (values.length < 2) {
-    return [];
-  }
-
-  const headers = values[0].map(String);
-
-  return values.slice(1)
-    .filter(function(r) {
-      return r.some(function(v) {
-        return v !== "";
-      });
-    })
-    .map(function(r) {
-      const obj = {};
-
-      headers.forEach(function(h,i) {
-        obj[h] = r[i];
-      });
-
-      return obj;
-    });
-}
-
-
-function publicOwner_(r) {
-  return {
-    ownerId: r.OwnerID,
-    ownerName: r.OwnerName,
-    vehicle: r.Vehicle,
-    mobile: r.Mobile,
-    joiningDate: r.JoiningDate,
-    serviceStartDate: r.JoiningDate,
-    monthlyAmount: number_(r.MonthlyAmount),
-    active: isActive_(r.Active)
-  };
-}
-
-
-function newToken_() {
-  return Utilities.getUuid().replace(/-/g,"") +
-    Utilities.getUuid().replace(/-/g,"");
-}
-
-
-function normVehicle_(v) {
-  return String(v || "")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g,"");
-}
-
-
-function hash_(value) {
-  return Utilities.computeDigest(
-    Utilities.DigestAlgorithm.SHA_256,
-    String(value),
-    Utilities.Charset.UTF_8
-  )
-  .map(function(b) {
-    return (b+256).toString(16).slice(-2);
-  })
-  .join("");
-}
-
-
-function number_(v) {
-  const n = Number(v);
-  return isFinite(n) ? n : 0;
-}
-
-
-function isActive_(v) {
-  return !(
-    v === false ||
-    String(v).toUpperCase() === "FALSE" ||
-    String(v).toUpperCase() === "INACTIVE"
-  );
-}
-
-
-function dateValue_(v) {
-  const d = toDate_(v);
-  return d ? d.getTime() : 0;
-}
-
-
-function toDate_(v) {
-  if (!v) return null;
-
-  if (v instanceof Date && !isNaN(v.getTime())) {
-    return v;
-  }
-
-  /*
-   * Handle HTML date input YYYY-MM-DD consistently
-   * in the configured Indian timezone.
-   */
-  const s = String(v).trim();
-  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-
-  if (m) {
-    return new Date(
-      Number(m[1]),
-      Number(m[2])-1,
-      Number(m[3]),
-      12,0,0
-    );
-  }
-
-  const d = new Date(v);
-  return isNaN(d.getTime()) ? null : d;
-}
-
-
-function formatDate_(v,pattern) {
-  const d = toDate_(v);
-
-  return d
-    ? Utilities.formatDate(d,CONFIG.TIMEZONE,pattern)
-    : "";
-}
-
-
-function normalizeBillingMonth_(value) {
-  if (!value) return "";
-
-  if (value instanceof Date) {
-    return Utilities.formatDate(
-      value,
-      CONFIG.TIMEZONE,
-      "yyyy-MM"
-    );
-  }
-
-  const s = String(value).trim();
-
-  let m = s.match(/^(\d{4})[-/](\d{1,2})$/);
-
-  if (m) {
-    return m[1]+"-"+("0"+m[2]).slice(-2);
-  }
-
-  m = s.match(/^(\d{1,2})[-/](\d{4})$/);
-
-  if (m) {
-    return m[2]+"-"+("0"+m[1]).slice(-2);
-  }
-
-  const d = new Date(s);
-
-  return isNaN(d.getTime())
-    ? ""
-    : Utilities.formatDate(d,CONFIG.TIMEZONE,"yyyy-MM");
-}
-
-
-function daysInMonth_(year,monthIndex) {
-  return new Date(year,monthIndex+1,0).getDate();
-}
-
-
-function addMonthOnDay_(base,months) {
-  const y = base.getFullYear();
-  const m = base.getMonth()+months;
-  const day = base.getDate();
-
-  const first = new Date(y,m,1);
-
-  return new Date(
-    first.getFullYear(),
-    first.getMonth(),
-    Math.min(
-      day,
-      daysInMonth_(first.getFullYear(),first.getMonth())
-    ),
-    12,0,0
-  );
-}
-
-
-function findRowByValue_(sh,column,value) {
-  const last = sh.getLastRow();
-
-  if (last < 2) return 0;
-
-  const found = sh.getRange(
-    2,column,last-1,1
-  )
-  .createTextFinder(String(value))
-  .matchEntireCell(true)
-  .findNext();
-
-  return found ? found.getRow() : 0;
-}
-
-
-function json_(obj) {
-  return ContentService
-    .createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+/* SETTINGS */
+document.getElementById("settingsForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
+  try {
+    await api("adminUpdateSettings",data);
+    toast("Settings saved successfully");
+  } catch(err){toast("Settings action is not available in Code.gs yet: "+err.message);}
+});
+
+/* MODALS */
+function closeModal(id){document.getElementById(id).classList.remove("show");}
+document.querySelectorAll(".modal").forEach(m=>{
+  m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("show");});
+});
+
+/* INITIALIZATION */
+verifySession();
+</script>
+</body>
+</html>
