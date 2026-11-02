@@ -1,1010 +1,2421 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <base target="_top">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Smart Parking | Admin Panel</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Parking | Admin Panel</title>
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-    :root {
-      --bg:#10051e;
-      --panel:#1d0b32;
-      --panel2:#291044;
-      --purple:#8b3dff;
-      --purple2:#bd75ff;
-      --pink:#df64ff;
-      --text:#fff;
-      --muted:#bba9d1;
-      --border:rgba(202,153,255,.19);
-      --green:#4ade80;
-      --red:#fb7185;
-      --yellow:#facc15;
-    }
+:root{
+  --bg:#090817;
+  --panel:#131127;
+  --panel2:#1a1733;
+  --purple:#8b5cf6;
+  --purple2:#a78bfa;
+  --cyan:#22d3ee;
+  --green:#22c55e;
+  --red:#ef4444;
+  --yellow:#f59e0b;
+  --text:#f5f3ff;
+  --muted:#a5a0bd;
+  --border:rgba(167,139,250,.16);
+}
 
-    * {box-sizing:border-box}
-    body {
-      margin:0;
-      font-family:Inter,Arial,sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(ellipse at 15% 0%,#42136a 0%,transparent 38%),
-        radial-gradient(ellipse at 90% 100%,#30104d 0%,transparent 40%),
-        var(--bg);
-      min-height:100vh;
-    }
-    button,input,select,textarea {font:inherit}
-    button {cursor:pointer}
-    .hidden {display:none!important}
-    .muted {color:var(--muted)}
-    .small {font-size:12px;color:var(--muted)}
-    .purple-text {color:#d9b6ff}
+*{box-sizing:border-box;margin:0;padding:0}
 
-    /* LOGIN */
-    #loginScreen {
-      min-height:100vh;display:flex;align-items:center;justify-content:center;
-      padding:20px;
-      background:radial-gradient(circle at center,#461477 0%,#1c0a30 45%,#0d0418 100%);
-    }
-    .login-card {
-      width:100%;max-width:420px;padding:35px;
-      border:1px solid var(--border);border-radius:25px;
-      background:linear-gradient(145deg,#351052,#1b092d);
-      box-shadow:0 25px 80px #0009, inset 0 1px #ffffff18;
-    }
-    .brand-icon {
-      width:65px;height:65px;border-radius:20px;
-      display:grid;place-items:center;font-size:30px;
-      background:linear-gradient(135deg,#a855f7,#6d28d9);
-      box-shadow:0 10px 35px #9333ea66;margin-bottom:20px;
-    }
-    .login-card h1 {margin:0 0 7px;font-size:25px}
-    .login-card p {color:var(--muted);font-size:13px;margin:0 0 25px}
+body{
+  font-family:Inter,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
 
-    /* APP LAYOUT */
-    #app {display:none;min-height:100vh}
-    .sidebar {
-      width:255px;position:fixed;left:0;top:0;bottom:0;z-index:20;
-      padding:22px 15px;overflow-y:auto;
-      background:linear-gradient(180deg,#321052,#1a092c 70%,#130720);
-      border-right:1px solid var(--border);
-      transition:transform .25s;
-    }
-    .logo {display:flex;align-items:center;gap:12px;padding:5px 10px 25px}
-    .logo-mark {
-      width:43px;height:43px;border-radius:14px;display:grid;place-items:center;
-      font-size:22px;background:linear-gradient(135deg,#c084fc,#7c3aed);
-    }
-    .logo strong {display:block;font-size:14px}
-    .logo small {font-size:10px;color:#d2b7f1}
-    .nav-label {
-      color:#9c82b8;font-size:10px;font-weight:800;
-      letter-spacing:1.5px;padding:15px 12px 8px;
-    }
-    .nav-btn {
-      width:100%;border:0;background:transparent;color:#d8c6ec;
-      padding:12px 13px;border-radius:12px;text-align:left;
-      display:flex;align-items:center;gap:12px;margin:3px 0;
-      font-size:13px;font-weight:600;transition:.2s;
-    }
-    .nav-btn:hover,.nav-btn.active {
-      color:#fff;background:linear-gradient(100deg,#8738d9,#6020a5);
-      box-shadow:0 7px 22px #842be344;
-    }
-    .nav-icon {width:22px;text-align:center;font-size:17px}
-    .sidebar-bottom {margin-top:30px;border-top:1px solid var(--border);padding-top:15px}
-    .logout-btn {color:#ff9eb1}
-    .main {margin-left:255px;min-height:100vh;padding:25px 30px 50px}
-    .topbar {display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:25px}
-    .topbar h2 {margin:0;font-size:22px}
-    .topbar p {margin:5px 0 0;color:var(--muted);font-size:12px}
-    .top-actions {display:flex;align-items:center;gap:10px}
-    .admin-pill {
-      padding:9px 14px;border-radius:30px;background:#672ba1;
-      font-size:12px;border:1px solid #bd75ff55;
-    }
-    .menu-btn {display:none}
+button,input,select,textarea{font:inherit}
 
-    /* COMPONENTS */
-    .section {display:none}
-    .section.active {display:block}
-    .grid {display:grid;gap:17px}
-    .stats-grid {grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:18px}
-    .status-grid {grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:20px}
-    .card {
-      background:linear-gradient(145deg,rgba(75,31,112,.86),rgba(29,10,48,.96));
-      border:1px solid var(--border);border-radius:19px;padding:20px;
-      box-shadow:0 12px 35px #0002,inset 0 1px #ffffff0b;
-      min-width:0;
-    }
-    .stat-top {display:flex;align-items:center;justify-content:space-between}
-    .stat-icon {
-      width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
-      font-size:20px;background:linear-gradient(135deg,#a855f7,#6b21a8);
-    }
-    .stat-label {font-size:12px;color:#d4c0e9}
-    .stat-value {font-size:27px;font-weight:800;margin-top:13px}
-    .status-card {cursor:pointer;transition:.2s}
-    .status-card:hover {transform:translateY(-3px);border-color:#c084fc}
-    .status-number {font-size:25px;font-weight:800;margin-top:10px}
-    .inside {color:var(--green)}
-    .outside {color:#fbbf24}
-    .section-heading {
-      display:flex;justify-content:space-between;align-items:center;
-      gap:12px;margin:24px 0 15px;flex-wrap:wrap;
-    }
-    .section-heading h3 {font-size:16px;margin:0}
-    .btn {
-      border:0;border-radius:11px;padding:11px 16px;color:white;
-      font-weight:700;font-size:12px;
-      background:linear-gradient(110deg,#a855f7,#7028c6);
-      box-shadow:0 5px 18px #8b3dff35;
-    }
-    .btn:hover {filter:brightness(1.12)}
-    .btn.secondary {background:#482366;border:1px solid var(--border);box-shadow:none}
-    .btn.danger {background:linear-gradient(110deg,#e04475,#9f1239)}
-    .btn.success {background:linear-gradient(110deg,#16a36a,#08744b)}
-    .btn.small-btn {padding:8px 11px;font-size:11px}
-    .form-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-    .field {display:flex;flex-direction:column;gap:7px;min-width:0}
-    .field.full {grid-column:1/-1}
-    label {font-size:12px;color:#ddc9f3;font-weight:600}
-    input,select,textarea {
-      width:100%;min-width:0;border:1px solid #784c9c;
-      border-radius:10px;padding:12px 13px;
-      background:#190b29;color:white;outline:none;font-size:13px;
-    }
-    input:focus,select:focus,textarea:focus {border-color:#c084fc;box-shadow:0 0 0 3px #a855f722}
-    select option {background:#251039;color:white}
-    input::placeholder,textarea::placeholder {color:#907aa8}
-    textarea {resize:vertical;min-height:75px}
-    .form-actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
-    .toolbar {display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}
-    .toolbar input,.toolbar select {max-width:260px}
-    .table-wrap {overflow-x:auto;border:1px solid var(--border);border-radius:14px}
-    table {width:100%;border-collapse:collapse;min-width:650px}
-    th,td {padding:13px 14px;text-align:left;border-bottom:1px solid #ffffff10;font-size:12px}
-    th {background:#3a1857;color:#e8d7fa;font-size:11px;white-space:nowrap}
-    td {color:#f0e7fa}
-    tr:last-child td {border-bottom:0}
-    tbody tr:hover {background:#ffffff08}
-    .badge {
-      display:inline-flex;padding:5px 9px;border-radius:30px;
-      font-size:10px;font-weight:800;background:#553076;color:#ead7ff;
-      white-space:nowrap;
-    }
-    .badge.green {background:#145b42;color:#9ff3c8}
-    .badge.red {background:#70213c;color:#ffc0d0}
-    .badge.yellow {background:#654d17;color:#ffe39b}
-    .badge.purple {background:#602e91;color:#e8ccff}
-    .empty {padding:35px;text-align:center;color:var(--muted);font-size:13px}
-    .photo-preview {
-      width:100%;max-width:230px;height:145px;object-fit:cover;
-      border-radius:13px;border:1px solid var(--border);display:none;
-    }
-    
-    .avatar-photo {width:45px;height:36px;object-fit:cover;border-radius:7px}
-    .detail-photo {width:100%;max-width:300px;height:190px;object-fit:cover;border-radius:15px}
-    .notice {padding:12px 14px;border-radius:11px;background:#532d741c;border:1px solid var(--border);color:#ddc7f2;font-size:12px}
-    .two-col {display:grid;grid-template-columns:1fr 1fr;gap:17px}
-    .quick-list {display:grid;gap:10px}
-    .quick-item {padding:13px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff10;display:flex;justify-content:space-between;gap:12px;font-size:12px}
-    .modal {
-      display:none;position:fixed;inset:0;z-index:100;
-      background:#08020dcc;align-items:center;justify-content:center;padding:18px;
-    }
-    .modal.show {display:flex}
-    .modal-box {
-      width:100%;max-width:850px;max-height:90vh;overflow-y:auto;
-      background:linear-gradient(145deg,#351450,#1b092c);
-      border:1px solid #b77ae966;border-radius:20px;padding:22px;
-      box-shadow:0 25px 90px #000b;
-    }
-    .modal-head {display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-    .modal-head h3 {margin:0;font-size:17px}
-    .close-btn {background:#552675;border:0;color:white;border-radius:9px;padding:8px 12px}
-    #toast {
-      position:fixed;right:20px;bottom:20px;z-index:200;
-      padding:13px 18px;border-radius:12px;background:#57258b;
-      border:1px solid #c084fc;color:white;font-size:13px;
-      box-shadow:0 10px 35px #0008;display:none;max-width:90vw;
-    }
-    .loading {opacity:.55;pointer-events:none}
-    .mobile-overlay {display:none}
+button{cursor:pointer}
 
-    @media(max-width:900px) {
-      .sidebar {transform:translateX(-100%)}
-      .sidebar.open {transform:translateX(0)}
-      .main {margin-left:0;padding:20px}
-      .menu-btn {display:block}
-      .mobile-overlay.show {display:block;position:fixed;inset:0;background:#0009;z-index:15}
-    }
-    @media(max-width:600px) {
-      .main {padding:16px 13px 35px}
-      .stats-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-      .status-grid {gap:10px}
-      .card {padding:14px;border-radius:15px}
-      .stat-value {font-size:22px}
-      .stat-label {font-size:10px}
-      .topbar h2 {font-size:18px}
-      .admin-pill {font-size:10px;padding:8px}
-      .form-grid,.two-col {grid-template-columns:1fr}
-      .field.full {grid-column:auto}
-      .toolbar input,.toolbar select {max-width:100%;flex:1}
-      .login-card {padding:25px}
-    }
-  </style>
+.hidden{display:none!important}
+
+/* LOGIN */
+
+.login-screen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:
+  radial-gradient(circle at 20% 20%,#321c6d 0,transparent 35%),
+  radial-gradient(circle at 80% 80%,#12334d 0,transparent 35%),
+  var(--bg);
+}
+
+.login-card{
+  width:100%;
+  max-width:410px;
+  background:rgba(19,17,39,.94);
+  border:1px solid var(--border);
+  padding:35px;
+  border-radius:22px;
+  box-shadow:0 0 50px rgba(139,92,246,.13);
+}
+
+.logo{
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  border-radius:17px;
+  background:linear-gradient(135deg,var(--purple),#4f46e5);
+  font-size:27px;
+  margin-bottom:20px;
+}
+
+.login-card h1{font-size:25px;margin-bottom:8px}
+.login-card p{color:var(--muted);font-size:13px;margin-bottom:25px}
+
+/* LAYOUT */
+
+.app{display:flex;min-height:100vh}
+
+.sidebar{
+  width:250px;
+  background:#100e21;
+  border-right:1px solid var(--border);
+  padding:22px 15px;
+  position:fixed;
+  inset:0 auto 0 0;
+  z-index:50;
+  overflow-y:auto;
+  transition:.3s;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:5px 10px 28px;
+}
+
+.brand-icon{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,var(--purple),#4f46e5);
+  border-radius:13px;
+  font-size:20px;
+}
+
+.brand strong{font-size:14px;display:block}
+.brand small{font-size:10px;color:var(--muted)}
+
+.nav-label{
+  color:#716c8b;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  padding:15px 12px 9px;
+}
+
+.nav-btn{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  width:100%;
+  border:0;
+  color:var(--muted);
+  background:transparent;
+  border-radius:11px;
+  text-align:left;
+  margin:3px 0;
+  font-size:12px;
+  font-weight:600;
+  transition:.2s;
+}
+
+.nav-btn:hover,.nav-btn.active{
+  color:white;
+  background:linear-gradient(90deg,rgba(139,92,246,.25),rgba(139,92,246,.07));
+}
+
+.nav-btn.active{border-left:3px solid var(--purple)}
+
+.nav-icon{font-size:17px;width:21px;text-align:center}
+
+.main{
+  margin-left:250px;
+  width:calc(100% - 250px);
+  min-height:100vh;
+}
+
+.topbar{
+  height:76px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 30px;
+  border-bottom:1px solid var(--border);
+  background:rgba(13,11,29,.8);
+  position:sticky;
+  top:0;
+  z-index:20;
+  backdrop-filter:blur(15px);
+}
+
+.topbar h2{font-size:17px}
+.topbar p{font-size:11px;color:var(--muted);margin-top:4px}
+
+.top-actions{display:flex;align-items:center;gap:12px}
+
+.admin-badge{
+  background:rgba(139,92,246,.14);
+  color:var(--purple2);
+  padding:9px 12px;
+  border-radius:9px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.menu-toggle{
+  display:none;
+  background:none;
+  border:0;
+  color:white;
+  font-size:23px;
+}
+
+.content{padding:28px;max-width:1500px;margin:auto}
+
+/* COMPONENTS */
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.section-head h2{font-size:20px}
+.section-head p{color:var(--muted);font-size:12px;margin-top:6px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:25px;
+}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:19px;
+}
+
+.stat-card{position:relative;overflow:hidden}
+.stat-card:after{
+  content:"";
+  position:absolute;
+  width:90px;height:90px;
+  border-radius:50%;
+  background:rgba(139,92,246,.1);
+  right:-25px;top:-30px;
+}
+
+.stat-icon{font-size:21px;margin-bottom:15px}
+.stat-label{color:var(--muted);font-size:11px}
+.stat-value{font-size:25px;font-weight:800;margin-top:8px}
+.stat-note{font-size:10px;color:var(--muted);margin-top:7px}
+
+.two-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:17px;
+  margin-bottom:20px;
+}
+
+.card-title{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:17px;
+}
+
+.form-card{max-width:800px}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.field{margin-bottom:15px}
+.field.full{grid-column:1/-1}
+
+label{
+  display:block;
+  color:#c4bfd8;
+  font-size:11px;
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:12px 13px;
+  background:#0d0b1d;
+  border:1px solid #30294d;
+  border-radius:10px;
+  color:white;
+  outline:none;
+  font-size:12px;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--purple);
+  box-shadow:0 0 0 3px rgba(139,92,246,.1);
+}
+
+textarea{resize:vertical;min-height:80px}
+
+input::placeholder{color:#77718e}
+
+.btn{
+  border:0;
+  padding:11px 16px;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:700;
+  color:white;
+  background:linear-gradient(135deg,var(--purple),#6541d9);
+  transition:.2s;
+}
+
+.btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.btn-secondary{background:#292443;border:1px solid var(--border)}
+.btn-green{background:#126b43}
+.btn-red{background:#812d3c}
+.btn-cyan{background:#155a70}
+.btn-small{padding:7px 10px;font-size:10px}
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:17px;
+}
+
+.toolbar input{max-width:300px}
+.toolbar select{max-width:190px}
+
+.table-wrap{
+  overflow-x:auto;
+  width:100%;
+}
+
+table{width:100%;border-collapse:collapse;min-width:650px}
+
+th{
+  text-align:left;
+  color:#918aa9;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  padding:13px;
+  border-bottom:1px solid var(--border);
+}
+
+td{
+  padding:14px 13px;
+  border-bottom:1px solid rgba(167,139,250,.08);
+  font-size:11px;
+  color:#e7e3f5;
+}
+
+tr:hover td{background:rgba(139,92,246,.035)}
+
+.muted{color:var(--muted)}
+.small{font-size:10px}
+
+.badge{
+  display:inline-block;
+  border-radius:30px;
+  padding:6px 9px;
+  font-size:9px;
+  font-weight:800;
+}
+
+.badge-green{background:rgba(34,197,94,.13);color:#4ade80}
+.badge-red{background:rgba(239,68,68,.13);color:#f87171}
+.badge-yellow{background:rgba(245,158,11,.13);color:#fbbf24}
+.badge-purple{background:rgba(139,92,246,.17);color:#c4b5fd}
+.badge-cyan{background:rgba(34,211,238,.13);color:#67e8f9}
+
+.empty{
+  padding:35px 15px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.actions{display:flex;gap:7px;flex-wrap:wrap}
+
+.notice{
+  background:rgba(139,92,246,.09);
+  border:1px solid var(--border);
+  padding:13px;
+  border-radius:10px;
+  color:#c4b5fd;
+  font-size:11px;
+  line-height:1.6;
+  margin-bottom:17px;
+}
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  background:#211b3d;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 18px;
+  font-size:12px;
+  z-index:200;
+  box-shadow:0 10px 30px #0008;
+  max-width:340px;
+}
+
+.toast.error{border-color:#ef4444}
+.toast.success{border-color:#22c55e}
+
+.loader{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#090817bb;
+  z-index:150;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(4px);
+}
+
+.loader.show{display:flex}
+
+.spinner{
+  width:40px;height:40px;
+  border:3px solid #393052;
+  border-top-color:var(--purple);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MODAL */
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:#000a;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+}
+
+.modal.show{display:flex}
+
+.modal-box{
+  width:100%;
+  max-width:750px;
+  max-height:90vh;
+  overflow-y:auto;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.close{
+  background:none;
+  color:white;
+  border:0;
+  font-size:24px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:760px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;width:100%}
+  .menu-toggle{display:block}
+  .topbar{padding:0 16px}
+  .content{padding:17px}
+  .two-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .field.full{grid-column:auto}
+  .grid{gap:10px}
+  .stat-card{padding:14px}
+  .stat-value{font-size:20px}
+  .admin-badge{display:none}
+}
+</style>
 </head>
 
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen">
+
+<div id="loginScreen" class="login-screen">
   <div class="login-card">
-    <div class="brand-icon">🅿</div>
+    <div class="logo">🚗</div>
     <h1>Smart Parking</h1>
-    <p>Administrator Portal · Secure Login</p>
+    <p>Administrator Portal · Secure Access</p>
+
     <form id="loginForm">
       <div class="field">
         <label>ADMIN PIN</label>
-        <input id="adminPin" type="password" placeholder="Enter your admin PIN" required>
+        <input
+          type="password"
+          id="adminPin"
+          placeholder="Enter administrator PIN"
+          inputmode="numeric"
+          required
+        >
       </div>
-      <div class="form-actions">
-        <button class="btn" style="width:100%" type="submit">Login to Dashboard →</button>
-      </div>
+
+      <button class="btn" style="width:100%;padding:14px">
+        Login to Dashboard →
+      </button>
     </form>
-    <div class="small" style="margin-top:18px;text-align:center">Secure Parking Management System</div>
+
+    <p style="margin-top:20px;margin-bottom:0;font-size:10px">
+      Secure parking management system
+    </p>
   </div>
 </div>
 
-<!-- APP -->
-<div id="app">
-  <div class="mobile-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- APPLICATION -->
+
+<div id="app" class="app hidden">
 
   <aside class="sidebar" id="sidebar">
-    <div class="logo">
-      <div class="logo-mark">🅿</div>
-      <div><strong>SMART PARKING</strong><small>MANAGEMENT SYSTEM</small></div>
+
+    <div class="brand">
+      <div class="brand-icon">🚗</div>
+      <div>
+        <strong>SMART PARKING</strong>
+        <small>MANAGEMENT SYSTEM</small>
+      </div>
     </div>
 
-    <div class="nav-label">MAIN MENU</div>
-    <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">▦</span>Dashboard</button>
-    <button class="nav-btn" data-page="customers"><span class="nav-icon">♙</span>Customers & Vehicles</button>
-    <button class="nav-btn" data-page="register"><span class="nav-icon">＋</span>Register Customer</button>
+    <div class="nav-label">OVERVIEW</div>
+
+    <button class="nav-btn active" data-page="dashboard">
+      <span class="nav-icon">▦</span> Dashboard
+    </button>
+
+    <div class="nav-label">CUSTOMER MANAGEMENT</div>
+
+    <button class="nav-btn" data-page="customers">
+      <span class="nav-icon">👥</span> Customers & Vehicles
+    </button>
+
+    <button class="nav-btn" data-page="register">
+      <span class="nav-icon">＋</span> Register Customer
+    </button>
 
     <div class="nav-label">FINANCIAL MANAGEMENT</div>
-    <button class="nav-btn" data-page="charges"><span class="nav-icon">▤</span>Monthly Charges</button>
-    <button class="nav-btn" data-page="payments"><span class="nav-icon">₹</span>Payments</button>
-    <button class="nav-btn" data-page="requests"><span class="nav-icon">⇄</span>UPI Requests</button>
 
-    <div class="nav-label">PARKING OPERATIONS</div>
-    <button class="nav-btn" data-page="movements"><span class="nav-icon">⇆</span>Vehicle Movements</button>
+    <button class="nav-btn" data-page="charges">
+      <span class="nav-icon">📅</span> Monthly Charges
+    </button>
+
+    <button class="nav-btn" data-page="payments">
+      <span class="nav-icon">💳</span> Payments
+    </button>
+
+    <button class="nav-btn" data-page="requests">
+      <span class="nav-icon">🔔</span> UPI Requests
+    </button>
+
+    <div class="nav-label">VEHICLE ACTIVITY</div>
+
+    <button class="nav-btn" data-page="movements">
+      <span class="nav-icon">🚘</span> Vehicle Movements
+    </button>
 
     <div class="nav-label">SYSTEM</div>
-    <button class="nav-btn" data-page="settings"><span class="nav-icon">⚙</span>Settings</button>
 
-    <div class="sidebar-bottom">
-      <button class="nav-btn logout-btn" onclick="logout()"><span class="nav-icon">↪</span>Logout</button>
-    </div>
+    <button class="nav-btn" data-page="settings">
+      <span class="nav-icon">⚙</span> Settings
+    </button>
+
+    <button class="nav-btn" onclick="logout()">
+      <span class="nav-icon">↪</span> Logout
+    </button>
+
   </aside>
 
+
   <main class="main">
+
     <header class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button class="btn menu-btn" onclick="toggleSidebar()">☰</button>
+      <div style="display:flex;align-items:center;gap:13px">
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
         <div>
           <h2 id="pageTitle">Dashboard</h2>
-          <p id="pageSubtitle">Your parking business at a glance</p>
+          <p id="todayDate"></p>
         </div>
       </div>
+
       <div class="top-actions">
-        <span class="admin-pill">● ADMIN PANEL</span>
+        <span class="admin-badge">● ADMINISTRATOR</span>
       </div>
     </header>
 
-    <!-- DASHBOARD -->
-    <section class="section active" id="page-dashboard">
-      <div class="grid stats-grid">
-        <div class="card">
-          <div class="stat-top"><span class="stat-label">TOTAL VEHICLES</span><span class="stat-icon">🚘</span></div>
-          <div class="stat-value" id="totalVehicles">0</div>
-        </div>
-        <div class="card">
-          <div class="stat-top"><span class="stat-label">OUTSTANDING</span><span class="stat-icon">💳</span></div>
-          <div class="stat-value" id="totalOutstanding">₹0</div>
-        </div>
-        <div class="card">
-          <div class="stat-top"><span class="stat-label">TOTAL COLLECTED</span><span class="stat-icon">💰</span></div>
-          <div class="stat-value" id="totalCollected">₹0</div>
-        </div>
-      </div>
+    <div class="content">
 
-      <div class="grid status-grid">
-        <div class="card status-card" onclick="showVehicleStatus('PARKED')">
-          <div class="stat-top"><span class="stat-label">PARKED · INSIDE</span><span class="stat-icon">🟢</span></div>
-          <div class="status-number inside" id="parkedVehicles">0 Vehicles</div>
-          <div class="small" style="margin-top:7px">Click to view parked vehicles →</div>
-        </div>
-        <div class="card status-card" onclick="showVehicleStatus('OUTSIDE')">
-          <div class="stat-top"><span class="stat-label">OUTSIDE</span><span class="stat-icon">🟠</span></div>
-          <div class="status-number outside" id="outsideVehicles">0 Vehicles</div>
-          <div class="small" style="margin-top:7px">Click to view outside vehicles →</div>
-        </div>
-      </div>
+      <!-- DASHBOARD -->
 
-      <div class="two-col">
-        <div class="card">
-          <div class="section-heading" style="margin-top:0">
-            <h3>Recent Vehicle Activity</h3>
-            <button class="btn secondary small-btn" onclick="navigate('movements')">View All</button>
+      <section id="page-dashboard" class="page">
+
+        <div class="section-head">
+          <div>
+            <h2>Dashboard Overview</h2>
+            <p>Monitor your parking operations and finances.</p>
           </div>
-          <div class="quick-list" id="recentActivity"><div class="empty">Loading activity...</div></div>
+          <button class="btn btn-secondary" onclick="loadDashboard()">
+            ↻ Refresh
+          </button>
         </div>
-        <div class="card">
-          <div class="section-heading" style="margin-top:0">
-            <h3>Payment Requests</h3>
-            <button class="btn secondary small-btn" onclick="navigate('requests')">Review</button>
+
+        <div class="grid">
+
+          <div class="card stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-label">Total Customers</div>
+            <div class="stat-value" id="statCustomers">0</div>
+            <div class="stat-note">Active registered customers</div>
           </div>
-          <div class="quick-list" id="recentRequests"><div class="empty">Loading requests...</div></div>
-          <div class="notice" style="margin-top:15px">Verify UTR details before approving customer payment requests.</div>
-        </div>
-      </div>
-    </section>
 
-    <!-- CUSTOMERS -->
-    <section class="section" id="page-customers">
-      <div class="section-heading" style="margin-top:0">
-        <h3>Customers & Vehicles</h3>
-        <button class="btn" onclick="navigate('register')">＋ Register Customer</button>
-      </div>
-      <div class="toolbar">
-        <input id="customerSearch" placeholder="Search name / vehicle / mobile..." oninput="renderCustomers()">
-        <select id="customerStatusFilter" onchange="renderCustomers()">
-          <option value="ALL">All Customers</option>
-          <option value="PARKED">Parked Inside</option>
-          <option value="OUTSIDE">Outside</option>
-          <option value="INACTIVE">Inactive</option>
-        </select>
-      </div>
-      <div class="card" style="padding:0">
-        <div class="table-wrap" style="border:0">
-          <table>
-            <thead><tr>
-              <th>PHOTO</th><th>CUSTOMER</th><th>VEHICLE</th><th>STATUS</th><th>MONTHLY CHARGE</th><th>ACTION</th>
-            </tr></thead>
-            <tbody id="customersTable"><tr><td colspan="6" class="empty">Loading customers...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+          <div class="card stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-label">Total Collection</div>
+            <div class="stat-value" id="statCollected">₹0</div>
+            <div class="stat-note">Recorded payments</div>
+          </div>
 
-    <!-- REGISTER -->
-    <section class="section" id="page-register">
-      <div class="card">
-        <div class="section-heading" style="margin-top:0"><h3>Register New Customer</h3></div>
-        <form id="registerForm">
-          <div class="form-grid">
-            <div class="field"><label>Customer Name *</label><input name="ownerName" required placeholder="Full name"></div>
-            <div class="field"><label>Vehicle Number *</label><input name="vehicle" required placeholder="DL XX XX XXXX"></div>
-            <div class="field"><label>Mobile Number *</label><input name="mobile" required inputmode="numeric" maxlength="10" placeholder="10 digit mobile"></div>
-            <div class="field"><label>Customer PIN *</label><input name="pin" required inputmode="numeric" maxlength="4" placeholder="4 digit PIN"></div>
-            <div class="field"><label>Joining Date *</label><input name="joiningDate" type="date" required></div>
-            <div class="field"><label>Monthly Parking Charge (₹) *</label><input name="monthlyAmount" type="number" min="0" step="0.01" required placeholder="2000"></div>
-            <div class="field full">
-              <label>Vehicle Photo (Optional)</label>
-              <input id="carPhoto" type="file" accept="image/*">
-              <img id="carPhotoPreview" class="photo-preview" alt="Vehicle preview">
-              <div class="small">Upload a clear vehicle photo. Maximum 5 MB.</div>
+          <div class="card stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-label">Outstanding Amount</div>
+            <div class="stat-value" id="statOutstanding">₹0</div>
+            <div class="stat-note">Pending customer dues</div>
+          </div>
+
+          <div class="card stat-card">
+            <div class="stat-icon">🔔</div>
+            <div class="stat-label">Pending UPI Requests</div>
+            <div class="stat-value" id="statRequests">0</div>
+            <div class="stat-note">Awaiting admin verification</div>
+          </div>
+
+        </div>
+
+        <div class="two-grid">
+
+          <div class="card">
+            <div class="card-title">Today's Vehicle Activity</div>
+
+            <div class="grid" style="grid-template-columns:1fr 1fr;margin:0">
+              <div>
+                <div class="stat-label">Check-ins</div>
+                <div class="stat-value" id="statCheckins">0</div>
+                <span class="badge badge-green">IN</span>
+              </div>
+
+              <div>
+                <div class="stat-label">Check-outs</div>
+                <div class="stat-value" id="statCheckouts">0</div>
+                <span class="badge badge-red">OUT</span>
+              </div>
             </div>
           </div>
-          <div class="form-actions">
-            <button class="btn" type="submit">Register Customer</button>
-            <button class="btn secondary" type="reset" onclick="clearPhotoPreview()">Reset Form</button>
-          </div>
-        </form>
-      </div>
-    </section>
 
-    <!-- CHARGES -->
-    <section class="section" id="page-charges">
-      <div class="two-col">
+          <div class="card">
+            <div class="card-title">Quick Actions</div>
+            <div class="actions">
+              <button class="btn" onclick="showPage('register')">
+                + Register Customer
+              </button>
+
+              <button class="btn btn-secondary" onclick="showPage('charges')">
+                Generate Bills
+              </button>
+
+              <button class="btn btn-secondary" onclick="showPage('requests')">
+                Review UPI
+              </button>
+            </div>
+          </div>
+
+        </div>
+
         <div class="card">
-          <div class="section-heading" style="margin-top:0"><h3>Add Monthly Charge</h3></div>
-          <form id="chargeForm">
-            <div class="field"><label>Select Customer *</label><select name="ownerId" id="chargeOwner" required><option value="">Select customer</option></select></div>
-            <div class="field" style="margin-top:13px"><label>Billing Month *</label><input name="billingMonth" type="month" required></div>
-            <div class="field" style="margin-top:13px"><label>Amount Due (₹) *</label><input name="amountDue" type="number" min="0" step="0.01" required></div>
-            <div class="field" style="margin-top:13px"><label>Due Date *</label><input name="dueDate" type="date" required></div>
-            <div class="form-actions"><button class="btn" type="submit">Add Charge</button></div>
+          <div class="card-title">Recent Vehicle Movements</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vehicle</th>
+                  <th>Movement</th>
+                  <th>Odometer</th>
+                  <th>Date & Time</th>
+                  <th>Photo</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardMovements"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- CUSTOMERS -->
+
+      <section id="page-customers" class="page hidden">
+
+        <div class="section-head">
+          <div>
+            <h2>Customers & Vehicles</h2>
+            <p>Manage registered customers and their vehicles.</p>
+          </div>
+
+          <button class="btn" onclick="showPage('register')">
+            + Add Customer
+          </button>
+        </div>
+
+        <div class="card">
+
+          <div class="toolbar">
+            <input
+              id="customerSearch"
+              placeholder="Search name, vehicle or mobile..."
+              oninput="renderCustomers()"
+            >
+
+            <button class="btn btn-secondary" onclick="loadCustomers()">
+              ↻ Refresh
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Vehicle</th>
+                  <th>Mobile</th>
+                  <th>Monthly Fee</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customersTable"></tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- REGISTER -->
+
+      <section id="page-register" class="page hidden">
+
+        <div class="section-head">
+          <div>
+            <h2>Register New Customer</h2>
+            <p>Create a customer account and vehicle profile.</p>
+          </div>
+        </div>
+
+        <div class="card form-card">
+
+          <div class="notice">
+            Customer login will require Vehicle Number, Registered Mobile Number and a 4-digit Customer PIN.
+          </div>
+
+          <form id="registerForm">
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label>Customer Full Name *</label>
+                <input name="name" required placeholder="Enter customer name">
+              </div>
+
+              <div class="field">
+                <label>Vehicle Number *</label>
+                <input name="vehicle" required placeholder="DL01AB1234">
+              </div>
+
+              <div class="field">
+                <label>Registered Mobile Number *</label>
+                <input
+                  name="mobile"
+                  required
+                  maxlength="10"
+                  inputmode="numeric"
+                  placeholder="10-digit mobile number"
+                >
+              </div>
+
+              <div class="field">
+                <label>Customer Login PIN *</label>
+                <input
+                  name="pin"
+                  type="password"
+                  required
+                  maxlength="4"
+                  minlength="4"
+                  inputmode="numeric"
+                  placeholder="4-digit PIN"
+                >
+              </div>
+
+              <div class="field">
+                <label>Joining Date *</label>
+                <input name="joiningDate" type="date" required>
+              </div>
+
+              <div class="field">
+                <label>Monthly Parking Fee (₹) *</label>
+                <input
+                  name="monthlyAmount"
+                  type="number"
+                  min="1"
+                  step="0.01"
+                  required
+                  placeholder="e.g. 1500"
+                >
+              </div>
+
+            </div>
+
+            <button class="btn" type="submit">
+              Register Customer →
+            </button>
+
           </form>
         </div>
-        <div class="card">
-          <h3 style="margin-top:0;font-size:16px">Billing Information</h3>
-          <div class="notice">Add charges for the required billing month. The backend manages outstanding balances and payment allocation according to its billing rules.</div>
-          <div class="quick-list" style="margin-top:15px">
-            <div class="quick-item"><span>Billing cycle</span><strong>Monthly</strong></div>
-            <div class="quick-item"><span>Unpaid balance</span><strong>Carried forward</strong></div>
-            <div class="quick-item"><span>Payment allocation</span><strong>Oldest dues first</strong></div>
+
+      </section>
+
+
+      <!-- CHARGES -->
+
+      <section id="page-charges" class="page hidden">
+
+        <div class="section-head">
+          <div>
+            <h2>Monthly Charges</h2>
+            <p>Generate monthly bills and manage parking fees.</p>
           </div>
         </div>
-      </div>
-      <div class="section-heading"><h3>Billing Records</h3><button class="btn secondary small-btn" onclick="loadPayments()">↻ Refresh</button></div>
-      <div class="card" style="padding:0"><div class="table-wrap" style="border:0">
-        <table><thead><tr><th>CUSTOMER</th><th>VEHICLE</th><th>MONTH</th><th>DUE</th><th>PAID</th><th>BALANCE</th><th>STATUS</th></tr></thead>
-        <tbody id="chargesTable"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody></table>
-      </div></div>
-    </section>
 
-    <!-- PAYMENTS -->
-    <section class="section" id="page-payments">
-      <div class="two-col">
+        <div class="two-grid">
+
+          <div class="card">
+            <div class="card-title">Generate Monthly Bills</div>
+
+            <div class="notice">
+              This creates bills only for active customers. Existing bills will not be duplicated. Historical billing records are preserved.
+            </div>
+
+            <div class="field">
+              <label>Select Billing Month</label>
+              <input type="month" id="generateMonth">
+            </div>
+
+            <button class="btn" onclick="generateBills()">
+              Generate Monthly Bills
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Add Manual Charge</div>
+
+            <form id="chargeForm">
+
+              <div class="field">
+                <label>Customer *</label>
+                <select name="ownerId" id="chargeOwner" required>
+                  <option value="">Select customer</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Billing Month *</label>
+                <input type="month" name="billingMonth" required>
+              </div>
+
+              <div class="field">
+                <label>Amount Due (₹) *</label>
+                <input type="number" name="amountDue" min="1" step=".01" required>
+              </div>
+
+              <div class="field">
+                <label>Due Date *</label>
+                <input type="date" name="dueDate" required>
+              </div>
+
+              <button class="btn" type="submit">
+                Add Charge
+              </button>
+
+            </form>
+          </div>
+
+        </div>
+
         <div class="card">
-          <div class="section-heading" style="margin-top:0"><h3>Record Payment</h3></div>
+          <div class="card-title">Monthly Billing Records</div>
+
+          <div class="toolbar">
+            <input id="chargeSearch" placeholder="Search customer or vehicle..." oninput="renderPayments()">
+            <select id="chargeFilter" onchange="renderPayments()">
+              <option value="ALL">All Status</option>
+              <option value="DUE">Due</option>
+              <option value="PARTIAL">Partial</option>
+              <option value="PAID">Paid</option>
+            </select>
+            <button class="btn btn-secondary" onclick="loadPayments()">↻ Refresh</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Vehicle</th>
+                  <th>Month</th>
+                  <th>Due</th>
+                  <th>Paid</th>
+                  <th>Balance</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="chargesTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- PAYMENTS -->
+
+      <section id="page-payments" class="page hidden">
+
+        <div class="section-head">
+          <div>
+            <h2>Payments Management</h2>
+            <p>Record collections and review payment transactions.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+
+          <div class="card-title">Record Customer Payment</div>
+
           <form id="paymentForm">
-            <div class="field"><label>Unpaid Bill *</label><select name="paymentID" id="paymentBill" required><option value="">Select unpaid bill</option></select></div>
-            <div class="field" style="margin-top:13px"><label>Payment Amount (₹) *</label><input name="amount" type="number" min="0.01" step="0.01" required></div>
-            <div class="field" style="margin-top:13px"><label>Payment Method *</label>
-              <select name="paymentMethod" required><option value="CASH">Cash</option><option value="UPI">UPI</option><option value="BANK TRANSFER">Bank Transfer</option><option value="OTHER">Other</option></select>
+
+            <div class="form-grid">
+
+              <div class="field">
+                <label>Select Monthly Charge *</label>
+                <select name="paymentID" id="paymentCharge" required>
+                  <option value="">Select outstanding charge</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Amount Received (₹) *</label>
+                <input name="amount" type="number" min=".01" step=".01" required>
+              </div>
+
+              <div class="field">
+                <label>Payment Method</label>
+                <select name="method">
+                  <option value="CASH">Cash</option>
+                  <option value="UPI">UPI</option>
+                  <option value="BANK TRANSFER">Bank Transfer</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Payment Date</label>
+                <input name="paymentDate" type="date">
+              </div>
+
+              <div class="field">
+                <label>Reference / UTR</label>
+                <input name="reference" placeholder="Optional transaction reference">
+              </div>
+
+              <div class="field">
+                <label>Note</label>
+                <input name="note" placeholder="Optional note">
+              </div>
+
             </div>
-            <div class="field" style="margin-top:13px"><label>Reference / UTR</label><input name="reference" placeholder="Transaction reference"></div>
-            <div class="field" style="margin-top:13px"><label>Note</label><textarea name="note" placeholder="Optional note"></textarea></div>
-            <div class="form-actions"><button class="btn success" type="submit">Save Payment</button></div>
+
+            <div class="notice">
+              Payments are automatically allocated to the oldest outstanding dues first, even when a newer monthly charge is selected.
+            </div>
+
+            <button class="btn btn-green" type="submit">
+              Record Payment
+            </button>
+
           </form>
         </div>
-        <div class="card">
-          <h3 style="margin-top:0;font-size:16px">Payment Records</h3>
-          <div class="notice">Record payments against the correct bill. Partial payments are supported only if permitted by the backend billing logic.</div>
-          <button class="btn secondary" style="margin-top:15px" onclick="loadPayments()">Refresh Payment Records</button>
-        </div>
-      </div>
-      <div class="section-heading"><h3>All Bills & Payment Status</h3></div>
-      <div class="card" style="padding:0"><div class="table-wrap" style="border:0">
-        <table><thead><tr><th>CUSTOMER</th><th>VEHICLE</th><th>BILLING MONTH</th><th>DUE</th><th>PAID</th><th>BALANCE</th><th>STATUS</th></tr></thead>
-        <tbody id="paymentsTable"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody></table>
-      </div></div>
-    </section>
 
-    <!-- PAYMENT REQUESTS -->
-    <section class="section" id="page-requests">
-      <div class="section-heading" style="margin-top:0">
-        <h3>Customer UPI Payment Requests</h3>
-        <button class="btn secondary small-btn" onclick="loadRequests()">↻ Refresh</button>
-      </div>
-      <div class="toolbar">
-        <select id="requestFilter" onchange="loadRequests()">
-          <option value="ALL">All Requests</option>
-          <option value="PENDING">Pending</option>
-          <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
-        </select>
-      </div>
-      <div class="card" style="padding:0"><div class="table-wrap" style="border:0">
-        <table><thead><tr><th>CUSTOMER</th><th>VEHICLE</th><th>MONTH</th><th>AMOUNT</th><th>UTR</th><th>DATE</th><th>STATUS</th><th>ACTION</th></tr></thead>
-        <tbody id="requestsTable"><tr><td colspan="8" class="empty">Loading...</td></tr></tbody></table>
-      </div></div>
-    </section>
-
-    <!-- MOVEMENTS -->
-    <section class="section" id="page-movements">
-      <div class="section-heading" style="margin-top:0">
-        <h3>Vehicle Movement History</h3>
-        <button class="btn secondary small-btn" onclick="loadMovements()">↻ Refresh</button>
-      </div>
-      <div class="toolbar">
-        <input id="movementSearch" placeholder="Search customer / vehicle..." oninput="renderMovements()">
-        <select id="movementFilter" onchange="renderMovements()">
-          <option value="ALL">All Movements</option>
-          <option value="IN">Check-In</option>
-          <option value="OUT">Check-Out</option>
-        </select>
-      </div>
-      <div class="card" style="padding:0"><div class="table-wrap" style="border:0">
-        <table><thead><tr><th>DATE & TIME</th><th>CUSTOMER</th><th>VEHICLE</th><th>ACTION</th><th>ODOMETER</th><th>DISTANCE</th><th>PHOTO</th></tr></thead>
-        <tbody id="movementsTable"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody></table>
-      </div></div>
-    </section>
-
-    <!-- SETTINGS -->
-    <section class="section" id="page-settings">
-      <div class="two-col">
         <div class="card">
-          <div class="section-heading" style="margin-top:0"><h3>UPI Payment Settings</h3></div>
-          <form id="settingsForm">
-            <div class="field"><label>UPI ID</label><input name="upiId" id="settingsUpiId" placeholder="yourname@upi"></div>
-            <div class="field" style="margin-top:13px"><label>UPI Account Name</label><input name="upiName" id="settingsUpiName" placeholder="Account holder name"></div>
-            <div class="form-actions"><button class="btn" type="submit">Save UPI Settings</button></div>
-          </form>
-          <div class="notice" style="margin-top:15px">Saving these settings requires the matching secure backend action in Code.gs.</div>
-        </div>
-        <div class="card">
-          <h3 style="margin-top:0;font-size:16px">Parking System</h3>
-          <div class="quick-list">
-            <div class="quick-item"><span>Application</span><strong>Smart Parking</strong></div>
-            <div class="quick-item"><span>Portal</span><strong>Administrator</strong></div>
-            <div class="quick-item"><span>Timezone</span><strong>Asia/Kolkata</strong></div>
-            <div class="quick-item"><span>Security</span><strong>PIN + Session</strong></div>
+          <div class="card-title">Payment Records</div>
+
+          <div class="toolbar">
+            <input id="paymentSearch" placeholder="Search customer or vehicle..." oninput="renderPayments()">
+            <button class="btn btn-secondary" onclick="loadPayments()">↻ Refresh</button>
           </div>
-          <button class="btn danger" style="margin-top:17px" onclick="logout()">Logout from Admin</button>
-        </div>
-      </div>
-    </section>
 
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Vehicle</th>
+                  <th>Month</th>
+                  <th>Amount Due</th>
+                  <th>Amount Paid</th>
+                  <th>Balance</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- UPI REQUESTS -->
+
+      <section id="page-requests" class="page hidden">
+
+        <div class="section-head">
+          <div>
+            <h2>UPI Payment Requests</h2>
+            <p>Verify customer-submitted UPI references.</p>
+          </div>
+
+          <button class="btn btn-secondary" onclick="loadRequests()">
+            ↻ Refresh
+          </button>
+        </div>
+
+        <div class="notice">
+          Important: Verify the actual bank / UPI transaction before approving any payment. A UTR submitted by a customer is not proof of successful payment.
+        </div>
+
+        <div class="card">
+
+          <div class="toolbar">
+            <select id="requestFilter" onchange="loadRequests()">
+              <option value="ALL">All Requests</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Vehicle</th>
+                  <th>Month</th>
+                  <th>Amount</th>
+                  <th>UTR</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="requestsTable"></tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- MOVEMENTS -->
+
+      <section id="page-movements" class="page hidden">
+
+        <div class="section-head">
+          <div>
+            <h2>Vehicle Movements</h2>
+            <p>Monitor vehicle check-in and check-out records.</p>
+          </div>
+
+          <button class="btn btn-secondary" onclick="loadMovements()">
+            ↻ Refresh
+          </button>
+        </div>
+
+        <div class="card">
+
+          <div class="toolbar">
+            <input id="movementSearch" placeholder="Search vehicle..." oninput="renderMovements()">
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vehicle</th>
+                  <th>Movement</th>
+                  <th>Odometer</th>
+                  <th>Distance</th>
+                  <th>Date & Time</th>
+                  <th>Photo</th>
+                  <th>Source</th>
+                </tr>
+              </thead>
+              <tbody id="movementsTable"></tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- SETTINGS -->
+
+      <section id="page-settings" class="page hidden">
+
+        <div class="section-head">
+          <div>
+            <h2>System Settings</h2>
+            <p>Manage payment configuration and administrator access.</p>
+          </div>
+        </div>
+
+        <div class="card form-card">
+
+          <div class="card-title">UPI Payment Settings</div>
+
+          <form id="settingsForm">
+
+            <div class="field">
+              <label>UPI ID</label>
+              <input name="upiId" id="upiId" placeholder="yourname@upi">
+            </div>
+
+            <div class="field">
+              <label>UPI Display Name</label>
+              <input name="upiName" id="upiName" placeholder="Parking Business Name">
+            </div>
+
+            <hr style="border-color:var(--border);margin:20px 0">
+
+            <div class="card-title">Change Administrator PIN</div>
+
+            <div class="field">
+              <label>New Admin PIN (Optional)</label>
+              <input
+                name="newAdminPin"
+                type="password"
+                minlength="4"
+                maxlength="8"
+                inputmode="numeric"
+                placeholder="Enter new 4-8 digit PIN"
+              >
+            </div>
+
+            <button class="btn" type="submit">
+              Save Settings
+            </button>
+
+          </form>
+
+        </div>
+
+      </section>
+
+    </div>
   </main>
 </div>
 
-<!-- CUSTOMER DETAIL MODAL -->
-<div class="modal" id="detailModal">
+
+<!-- CUSTOMER DETAILS MODAL -->
+
+<div class="modal" id="detailsModal">
   <div class="modal-box">
-    <div class="modal-head"><h3>Customer Details</h3><button class="close-btn" onclick="closeModal('detailModal')">✕</button></div>
-    <div id="customerDetailsContent"><div class="empty">Loading...</div></div>
+    <div class="modal-head">
+      <h3>Customer Details</h3>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+
+    <div id="detailsContent"></div>
   </div>
 </div>
 
-<!-- REVIEW REQUEST MODAL -->
-<div class="modal" id="reviewModal">
-  <div class="modal-box" style="max-width:500px">
-    <div class="modal-head"><h3>Review Payment Request</h3><button class="close-btn" onclick="closeModal('reviewModal')">✕</button></div>
-    <form id="reviewForm">
-      <input type="hidden" name="requestId" id="reviewRequestId">
-      <div class="field"><label>Decision *</label><select name="decision" id="reviewDecision"><option value="APPROVED">Approve Payment</option><option value="REJECTED">Reject Request</option></select></div>
-      <div class="field" style="margin-top:13px"><label>Admin Note</label><textarea name="adminNote" placeholder="Optional note"></textarea></div>
-      <div class="form-actions"><button class="btn" type="submit">Submit Decision</button></div>
-    </form>
-  </div>
+
+<!-- LOADER AND TOAST -->
+
+<div class="loader" id="loader">
+  <div class="spinner"></div>
 </div>
 
-<div id="toast"></div>
+<div id="toast" class="toast hidden"></div>
+
 
 <script>
-/* =========================================================
-   SMART PARKING ADMIN
-   API contract: Google Apps Script Code.gs
-========================================================= */
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzDxI1LyqLkIkTioRTn-xuL9JHZ_iWUH8LYrPUlniFgizDI6wbbM0X4OLtamcwwLhIQ/exec";
-const SESSION_KEY = "parkingAdminToken";
+/* ==========================================
+   CONFIGURATION
+========================================== */
 
-let adminToken = sessionStorage.getItem(SESSION_KEY) || "";
-let owners = [];
+// Replace this URL if you deploy a new Apps Script version.
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxw3bAJRaCIuZE4KzQkQZCwFyxZjTvXa_fhGA9rlw8X4K87jisZlaKSpoBDF4xfBeGn/exec";
+
+
+let adminToken = sessionStorage.getItem("parkingAdminToken") || "";
+
+let customers = [];
 let payments = [];
 let movements = [];
 let requests = [];
-let currentDashboard = {};
 
-const pageInfo = {
-  dashboard:["Dashboard","Your parking business at a glance"],
-  customers:["Customers & Vehicles","Manage registered parking customers"],
-  register:["Register Customer","Add a new customer and vehicle"],
-  charges:["Monthly Charges","Create monthly parking bills"],
-  payments:["Payments","Record and track customer payments"],
-  requests:["UPI Payment Requests","Verify customer UPI transactions"],
-  movements:["Vehicle Movements","Track vehicle entry and exit"],
-  settings:["Settings","Configure your parking system"]
-};
+let currentPage = "dashboard";
 
-function toast(message) {
-  const el=document.getElementById("toast");
-  el.textContent=message;el.style.display="block";
-  clearTimeout(window.toastTimer);
-  window.toastTimer=setTimeout(()=>el.style.display="none",3500);
-}
 
-function money(value) {
-  return "₹"+Number(value||0).toLocaleString("en-IN",{maximumFractionDigits:2});
-}
-function esc(value) {
-  return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function fmtDate(value) {
-  if(!value)return "—";
-  const d=new Date(value);
-  return isNaN(d) ? esc(value) : d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
-}
-function fmtDateTime(value) {
-  if(!value)return "—";
-  const d=new Date(value);
-  return isNaN(d) ? esc(value) : d.toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
-}
-function badge(status) {
-  const s=String(status||"").toUpperCase();
-  let cls="purple";
-  if(["IN","PARKED","APPROVED","PAID","ACTIVE","COMPLETE"].includes(s))cls="green";
-  if(["OUT","OUTSIDE","REJECTED","INACTIVE","CANCELLED"].includes(s))cls="red";
-  if(["PENDING","PARTIAL","DUE"].includes(s))cls="yellow";
-  return `<span class="badge ${cls}">${esc(s||"—")}</span>`;
-}
-function getToken() {return adminToken;}
+/* ==========================================
+   API
+========================================== */
 
-async function api(action,data={}) {
-  const payload={action,...data};
-  if(action!=="adminLogin") payload.adminToken=getToken();
+async function api(action, data = {}) {
 
-  const response=await fetch(API_URL,{
-    method:"POST",
-    body:new URLSearchParams(
-      Object.entries(payload).map(([k,v])=>[k,typeof v==="object"&&v!==null?JSON.stringify(v):String(v??"")])
-    )
+  const params = new URLSearchParams();
+
+  params.append("action", action);
+
+  Object.keys(data).forEach(key => {
+    if (data[key] !== undefined && data[key] !== null) {
+      params.append(key, data[key]);
+    }
   });
-  const result=await response.json();
-  if(!response.ok || result.ok===false) throw new Error(result.message||result.error||"Request failed");
+
+  if (adminToken && !data.adminToken) {
+    params.append("adminToken", adminToken);
+  }
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    body: params
+  });
+
+  const result = await response.json();
+
+  if (!result.ok && !result.success) {
+    throw new Error(
+      result.message || result.error || "Request failed."
+    );
+  }
+
   return result;
 }
 
-function showLogin() {
-  document.getElementById("loginScreen").style.display="flex";
-  document.getElementById("app").style.display="none";
-}
-function showApp() {
-  document.getElementById("loginScreen").style.display="none";
-  document.getElementById("app").style.display="block";
-}
-function logout() {
-  sessionStorage.removeItem(SESSION_KEY);
-  adminToken="";
-  showLogin();
-  document.getElementById("adminPin").value="";
-  toast("Logged out successfully");
+
+function setLoading(show) {
+  document.getElementById("loader")
+    .classList.toggle("show", !!show);
 }
 
-document.getElementById("loginForm").addEventListener("submit",async e=>{
+
+function toast(message, type = "success") {
+  const el = document.getElementById("toast");
+
+  el.textContent = message;
+  el.className = "toast " + type;
+
+  setTimeout(() => {
+    el.classList.add("hidden");
+  }, 3500);
+}
+
+
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2
+  });
+}
+
+
+function safe(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+}
+
+
+function dateText(value) {
+  if (!value) return "-";
+
+  const d = new Date(value);
+
+  if (isNaN(d.getTime())) return safe(value);
+
+  return d.toLocaleDateString("en-IN");
+}
+
+
+function dateTimeText(value) {
+  if (!value) return "-";
+
+  const d = new Date(value);
+
+  if (isNaN(d.getTime())) return safe(value);
+
+  return d.toLocaleString("en-IN");
+}
+
+
+function badge(status) {
+  const s = String(status || "").toUpperCase();
+
+  let cls = "badge-purple";
+
+  if (["PAID","APPROVED","IN","ACTIVE","PARKED"].includes(s)) {
+    cls = "badge-green";
+  }
+
+  if (["DUE","PENDING","PARTIAL"].includes(s)) {
+    cls = "badge-yellow";
+  }
+
+  if (["REJECTED","OUT","INACTIVE","OUTSIDE"].includes(s)) {
+    cls = "badge-red";
+  }
+
+  return `<span class="badge ${cls}">${safe(s)}</span>`;
+}
+
+
+/* ==========================================
+   LOGIN / LOGOUT
+========================================== */
+
+document.getElementById("loginForm")
+.addEventListener("submit", async function(e) {
+
   e.preventDefault();
-  const pin=document.getElementById("adminPin").value.trim();
-  if(!pin)return toast("Enter admin PIN");
+
+  setLoading(true);
+
   try {
-    const r=await api("adminLogin",{adminPin:pin});
-    adminToken=r.adminToken||r.token||"";
-    if(!adminToken)throw new Error("Admin token missing in server response");
-    sessionStorage.setItem(SESSION_KEY,adminToken);
-    showApp();navigate("dashboard");toast("Login successful");
-  } catch(err) {toast(err.message);}
+
+    const pin = document.getElementById("adminPin").value;
+
+    const result = await api("adminLogin", {
+      adminPin: pin
+    });
+
+    adminToken = result.adminToken || result.token;
+
+    sessionStorage.setItem(
+      "parkingAdminToken",
+      adminToken
+    );
+
+    document.getElementById("loginScreen")
+      .classList.add("hidden");
+
+    document.getElementById("app")
+      .classList.remove("hidden");
+
+    document.getElementById("adminPin").value = "";
+
+    toast("Login successful.");
+
+    await initializeApp();
+
+  } catch(err) {
+    toast(err.message, "error");
+  }
+
+  setLoading(false);
 });
 
-async function verifySession() {
-  if(!adminToken){showLogin();return;}
+
+async function logout() {
+
+  adminToken = "";
+
+  sessionStorage.removeItem("parkingAdminToken");
+
+  document.getElementById("app").classList.add("hidden");
+  document.getElementById("loginScreen").classList.remove("hidden");
+
+  showPage("dashboard");
+}
+
+
+async function initializeApp() {
+
+  document.getElementById("todayDate").textContent =
+    new Date().toLocaleDateString("en-IN", {
+      weekday:"long",
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    });
+
+  document.getElementById("generateMonth").value =
+    new Date().toISOString().slice(0,7);
+
   try {
     await loadDashboard();
-    showApp();
-    navigate("dashboard");
-  } catch(e) {
-    sessionStorage.removeItem(SESSION_KEY);adminToken="";showLogin();
+    await loadCustomers();
+    await loadPayments();
+    await loadRequests();
+    await loadMovements();
+    await loadSettings();
+  } catch(err) {
+    toast(err.message, "error");
   }
 }
 
-function navigate(page) {
-  if(!pageInfo[page])return;
-  document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
-  document.querySelectorAll(".nav-btn[data-page]").forEach(x=>x.classList.remove("active"));
-  document.getElementById("page-"+page).classList.add("active");
-  const nav=document.querySelector(`.nav-btn[data-page="${page}"]`);
-  if(nav)nav.classList.add("active");
-  document.getElementById("pageTitle").textContent=pageInfo[page][0];
-  document.getElementById("pageSubtitle").textContent=pageInfo[page][1];
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("overlay").classList.remove("show");
 
-  const loaders={
-    dashboard:loadDashboard,
-    customers:loadOwners,
-    charges:loadPayments,
-    payments:loadPayments,
-    requests:loadRequests,
-    movements:loadMovements
+/* ==========================================
+   AUTO SESSION CHECK
+========================================== */
+
+window.addEventListener("load", async function() {
+
+  if (!adminToken) return;
+
+  setLoading(true);
+
+  try {
+    await api("adminDashboard");
+
+    document.getElementById("loginScreen").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+
+    await initializeApp();
+
+  } catch(err) {
+    adminToken = "";
+    sessionStorage.removeItem("parkingAdminToken");
+  }
+
+  setLoading(false);
+});
+
+
+/* ==========================================
+   NAVIGATION
+========================================== */
+
+function showPage(page) {
+
+  currentPage = page;
+
+  document.querySelectorAll(".page").forEach(el => {
+    el.classList.add("hidden");
+  });
+
+  const section = document.getElementById("page-" + page);
+
+  if (section) section.classList.remove("hidden");
+
+  document.querySelectorAll(".nav-btn[data-page]").forEach(btn => {
+    btn.classList.toggle(
+      "active",
+      btn.dataset.page === page
+    );
+  });
+
+  const titles = {
+    dashboard:"Dashboard",
+    customers:"Customers & Vehicles",
+    register:"Register Customer",
+    charges:"Monthly Charges",
+    payments:"Payments",
+    requests:"UPI Payment Requests",
+    movements:"Vehicle Movements",
+    settings:"System Settings"
   };
-  if(loaders[page])loaders[page]();
+
+  document.getElementById("pageTitle").textContent =
+    titles[page] || "Dashboard";
+
+  document.getElementById("sidebar").classList.remove("open");
+
+  if (page === "dashboard") loadDashboard();
+  if (page === "customers") loadCustomers();
+  if (page === "charges" || page === "payments") loadPayments();
+  if (page === "requests") loadRequests();
+  if (page === "movements") loadMovements();
 }
-document.querySelectorAll(".nav-btn[data-page]").forEach(btn=>{
-  btn.addEventListener("click",()=>navigate(btn.dataset.page));
+
+
+document.querySelectorAll(".nav-btn[data-page]")
+.forEach(btn => {
+  btn.addEventListener("click", () => {
+    showPage(btn.dataset.page);
+  });
 });
-function toggleSidebar() {
+
+
+function toggleMenu() {
   document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("overlay").classList.toggle("show");
 }
 
-/* DASHBOARD */
+
+/* ==========================================
+   DASHBOARD
+========================================== */
+
 async function loadDashboard() {
+
   try {
-    const [d,o,m,r]=await Promise.all([
-      api("adminDashboard"),
-      api("adminOwners"),
-      api("adminMovements"),
-      api("adminPaymentRequests",{status:"PENDING"})
-    ]);
-    currentDashboard=d.dashboard||{};
-    owners=o.owners||[];
-    movements=m.movements||[];
-    requests=r.requests||[];
 
-    const dash=currentDashboard;
-    document.getElementById("totalVehicles").textContent=dash.totalVehicles??owners.filter(x=>x.active!==false).length;
-    document.getElementById("totalOutstanding").textContent=money(dash.totalOutstanding);
-    document.getElementById("totalCollected").textContent=money(dash.totalCollected);
+    const result = await api("adminDashboard");
 
-    const statuses=calculateStatuses(owners,movements);
-    document.getElementById("parkedVehicles").textContent=statuses.parked.length+" Vehicles";
-    document.getElementById("outsideVehicles").textContent=statuses.outside.length+" Vehicles";
+    const d = result.dashboard || {};
 
-    document.getElementById("recentActivity").innerHTML=movements.slice(0,5).map(m=>`
-      <div class="quick-item"><div><strong>${esc(m.vehicle)}</strong><div class="small">${esc(m.ownerName)} · ${fmtDateTime(m.dateTime)}</div></div>${badge(m.action)}</div>
-    `).join("")||'<div class="empty">No recent activity</div>';
+    document.getElementById("statCustomers").textContent =
+      d.totalCustomers || 0;
 
-    document.getElementById("recentRequests").innerHTML=requests.slice(0,5).map(x=>`
-      <div class="quick-item"><div><strong>${esc(x.ownerName)}</strong><div class="small">${esc(x.vehicle)} · ${money(x.amount)}</div></div>${badge(x.status)}</div>
-    `).join("")||'<div class="empty">No pending requests</div>';
-  } catch(e) {toast("Dashboard: "+e.message);}
+    document.getElementById("statCollected").textContent =
+      money(d.totalCollected);
+
+    document.getElementById("statOutstanding").textContent =
+      money(d.totalOutstanding);
+
+    document.getElementById("statRequests").textContent =
+      d.pendingPaymentRequests || 0;
+
+    document.getElementById("statCheckins").textContent =
+      d.todayCheckIns || 0;
+
+    document.getElementById("statCheckouts").textContent =
+      d.todayCheckOuts || 0;
+
+    const m = await api("adminMovements");
+
+    movements = m.movements || [];
+
+    renderDashboardMovements();
+
+  } catch(err) {
+    toast(err.message, "error");
+  }
 }
 
-function calculateStatuses(ownerList,movementList) {
-  const latest={};
-  movementList.forEach(m=>{
-    const id=m.ownerId;
-    if(id && (!latest[id] || new Date(m.dateTime)>new Date(latest[id].dateTime)))latest[id]=m;
-  });
-  const active=ownerList.filter(o=>o.active!==false && String(o.active).toLowerCase()!=="false");
-  const parked=[],outside=[];
-  active.forEach(o=>{
-    const action=String(latest[o.ownerId]?.action||"IN").toUpperCase();
-    if(action==="OUT")outside.push(o);else parked.push(o);
-  });
-  return {parked,outside};
-}
-function showVehicleStatus(status) {
-  navigate("customers");
-  document.getElementById("customerStatusFilter").value=status;
-  renderCustomers();
+
+function renderDashboardMovements() {
+
+  const list = movements.slice(0,7);
+
+  document.getElementById("dashboardMovements").innerHTML =
+    list.length
+    ? list.map(r => `
+      <tr>
+        <td><strong>${safe(r.vehicle)}</strong></td>
+        <td>${badge(r.action === "CHECK IN" ? "IN" : "OUT")}</td>
+        <td>${safe(r.odometer || "-")}</td>
+        <td>${dateTimeText(r.dateTime)}</td>
+        <td>
+          ${r.photoUrl
+            ? `<a target="_blank" href="${safe(r.photoUrl)}" class="btn btn-small btn-secondary">View</a>`
+            : "-"
+          }
+        </td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="5" class="empty">No vehicle activity found.</td></tr>`;
 }
 
-/* CUSTOMERS */
-async function loadOwners() {
+
+/* ==========================================
+   CUSTOMERS
+========================================== */
+
+async function loadCustomers() {
+
   try {
-    const r=await api("adminOwners");
-    owners=r.owners||[];
+
+    const result = await api("adminOwners");
+
+    customers = result.owners || [];
+
     renderCustomers();
-    fillOwnerSelects();
-  } catch(e){toast(e.message);}
+    updateCustomerDropdowns();
+
+  } catch(err) {
+    toast(err.message, "error");
+  }
 }
+
+
 function renderCustomers() {
-  const q=(document.getElementById("customerSearch").value||"").toLowerCase();
-  const filter=document.getElementById("customerStatusFilter").value;
-  const statuses=calculateStatuses(owners,movements);
-  const statusById={};
-  statuses.parked.forEach(x=>statusById[x.ownerId]="PARKED");
-  statuses.outside.forEach(x=>statusById[x.ownerId]="OUTSIDE");
 
-  const list=owners.filter(o=>{
-    const search=[o.ownerName,o.vehicle,o.mobile].join(" ").toLowerCase().includes(q);
-    const status=statusById[o.ownerId]||"INACTIVE";
-    return search&&(filter==="ALL"||filter===status);
+  const q = (
+    document.getElementById("customerSearch")?.value || ""
+  ).toLowerCase();
+
+  const list = customers.filter(c => {
+
+    const text = [
+      c.ownerName,
+      c.name,
+      c.vehicle,
+      c.mobile
+    ].join(" ").toLowerCase();
+
+    return text.includes(q);
   });
-  document.getElementById("customersTable").innerHTML=list.map(o=>{
-    const status=statusById[o.ownerId]||"INACTIVE";
-    const photo=o.carPhotoURL||o.photoURL||"";
-    return `<tr>
-      <td>${photo?`<img class="avatar-photo" src="${esc(photo)}" alt="Car">`:"🚘"}</td>
-      <td><strong>${esc(o.ownerName)}</strong><div class="small">${esc(o.mobile)}</div></td>
-      <td><strong>${esc(o.vehicle)}</strong></td>
-      <td>${badge(status)}</td>
-      <td>${money(o.monthlyAmount)}</td>
-      <td><button class="btn small-btn" onclick="viewCustomer('${esc(o.ownerId)}')">View Details</button></td>
-    </tr>`;
-  }).join("")||'<tr><td colspan="6" class="empty">No customers found</td></tr>';
-}
-function fillOwnerSelects() {
-  const options='<option value="">Select customer</option>'+owners.map(o=>
-    `<option value="${esc(o.ownerId)}">${esc(o.ownerName)} · ${esc(o.vehicle)}</option>`
-  ).join("");
-  document.getElementById("chargeOwner").innerHTML=options;
-}
 
-/* REGISTER CUSTOMER + OPTIONAL PHOTO */
-document.getElementById("carPhoto").addEventListener("change",()=>{
-  const file=document.getElementById("carPhoto").files[0];
-  const preview=document.getElementById("carPhotoPreview");
-  if(!file){preview.style.display="none";return;}
-  if(file.size>5*1024*1024){toast("Photo must be 5 MB or less");document.getElementById("carPhoto").value="";return;}
-  preview.src=URL.createObjectURL(file);preview.style.display="block";
-});
-function clearPhotoPreview() {
-  document.getElementById("carPhotoPreview").style.display="none";
-}
-function fileToBase64(file) {
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>resolve(reader.result);
-    reader.onerror=reject;
-    reader.readAsDataURL(file);
-  });
-}
-document.getElementById("registerForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const form=e.currentTarget;
-  const data=Object.fromEntries(new FormData(form).entries());
-  const file=document.getElementById("carPhoto").files[0];
-  try {
-    const r=await api("adminRegister",data);
-    const ownerId=r.ownerId||r.customer?.ownerId||r.owner?.ownerId;
-    if(file) {
-      if(!ownerId)throw new Error("Customer registered, but server did not return ownerId. Photo upload needs the ownerId.");
-      const image=await fileToBase64(file);
-      await api("adminUploadCarPhoto",{ownerId,imageData:image,fileName:file.name,mimeType:file.type});
-    }
-    toast(file?"Customer registered with vehicle photo":"Customer registered successfully");
-    form.reset();clearPhotoPreview();await loadOwners();navigate("customers");
-  } catch(err){toast(err.message);}
-});
+  document.getElementById("customersTable").innerHTML =
+    list.length
+    ? list.map(c => `
+      <tr>
+        <td>
+          <strong>${safe(c.ownerName || c.name)}</strong>
+          <div class="muted small">${safe(c.ownerId)}</div>
+        </td>
 
-/* CUSTOMER DETAIL */
-async function viewCustomer(ownerId) {
-  document.getElementById("detailModal").classList.add("show");
-  const box=document.getElementById("customerDetailsContent");
-  box.innerHTML='<div class="empty">Loading customer details...</div>';
-  try {
-    const r=await api("adminCustomerDetails",{ownerId});
-    const c=r.customer||{};
-    const summary=r.summary||{};
-    const photo=c.carPhotoURL||c.photoURL||"";
-    box.innerHTML=`
-      <div class="two-col">
-        <div>
-          ${photo?`<img class="detail-photo" src="${esc(photo)}" alt="Vehicle">`:'<div class="detail-photo" style="display:grid;place-items:center;background:#32164b;font-size:50px">🚘</div>'}
-          <div style="margin-top:12px"><strong>${esc(c.ownerName)}</strong><div class="small">${esc(c.vehicle)} · ${esc(c.mobile)}</div></div>
-          <div class="form-actions">
-            <button class="btn secondary small-btn" onclick="replaceCarPhoto('${esc(ownerId)}')">Replace Photo</button>
-            <button class="btn secondary small-btn" onclick="editJoiningDate('${esc(ownerId)}','${esc(c.joiningDate||"")}')">Edit Joining Date</button>
+        <td><strong>${safe(c.vehicle)}</strong></td>
+
+        <td>${safe(c.mobile)}</td>
+
+        <td>${money(c.monthlyAmount)}</td>
+
+        <td>${badge(c.active ? "ACTIVE" : "INACTIVE")}</td>
+
+        <td>
+          <div class="actions">
+            <button
+              class="btn btn-small btn-secondary"
+              onclick="viewCustomer('${safe(c.ownerId)}')"
+            >Details</button>
+
+            <button
+              class="btn btn-small ${c.active ? "btn-red" : "btn-green"}"
+              onclick="toggleCustomer('${safe(c.ownerId)}',${!c.active})"
+            >${c.active ? "Deactivate" : "Activate"}</button>
           </div>
+        </td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="6" class="empty">No customers found.</td></tr>`;
+}
+
+
+function updateCustomerDropdowns() {
+
+  const active = customers.filter(c => c.active);
+
+  document.getElementById("chargeOwner").innerHTML =
+    `<option value="">Select customer</option>` +
+    active.map(c => `
+      <option value="${safe(c.ownerId)}">
+        ${safe(c.ownerName || c.name)} - ${safe(c.vehicle)}
+      </option>
+    `).join("");
+}
+
+
+async function toggleCustomer(id, active) {
+
+  if (!confirm(
+    active
+      ? "Activate this customer?"
+      : "Deactivate this customer? The customer will no longer be able to log in."
+  )) return;
+
+  setLoading(true);
+
+  try {
+
+    await api("adminSetOwnerStatus", {
+      ownerId:id,
+      active:String(active)
+    });
+
+    toast("Customer status updated.");
+
+    await loadCustomers();
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+
+  setLoading(false);
+}
+
+
+/* ==========================================
+   REGISTER CUSTOMER
+========================================== */
+
+document.getElementById("registerForm")
+.addEventListener("submit", async function(e) {
+
+  e.preventDefault();
+
+  const form = new FormData(this);
+
+  const data = Object.fromEntries(form.entries());
+
+  if (!/^\d{4}$/.test(data.pin)) {
+    toast("Customer PIN must be exactly 4 digits.","error");
+    return;
+  }
+
+  if (!/^\d{10}$/.test(data.mobile)) {
+    toast("Enter a valid 10-digit mobile number.","error");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+
+    const result = await api("adminRegister", data);
+
+    toast(result.message || "Customer registered.");
+
+    this.reset();
+
+    await loadCustomers();
+
+    showPage("customers");
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+
+  setLoading(false);
+});
+
+
+/* ==========================================
+   CUSTOMER DETAILS
+========================================== */
+
+async function viewCustomer(id) {
+
+  setLoading(true);
+
+  try {
+
+    const result = await api("adminCustomerDetails", {
+      ownerId:id
+    });
+
+    const c = result.customer || {};
+    const s = result.summary || {};
+
+    const history = result.paymentHistory || [];
+    const tx = result.transactions || [];
+    const moves = result.recentMovements || [];
+
+    let html = `
+      <div class="two-grid">
+
+        <div class="card">
+          <div class="card-title">Customer Profile</div>
+
+          ${c.carPhotoURL
+            ? `<img src="${safe(c.carPhotoURL)}" style="width:100%;max-height:170px;object-fit:cover;border-radius:10px;margin-bottom:12px">`
+            : ""
+          }
+
+          <h3>${safe(c.ownerName || c.name)}</h3>
+
+          <p class="muted small" style="margin-top:8px">
+            ${safe(c.vehicle)}
+          </p>
+
+          <p class="muted small" style="margin-top:8px">
+            Mobile: ${safe(c.mobile)}
+          </p>
+
+          <p class="muted small" style="margin-top:8px">
+            Joining: ${dateText(c.joiningDate)}
+          </p>
+
+          <p class="muted small" style="margin-top:8px">
+            Monthly Fee: ${money(c.monthlyAmount)}
+          </p>
         </div>
-        <div class="quick-list">
-          <div class="quick-item"><span>Vehicle Status</span>${badge(c.status||"—")}</div>
-          <div class="quick-item"><span>Monthly Charge</span><strong>${money(c.monthlyAmount)}</strong></div>
-          <div class="quick-item"><span>Outstanding</span><strong>${money(summary.outstanding)}</strong></div>
-          <div class="quick-item"><span>Total Paid</span><strong>${money(summary.totalPaid)}</strong></div>
-          <div class="quick-item"><span>Joining Date</span><strong>${fmtDate(c.joiningDate)}</strong></div>
+
+        <div class="card">
+          <div class="card-title">Account Summary</div>
+
+          <p class="small muted">Total Billed</p>
+          <h3>${money(s.totalBilled)}</h3>
+
+          <p class="small muted" style="margin-top:12px">Total Paid</p>
+          <h3 style="color:#4ade80">${money(s.totalPaid)}</h3>
+
+          <p class="small muted" style="margin-top:12px">Outstanding</p>
+          <h3 style="color:#fbbf24">${money(s.outstanding)}</h3>
+
+          <p class="small muted" style="margin-top:12px">Vehicle Status</p>
+          ${badge(s.vehicleStatus)}
+        </div>
+
+      </div>
+
+      <div class="card" style="margin-bottom:15px">
+        <div class="card-title">Upcoming Payment</div>
+
+        <p class="small muted">
+          ${safe(s.nextBillingMonth || "-")}
+        </p>
+
+        <h2 style="margin-top:8px">
+          ${money(s.nextDueAmount)}
+        </h2>
+
+        <p class="small muted" style="margin-top:7px">
+          Due Date: ${dateText(s.nextDueDate)}
+        </p>
+      </div>
+
+      <div class="card" style="margin-bottom:15px">
+        <div class="card-title">Payment History</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Due</th>
+                <th>Paid</th>
+                <th>Balance</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${history.map(p => `
+                <tr>
+                  <td>${safe(p.billingMonth)}</td>
+                  <td>${money(p.amountDue)}</td>
+                  <td>${money(p.amountPaid)}</td>
+                  <td>${money(p.balance)}</td>
+                  <td>${badge(p.status)}</td>
+                </tr>
+              `).join("") || `<tr><td colspan="5" class="empty">No billing records.</td></tr>`}
+            </tbody>
+          </table>
         </div>
       </div>
-      ${detailTable("Payment History",r.paymentHistory||[],["billingMonth","amountDue","amountPaid","balance","status"])}
-      ${detailTable("Transactions",r.transactions||[],["paymentDate","amount","paymentMethod","reference"])}
-      ${detailTable("Recent Movements",r.recentMovements||[],["dateTime","action","odometer","distance"])}
-      ${detailTable("UPI Requests",r.paymentRequests||[],["billingMonth","amount","utr","status"])}
+
+      <div class="card" style="margin-bottom:15px">
+        <div class="card-title">Recent Transactions</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Month</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${tx.map(t => `
+                <tr>
+                  <td>${dateText(t.paymentDate)}</td>
+                  <td>${safe(t.billingMonth)}</td>
+                  <td>${money(t.amount)}</td>
+                  <td>${safe(t.paymentMethod)}</td>
+                  <td>${safe(t.reference || "-")}</td>
+                </tr>
+              `).join("") || `<tr><td colspan="5" class="empty">No transactions.</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recent Vehicle Movements</div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Odometer</th>
+                <th>Date</th>
+                <th>Photo</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${moves.map(m => `
+                <tr>
+                  <td>${badge(m.action === "CHECK IN" ? "IN" : "OUT")}</td>
+                  <td>${safe(m.odometer || "-")}</td>
+                  <td>${dateTimeText(m.dateTime)}</td>
+                  <td>
+                    ${m.photoUrl
+                      ? `<a class="btn btn-small btn-secondary" target="_blank" href="${safe(m.photoUrl)}">View</a>`
+                      : "-"
+                    }
+                  </td>
+                </tr>
+              `).join("") || `<tr><td colspan="4" class="empty">No movements.</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+      </div>
     `;
-  } catch(e){box.innerHTML=`<div class="empty">${esc(e.message)}</div>`;}
-}
-function detailTable(title,rows,keys) {
-  if(!rows.length)return `<h3 style="font-size:14px;margin-top:24px">${title}</h3><div class="empty">No records</div>`;
-  return `<h3 style="font-size:14px;margin-top:24px">${title}</h3><div class="table-wrap"><table><thead><tr>${keys.map(k=>`<th>${esc(k)}</th>`).join("")}</tr></thead><tbody>${rows.map(row=>`<tr>${keys.map(k=>`<td>${esc(row[k]??"—")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
-}
-function replaceCarPhoto(ownerId) {
-  const input=document.createElement("input");
-  input.type="file";input.accept="image/*";
-  input.onchange=async()=>{
-    const file=input.files[0];if(!file)return;
-    if(file.size>5*1024*1024)return toast("Photo must be 5 MB or less");
-    try {
-      const image=await fileToBase64(file);
-      await api("adminUploadCarPhoto",{ownerId,imageData:image,fileName:file.name,mimeType:file.type});
-      toast("Vehicle photo updated");viewCustomer(ownerId);loadOwners();
-    } catch(e){toast(e.message);}
-  };
-  input.click();
-}
-async function editJoiningDate(ownerId,currentDate) {
-  const date=prompt("Enter new joining date (YYYY-MM-DD)",currentDate);
-  if(!date)return;
-  try {
-    await api("adminUpdateJoiningDate",{ownerId,joiningDate:date});
-    toast("Joining date updated");viewCustomer(ownerId);loadOwners();
-  } catch(e){toast(e.message);}
+
+    document.getElementById("detailsContent").innerHTML = html;
+
+    document.getElementById("detailsModal").classList.add("show");
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+
+  setLoading(false);
 }
 
-/* BILLING AND PAYMENTS */
+
+function closeModal() {
+  document.getElementById("detailsModal").classList.remove("show");
+}
+
+
+/* ==========================================
+   MONTHLY CHARGES
+========================================== */
+
+async function generateBills() {
+
+  const month = document.getElementById("generateMonth").value;
+
+  if (!month) {
+    toast("Select a billing month.","error");
+    return;
+  }
+
+  if (!confirm("Generate monthly bills for " + month + "?")) {
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+
+    const result = await api("adminGenerateMonthlyBills", {
+      billingMonth:month
+    });
+
+    toast(
+      `${result.created || 0} bills created. ${result.skipped || 0} skipped.`
+    );
+
+    await loadPayments();
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+
+  setLoading(false);
+}
+
+
+document.getElementById("chargeForm")
+.addEventListener("submit", async function(e) {
+
+  e.preventDefault();
+
+  const data = Object.fromEntries(new FormData(this).entries());
+
+  setLoading(true);
+
+  try {
+
+    const result = await api("adminAddCharge", data);
+
+    toast(result.message || "Charge added.");
+
+    this.reset();
+
+    await loadPayments();
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+
+  setLoading(false);
+});
+
+
+/* ==========================================
+   PAYMENTS
+========================================== */
+
 async function loadPayments() {
-  try {
-    const r=await api("adminPayments");
-    payments=r.payments||[];
-    const rows=payments.map(p=>`<tr>
-      <td>${esc(p.ownerName)}</td><td>${esc(p.vehicle)}</td>
-      <td>${esc(p.billingMonth)}</td><td>${money(p.amountDue)}</td>
-      <td>${money(p.amountPaid)}</td><td>${money(p.balance)}</td>
-      <td>${badge(p.status)}</td>
-    </tr>`).join("")||'<tr><td colspan="7" class="empty">No billing records</td></tr>';
-    document.getElementById("chargesTable").innerHTML=rows;
-    document.getElementById("paymentsTable").innerHTML=rows;
 
-    const unpaid=payments.filter(p=>Number(p.balance)>0);
-    document.getElementById("paymentBill").innerHTML='<option value="">Select unpaid bill</option>'+unpaid.map(p=>
-      `<option value="${esc(p.paymentId||p.paymentID)}">${esc(p.ownerName)} · ${esc(p.vehicle)} · ${esc(p.billingMonth)} · Balance ${money(p.balance)}</option>`
-    ).join("");
-  } catch(e){toast(e.message);}
+  try {
+
+    const result = await api("adminPayments");
+
+    payments = result.payments || [];
+
+    renderPayments();
+    updatePaymentDropdown();
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
 }
-document.getElementById("chargeForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
-  try {
-    await api("adminAddCharge",data);
-    toast("Monthly charge added");e.currentTarget.reset();await loadPayments();
-  } catch(err){toast(err.message);}
-});
-document.getElementById("paymentForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
-  try {
-    await api("adminRecordPayment",data);
-    toast("Payment recorded successfully");e.currentTarget.reset();await loadPayments();await loadDashboard();
-  } catch(err){toast(err.message);}
-});
 
-/* UPI REQUESTS */
-async function loadRequests() {
-  try {
-    const status=document.getElementById("requestFilter").value;
-    const r=await api("adminPaymentRequests",{status});
-    requests=r.requests||[];
-    document.getElementById("requestsTable").innerHTML=requests.map(x=>`
+
+function renderPayments() {
+
+  const chargeSearch =
+    document.getElementById("chargeSearch")?.value.toLowerCase() || "";
+
+  const paymentSearch =
+    document.getElementById("paymentSearch")?.value.toLowerCase() || "";
+
+  const filter =
+    document.getElementById("chargeFilter")?.value || "ALL";
+
+  const chargeList = payments.filter(p => {
+
+    const customer = customers.find(c =>
+      String(c.ownerId) === String(p.ownerId)
+    );
+
+    const text = [
+      p.ownerName,
+      p.vehicle,
+      customer?.ownerName,
+      customer?.name
+    ].join(" ").toLowerCase();
+
+    const status = p.status || "DUE";
+
+    return (
+      text.includes(chargeSearch) &&
+      (filter === "ALL" || status === filter)
+    );
+  });
+
+  const html = chargeList.length
+    ? chargeList.map(p => `
       <tr>
-        <td><strong>${esc(x.ownerName)}</strong></td>
-        <td>${esc(x.vehicle)}</td><td>${esc(x.billingMonth)}</td>
-        <td>${money(x.amount)}</td><td>${esc(x.utr)}</td>
-        <td>${fmtDateTime(x.createdAt)}</td><td>${badge(x.status)}</td>
-        <td>${String(x.status).toUpperCase()==="PENDING"?`<button class="btn small-btn" onclick="openReview('${esc(x.requestId)}')">Review</button>`:"—"}</td>
-      </tr>`).join("")||'<tr><td colspan="8" class="empty">No payment requests</td></tr>';
-  } catch(e){toast(e.message);}
+        <td>${safe(p.ownerName)}</td>
+        <td>${safe(p.vehicle)}</td>
+        <td>${safe(p.billingMonth)}</td>
+        <td>${money(p.amountDue)}</td>
+        <td>${money(p.amountPaid)}</td>
+        <td>${money(p.balance)}</td>
+        <td>${badge(p.status)}</td>
+        <td>
+          ${p.balance > 0
+            ? `<button class="btn btn-small" onclick="selectCharge('${safe(p.paymentID)}')">Receive</button>`
+            : "-"
+          }
+        </td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="8" class="empty">No billing records found.</td></tr>`;
+
+  const chargeTable = document.getElementById("chargesTable");
+  const paymentTable = document.getElementById("paymentsTable");
+
+  if (chargeTable) chargeTable.innerHTML = html;
+
+  if (paymentTable) {
+
+    const list = payments.filter(p => {
+
+      const text = [
+        p.ownerName,
+        p.vehicle,
+        p.billingMonth
+      ].join(" ").toLowerCase();
+
+      return text.includes(paymentSearch);
+    });
+
+    paymentTable.innerHTML =
+      list.length
+      ? list.map(p => `
+        <tr>
+          <td>${safe(p.ownerName)}</td>
+          <td>${safe(p.vehicle)}</td>
+          <td>${safe(p.billingMonth)}</td>
+          <td>${money(p.amountDue)}</td>
+          <td>${money(p.amountPaid)}</td>
+          <td>${money(p.balance)}</td>
+          <td>${badge(p.status)}</td>
+        </tr>
+      `).join("")
+      : `<tr><td colspan="7" class="empty">No payment records found.</td></tr>`;
+  }
 }
-function openReview(id) {
-  document.getElementById("reviewRequestId").value=id;
-  document.getElementById("reviewModal").classList.add("show");
+
+
+function updatePaymentDropdown() {
+
+  const list = payments.filter(p => Number(p.balance) > 0);
+
+  document.getElementById("paymentCharge").innerHTML =
+    `<option value="">Select outstanding charge</option>` +
+    list.map(p => `
+      <option value="${safe(p.paymentID)}">
+        ${safe(p.ownerName)} | ${safe(p.vehicle)} |
+        ${safe(p.billingMonth)} | Balance: ${money(p.balance)}
+      </option>
+    `).join("");
 }
-document.getElementById("reviewForm").addEventListener("submit",async e=>{
+
+
+function selectCharge(id) {
+
+  document.getElementById("paymentCharge").value = id;
+
+  showPage("payments");
+
+  document.getElementById("paymentCharge").value = id;
+
+  document.getElementById("paymentCharge").scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
+}
+
+
+document.getElementById("paymentForm")
+.addEventListener("submit", async function(e) {
+
   e.preventDefault();
-  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
+
+  const data = Object.fromEntries(new FormData(this).entries());
+
+  if (!data.paymentID) {
+    toast("Select a monthly charge.","error");
+    return;
+  }
+
+  if (!(Number(data.amount) > 0)) {
+    toast("Enter a valid amount.","error");
+    return;
+  }
+
+  setLoading(true);
+
   try {
-    await api("adminReviewPaymentRequest",data);
-    closeModal("reviewModal");toast("Payment request reviewed");
-    await loadRequests();await loadPayments();await loadDashboard();
-  } catch(err){toast(err.message);}
+
+    const result = await api("adminRecordPayment", data);
+
+    toast(result.message || "Payment recorded.");
+
+    this.reset();
+
+    await loadPayments();
+    await loadDashboard();
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+
+  setLoading(false);
 });
 
-/* MOVEMENTS */
-async function loadMovements() {
+
+/* ==========================================
+   UPI REQUESTS
+========================================== */
+
+async function loadRequests() {
+
   try {
-    const r=await api("adminMovements");
-    movements=r.movements||[];
-    renderMovements();
-  } catch(e){toast(e.message);}
+
+    const status = document.getElementById("requestFilter").value;
+
+    const result = await api("adminPaymentRequests", {
+      status:status
+    });
+
+    requests = result.requests || [];
+
+    renderRequests();
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
 }
-function renderMovements() {
-  const q=(document.getElementById("movementSearch").value||"").toLowerCase();
-  const filter=document.getElementById("movementFilter").value;
-  const list=movements.filter(m=>
-    [m.ownerName,m.vehicle].join(" ").toLowerCase().includes(q)&&
-    (filter==="ALL"||String(m.action).toUpperCase()===filter)
+
+
+function renderRequests() {
+
+  const list = requests;
+
+  document.getElementById("requestsTable").innerHTML =
+    list.length
+    ? list.map(r => `
+      <tr>
+        <td>${safe(r.ownerName)}</td>
+        <td>${safe(r.vehicle)}</td>
+        <td>${safe(r.billingMonth)}</td>
+        <td>${money(r.amount)}</td>
+        <td><strong>${safe(r.utr)}</strong></td>
+        <td>${dateTimeText(r.createdAt)}</td>
+        <td>${badge(r.status)}</td>
+        <td>
+          ${String(r.status).toUpperCase() === "PENDING"
+            ? `
+              <div class="actions">
+                <button class="btn btn-small btn-green"
+                  onclick="reviewRequest('${safe(r.requestId)}','APPROVE')">
+                  Approve
+                </button>
+
+                <button class="btn btn-small btn-red"
+                  onclick="reviewRequest('${safe(r.requestId)}','REJECT')">
+                  Reject
+                </button>
+              </div>
+            `
+            : "-"
+          }
+        </td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="8" class="empty">No payment requests found.</td></tr>`;
+}
+
+
+async function reviewRequest(id, decision) {
+
+  const note = prompt(
+    decision === "APPROVE"
+      ? "Optional approval note:"
+      : "Reason for rejection:"
   );
-  document.getElementById("movementsTable").innerHTML=list.map(m=>`
-    <tr>
-      <td>${fmtDateTime(m.dateTime)}</td><td>${esc(m.ownerName)}</td>
-      <td><strong>${esc(m.vehicle)}</strong></td><td>${badge(m.action)}</td>
-      <td>${esc(m.odometer??"—")}</td><td>${esc(m.distance??"—")}</td>
-      <td>${m.photoUrl?`<a href="${esc(m.photoUrl)}" target="_blank" rel="noopener" class="purple-text">View Photo ↗</a>`:"—"}</td>
-    </tr>`).join("")||'<tr><td colspan="7" class="empty">No movement records found</td></tr>';
+
+  if (note === null) return;
+
+  if (decision === "REJECT" && !note.trim()) {
+    toast("Please enter a rejection reason.","error");
+    return;
+  }
+
+  if (!confirm(
+    decision === "APPROVE"
+      ? "Have you verified the UPI payment in your bank account?"
+      : "Reject this payment request?"
+  )) return;
+
+  setLoading(true);
+
+  try {
+
+    const result = await api("adminReviewPaymentRequest", {
+      requestId:id,
+      decision:decision,
+      adminNote:note
+    });
+
+    toast(result.message || "Request reviewed.");
+
+    await loadRequests();
+    await loadPayments();
+    await loadDashboard();
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+
+  setLoading(false);
 }
 
-/* SETTINGS */
-document.getElementById("settingsForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const data=Object.fromEntries(new FormData(e.currentTarget).entries());
+
+/* ==========================================
+   VEHICLE MOVEMENTS
+========================================== */
+
+async function loadMovements() {
+
   try {
-    await api("adminUpdateSettings",data);
-    toast("Settings saved successfully");
-  } catch(err){toast("Settings action is not available in Code.gs yet: "+err.message);}
+
+    const result = await api("adminMovements");
+
+    movements = result.movements || [];
+
+    renderMovements();
+    renderDashboardMovements();
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+}
+
+
+function renderMovements() {
+
+  const q = (
+    document.getElementById("movementSearch")?.value || ""
+  ).toLowerCase();
+
+  const list = movements.filter(r =>
+    String(r.vehicle || "").toLowerCase().includes(q)
+  );
+
+  document.getElementById("movementsTable").innerHTML =
+    list.length
+    ? list.map(r => `
+      <tr>
+        <td><strong>${safe(r.vehicle)}</strong></td>
+        <td>${badge(r.action === "CHECK IN" ? "IN" : "OUT")}</td>
+        <td>${safe(r.odometer || "-")}</td>
+        <td>${safe(r.distance || 0)}</td>
+        <td>${dateTimeText(r.dateTime)}</td>
+        <td>
+          ${r.photoUrl
+            ? `<a class="btn btn-small btn-secondary" target="_blank" href="${safe(r.photoUrl)}">View Photo</a>`
+            : "-"
+          }
+        </td>
+        <td>${safe(r.source || "-")}</td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="7" class="empty">No vehicle movements found.</td></tr>`;
+}
+
+
+/* ==========================================
+   SETTINGS
+========================================== */
+
+async function loadSettings() {
+
+  try {
+
+    const result = await api("getPaymentConfig");
+
+    const c = result.config || result;
+
+    document.getElementById("upiId").value =
+      c.upiId || "";
+
+    document.getElementById("upiName").value =
+      c.upiName || "";
+
+  } catch(err) {
+    console.log(err);
+  }
+}
+
+
+document.getElementById("settingsForm")
+.addEventListener("submit", async function(e) {
+
+  e.preventDefault();
+
+  const data = Object.fromEntries(new FormData(this).entries());
+
+  if (
+    data.newAdminPin &&
+    !/^\d{4,8}$/.test(data.newAdminPin)
+  ) {
+    toast("Admin PIN must contain 4 to 8 digits.","error");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+
+    const result = await api("adminUpdateSettings", data);
+
+    toast(result.message || "Settings saved.");
+
+    if (data.newAdminPin) {
+      adminToken = "";
+      sessionStorage.removeItem("parkingAdminToken");
+
+      alert("Admin PIN changed. Please log in again.");
+
+      logout();
+    }
+
+  } catch(err) {
+    toast(err.message,"error");
+  }
+
+  setLoading(false);
 });
 
-/* MODALS */
-function closeModal(id){document.getElementById(id).classList.remove("show");}
-document.querySelectorAll(".modal").forEach(m=>{
-  m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("show");});
-});
 
-/* INITIALIZATION */
-verifySession();
 </script>
+
 </body>
 </html>
