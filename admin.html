@@ -725,11 +725,9 @@ async function reviewRequest(requestId,decision){
   try{
     await api("adminReviewPaymentRequest",{requestId,decision,adminNote});
     toast("Payment request "+decision.toLowerCase()+"d.");
-    await Promise.all([
-  loadCustomerStatus(),
-  loadHistory(),
-  loadPayments()
-]);
+    await Promise.all([loadRequests(),loadPayments(),loadDashboard()]);
+  }catch(e){toast(e.message);}
+}
 
 async function loadMovements(){
   const r=await api("adminMovements");
