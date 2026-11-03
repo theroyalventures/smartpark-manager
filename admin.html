@@ -1032,7 +1032,7 @@ $("adminPin").addEventListener("keydown",e=>{
                 document.body.style.overflowY = "auto";
                 document.body.style.touchAction = "auto";
 
-            }, 500);
+            }, 100);
         }
 
         // Start video
@@ -1042,8 +1042,8 @@ $("adminPin").addEventListener("keydown",e=>{
             console.log("Video autoplay error:", error);
         });
 
-        // Automatically close after
-        setTimeout(closeSplash, 26000);
+        // Automatically close after 15 sec
+        setTimeout(closeSplash, 15000);
 
     }
 
