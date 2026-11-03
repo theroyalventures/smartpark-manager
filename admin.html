@@ -355,6 +355,25 @@ tr:last-child td{border-bottom:0}
   .card{padding:14px}
   .page-title{font-size:22px}
 }
+
+  html,
+body {
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+body.splash-active {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100%;
+}
+
+body:not(.splash-active) {
+    position: static !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    touch-action: auto !important;
+}
 </style>
 </head>
 
