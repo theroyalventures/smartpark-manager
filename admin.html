@@ -813,6 +813,36 @@ async function viewCustomer(ownerId){
 $("adminPin").addEventListener("keydown",e=>{
   if(e.key==="Enter")login();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const splash = document.getElementById("splash");
+    const video = document.getElementById("splashVideo");
+
+    if (!splash || !video) return;
+
+    function hideSplash() {
+        splash.style.transition = "opacity 0.8s ease";
+        splash.style.opacity = "0";
+
+        setTimeout(() => {
+            splash.style.display = "none";
+        }, 800);
+    }
+
+    // Video complete hone par splash hide
+    video.addEventListener("ended", hideSplash, { once: true });
+
+    // Video play karne ki koshish
+    video.play().catch(error => {
+        console.log("Video autoplay issue:", error);
+    });
+
+    // Fallback: maximum 30 seconds
+    setTimeout(hideSplash, 30000);
+
+});
+  
 </script>
 </body>
 </html>
