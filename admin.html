@@ -156,9 +156,12 @@ button{cursor:pointer}
 
 body.splash-active {
     overflow: hidden !important;
-    height: 100vh;
-    height: 100dvh;
     touch-action: none;
+}
+
+body:not(.splash-active) {
+    overflow-y: auto !important;
+    touch-action: auto;
 }
 
 /* Mobile optimization */
@@ -966,10 +969,7 @@ $("adminPin").addEventListener("keydown",e=>{
   if(e.key==="Enter")login();
 });
 
-/* ==============================
-   SPLASH SCREEN CONTROLLER
-   Duration: 10 Seconds
-============================== */
+/* SMART PARKING SPLASH CONTROLLER */
 
 (function () {
 
@@ -980,9 +980,10 @@ $("adminPin").addEventListener("keydown",e=>{
 
         if (!splash || !video) return;
 
-        document.body.classList.add("splash-active");
-
         let splashClosed = false;
+
+        // Lock scrolling only during splash
+        document.body.classList.add("splash-active");
 
         function closeSplash() {
 
@@ -990,40 +991,40 @@ $("adminPin").addEventListener("keydown",e=>{
 
             splashClosed = true;
 
-            // Stop video completely
+            // Stop video
             video.pause();
 
             try {
                 video.currentTime = 0;
-            } catch (error) {}
+            } catch (e) {}
 
             // Fade out splash
+            splash.style.transition = "opacity 0.5s ease";
             splash.style.opacity = "0";
-            splash.style.visibility = "hidden";
 
-            // Remove splash after transition
             setTimeout(function () {
 
+                // Completely remove splash
                 splash.remove();
 
+                // Immediately unlock dashboard scrolling
                 document.body.classList.remove("splash-active");
 
-            }, 650);
+                document.body.style.overflowY = "auto";
+                document.body.style.touchAction = "auto";
+
+            }, 500);
         }
 
         // Start video
         video.muted = true;
 
-        const playPromise = video.play();
+        video.play().catch(function (error) {
+            console.log("Video autoplay error:", error);
+        });
 
-        if (playPromise !== undefined) {
-            playPromise.catch(function (error) {
-                console.log("Splash autoplay unavailable:", error);
-            });
-        }
-
-        // Close splash after exactly 10 seconds
-        setTimeout(closeSplash, 20000);
+        // Automatically close after 15 seconds
+        setTimeout(closeSplash, 15000);
 
     }
 
