@@ -988,6 +988,7 @@ $("adminPin").addEventListener("keydown",e=>{
   if(e.key==="Enter")login();
 });
 
+// splash screen 
 document.addEventListener("DOMContentLoaded", function () {
 
     const splash = document.getElementById("splash");
@@ -996,40 +997,29 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!splash || !video) return;
 
     let closed = false;
-    let timer = null;
 
-    // Lock scrolling
+    // Lock scrolling while splash is visible
     document.body.classList.add("splash-active");
 
     function closeSplash() {
         if (closed) return;
-
         closed = true;
-        clearTimeout(timer);
 
-        splash.style.transition = "opacity 0.4s ease";
+        splash.style.transition = "opacity 0.5s ease";
         splash.style.opacity = "0";
 
-        setTimeout(function () {
+        setTimeout(() => {
             splash.remove();
             document.body.classList.remove("splash-active");
-        }, 400);
+        }, 500);
     }
 
-    // Start 12-second timer only when video actually starts
-    video.addEventListener("playing", function () {
+    // Close splash when video finishes naturally
+    video.addEventListener("ended", closeSplash, { once: true });
 
-        if (timer || closed) return;
-
-        timer = setTimeout(function () {
-            video.pause();
-            closeSplash();
-        }, 12000);
-
-    }, { once: true });
-
-    video.play().catch(function (error) {
-        console.log("Video error:", error);
+    // Play video
+    video.play().catch(error => {
+        console.log("Video playback error:", error);
         closeSplash();
     });
 
