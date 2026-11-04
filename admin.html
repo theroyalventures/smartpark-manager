@@ -411,7 +411,7 @@ body:not(.splash-active) {
         </div>
 
         <div class="splash-loading">
-            LOADING EXPERIENCE
+            LOADING EXPERIENCE PLEASE WAIT
         </div>
 
         <div class="splash-loading-bar">
@@ -988,80 +988,52 @@ $("adminPin").addEventListener("keydown",e=>{
   if(e.key==="Enter")login();
 });
 
-/* SMART PARKING SPLASH CONTROLLER */
+document.addEventListener("DOMContentLoaded", function () {
 
-(function () {
+    const splash = document.getElementById("splash");
+    const video = document.getElementById("splashVideo");
 
-    function initializeSplash() {
+    if (!splash || !video) return;
 
-        const splash = document.getElementById("splash");
-        const video = document.getElementById("splashVideo");
+    let closed = false;
+    let timer = null;
 
-        if (!splash || !video) return;
+    // Lock scrolling
+    document.body.classList.add("splash-active");
 
-        let splashClosed = false;
+    function closeSplash() {
+        if (closed) return;
 
-        // Lock scrolling only during splash
-        document.body.classList.add("splash-active");
+        closed = true;
+        clearTimeout(timer);
 
-        function closeSplash() {
+        splash.style.transition = "opacity 0.4s ease";
+        splash.style.opacity = "0";
 
-            if (splashClosed) return;
+        setTimeout(function () {
+            splash.remove();
+            document.body.classList.remove("splash-active");
+        }, 400);
+    }
 
-            splashClosed = true;
+    // Start 12-second timer only when video actually starts
+    video.addEventListener("playing", function () {
 
-            // Stop video
+        if (timer || closed) return;
+
+        timer = setTimeout(function () {
             video.pause();
+            closeSplash();
+        }, 12000);
 
-            try {
-                video.currentTime = 0;
-            } catch (e) {}
+    }, { once: true });
 
-            // Fade out splash
-            splash.style.transition = "opacity 0.5s ease";
-            splash.style.opacity = "0";
+    video.play().catch(function (error) {
+        console.log("Video error:", error);
+        closeSplash();
+    });
 
-            setTimeout(function () {
-
-                // Completely remove splash
-                splash.remove();
-
-                // Immediately unlock dashboard scrolling
-                document.body.classList.remove("splash-active");
-
-                document.body.style.overflowY = "auto";
-                document.body.style.touchAction = "auto";
-
-            }, 200);
-        }
-
-        // Start video
-        video.muted = true;
-
-        video.play().catch(function (error) {
-            console.log("Video autoplay error:", error);
-        });
-
-        // Automatically close after 15 sec
-        setTimeout(closeSplash, 11000);
-
-    }
-
-    if (document.readyState === "loading") {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeSplash,
-            { once: true }
-        );
-
-    } else {
-
-        initializeSplash();
-
-    }
-
-})();
+});
 </script>
 </body>
 </html>
