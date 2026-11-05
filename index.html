@@ -552,8 +552,31 @@ td{
     opacity: 0.9;
 }
 
-body.splash-active {
-  overflow: hidden !important;
+.splash-loading {
+    margin-top: 30px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    opacity: 0.85;
+}
+
+.splash-loading-bar {
+    width: 150px;
+    height: 3px;
+
+    background: rgba(255,255,255,0.25);
+
+    margin: 14px auto;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.splash-loading-progress {
+    width: 35%;
+    height: 100%;
+
+    background: #ffffff;
+
+    animation: splashProgress 2s ease-in-out infinite;
 }
   
 </style>
